@@ -1,0 +1,9 @@
+.superpowers/
+node_modules/
+.env
+.env*.local
+.vercel/
+dist/
+.output/
+.claude/settings.local.json
+.claude/.cc-writes/
