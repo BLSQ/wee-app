@@ -2,6 +2,7 @@
 
 **Date:** 2026-09-13
 **Status:** Approved
+**Repository:** https://github.com/BLSQ/wee-app
 **Context:** Starter repository for a Bluesquare workshop on spec-driven development and TDD with Superpowers.
 
 ## 1. Purpose
@@ -345,26 +346,35 @@ requests are attributed to the human author alone.
 
 Superpowers is deliberately unhurried. That is right in normal work and wrong
 in a three-hour session: a pair that spends forty minutes in brainstorming
-never reaches a merged pull request, and the point of the workshop is to see
+never reaches a merged pull request, and the point of the workshop is to watch
 the whole loop close at least once.
 
-The repository therefore states a pace budget in `AGENTS.md`. It trims
-ceremony, never the method — the brainstorm still happens, the test is still
-written first, the ADR is still proposed:
+The governing principle is therefore: **no step is skipped, every step is
+short.** Superpowers is slow because of the number of round trips and the
+length of its artefacts, not because of the steps themselves. Making the spec
+optional would remove precisely what the participants came to see.
 
-- Ask at most three clarifying questions, and ask them in one batch rather than
-  one per message.
-- A backlog ticket is a bounded task by default. Present a short design in
-  chat and implement after approval. Write a spec document only when the
-  ticket changes a shared contract — the database schema, the feature
-  registry, or the shell.
-- Plans are lists of steps, not prose. One page.
+Every ticket runs the full loop — brainstorm, spec, plan, failing test,
+implementation, pull request, ADR proposal — under this budget:
+
+- Ask clarifying questions in **one batch of at most three**, not one per
+  message. This is the single largest saving and it costs nothing.
+- A spec is **half a page**: purpose, the shape of the query or component,
+  acceptance criteria, what is explicitly out of scope.
+- A plan is **one page of steps**, not prose.
 - Do not use `subagent-driven-development`. Implement directly.
-- Prefer one round of review over several.
+- One round of review, not several.
+- Reach for the visual companion instead of describing a layout or a map in
+  prose. It is faster, not slower, for anything spatial.
 
-The budget is a rule in `AGENTS.md`, in its own `## Pace` section, so that it
-can be deleted in one edit when the repository outlives the workshop. ADR 0009
-records that it is a temporary, workshop-scoped concession.
+Backlog tickets carry their own context and acceptance criteria (§8) so that
+brainstorming starts from a real brief and converges quickly, without the
+brainstorm becoming a formality.
+
+The budget lives in its own `## Pace` section of `AGENTS.md` so it can be
+deleted in one edit once the repository outlives the workshop. ADR 0009 records
+it as a temporary, workshop-scoped concession and states what it must never
+trade away.
 
 ### 6.4 Development workflow
 
@@ -428,7 +438,7 @@ mitigation, and the contention is itself worth discussing during the session.
 | Neon setup consumes workshop time | README gives an exact procedure; the seed is a single command; the repository owner validates the path end to end beforehand |
 | Cross-cutting tickets collide | Kanban WIP limit; the collision is surfaced as a discussion topic rather than hidden |
 | Two to three hours is short for a full brainstorm-to-merge cycle | The pace budget in §6.3 caps clarifying questions, spec writing and review rounds; tickets 1, 3, 4 and 8 are sized S specifically so at least one pair completes the loop early and can demonstrate it |
-| The pace budget is read as permission to skip the method | It trims ceremony only, and says so explicitly; the brainstorm, the failing test and the ADR proposal are never optional |
+| The pace budget is read as permission to skip the method, so participants never see what Superpowers is for | The budget shortens artefacts and round trips; it never makes a step optional. ADR 0009 states this as the constraint the budget must not trade away |
 | A pair invents its own conventions | The `device-syncs` slice is complete and tested; `AGENTS.md` names it as the pattern |
 
 ## 10. Open questions
