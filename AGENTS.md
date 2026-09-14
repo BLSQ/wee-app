@@ -11,8 +11,10 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
 - Offer the brainstorming visual companion for any layout, map or data-shape question.
   Do not wait to be asked.
 - Work in a git worktree and open a pull request. Never commit to `main`.
-- A feature lives in `src/features/<name>/` and registers itself in `src/features/index.ts`,
-  nowhere else. `src/features/device-syncs/` is the pattern to copy.
+- A feature lives in `src/features/<name>/` and registers itself in `src/features/router.ts`
+  (server) and `src/features/nav.ts` (client), nowhere else. `src/features/device-syncs/` is the
+  pattern to copy.
+- Code that runs in the browser never imports from `src/server/`, except `import type`.
 - Database access goes in `api/queries.ts` as plain functions taking `db`. That is what you test.
 - Tests are Vitest against a migrated and seeded database (`TEST_DATABASE_URL`). No mocks.
 - No linter, e2e framework, auth or CI yet. They are tickets in `BACKLOG.md`, not gaps to fill

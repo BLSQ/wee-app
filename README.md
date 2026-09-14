@@ -54,7 +54,8 @@ pnpm format              # Prettier
 ```
 src/
 ├── features/
-│   ├── index.ts          the feature registry: the only shared file a feature touches
+│   ├── router.ts         feature registry, server side: tRPC routers
+│   ├── nav.ts            feature registry, client side: navigation items
 │   └── device-syncs/     the example feature, the pattern to copy
 │       ├── api/queries.ts       Kysely queries, plain functions taking `db`: tested
 │       ├── api/queries.test.ts
@@ -67,8 +68,9 @@ src/
 └── lib/                  tRPC client
 ```
 
-A new feature is a folder under `src/features/`, one route file under `src/routes/`, and two lines
-in `src/features/index.ts` (ADR 0005).
+A new feature is a folder under `src/features/`, one route file under `src/routes/`, and one line
+in each of `src/features/router.ts` and `src/features/nav.ts` (ADR 0010). Browser code never
+imports server code.
 
 ## How we work
 

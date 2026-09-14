@@ -1,6 +1,6 @@
 # 0005. Explicit feature registry
 
-**Status:** Accepted
+**Status:** Superseded by 0010
 **Date:** 2026-09-13
 
 ## Context

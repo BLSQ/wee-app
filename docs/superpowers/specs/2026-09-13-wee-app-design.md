@@ -204,7 +204,8 @@ wee-app/
     ├── ui/                   AppShell, theme
     ├── lib/trpc.ts           client
     └── features/
-        ├── index.ts          the shared contact point
+        ├── router.ts         shared contact point, server side
+        ├── nav.ts            shared contact point, client side
         └── device-syncs/
             ├── api/queries.ts
             ├── api/queries.test.ts
@@ -215,22 +216,25 @@ wee-app/
 ### 4.3 Feature slices
 
 A feature owns one folder under `src/features/` and touches exactly two things
-outside it: a three-line route file, and two lines in `src/features/index.ts`.
+outside it: a three-line route file, and one line in each half of the registry.
 
 ```ts
-// src/features/index.ts
-import { router } from '#/server/trpc/base'
-import { deviceSyncsRouter } from './device-syncs/api/router'
-
+// src/features/router.ts  (server)
 export const appRouter = router({
   deviceSyncs: deviceSyncsRouter,
 })
 export type AppRouter = typeof appRouter
 
+// src/features/nav.ts  (client)
 export const navItems = [{ label: 'Syncs', to: '/syncs' }]
 ```
 
-The registry is explicit rather than discovered by globbing (ADR 0005). The
+The registry is split by where the code runs (ADR 0010, superseding 0005). The
+shell runs in the browser, so it must never import the router, which reaches the
+database driver. A single file holding both once pulled `pg` into the client
+bundle; `src/ui/AppShell.test.ts` now guards against it.
+
+The registry is explicit rather than discovered by globbing. The
 decisive reason is not taste: composing a tRPC router from an array erases the
 end-to-end type inference that justifies choosing tRPC in the first place.
 
@@ -400,6 +404,7 @@ Kanban. `BACKLOG.md` holds the ticket text until the repository is pushed.
 | 0007 | GeoJSON in `jsonb` instead of PostGIS |
 | 0008 | No authentication yet |
 | 0009 | A workshop pace budget for agents |
+| 0010 | Split the feature registry by runtime (supersedes 0005) |
 
 ADR 0004 records why deployment as an OpenHEXA web app was set aside: the
 per-pull-request preview environment was the deciding criterion.

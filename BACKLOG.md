@@ -3,7 +3,8 @@
 Each ticket becomes a GitHub issue on the project board. Copy the section as the issue body.
 
 - **Tickets 1 to 5 are features.** Each lives in its own folder under `src/features/`, so they can
-  be built in parallel. They meet only in `src/features/index.ts` (ADR 0005).
+  be built in parallel. They meet only in `src/features/router.ts` and
+  `src/features/nav.ts` (ADR 0010).
 - **Tickets 6 to 11 are cross-cutting.** They touch root configuration, `package.json` or CI, and
   will collide with each other. The Kanban work-in-progress limit is how we manage that.
 
@@ -27,7 +28,7 @@ before data is lost.
 - [ ] The most stale devices come first.
 - [ ] The query is tested against the seeded database, which holds 12 devices that never synced.
 
-**Touches shared files:** `src/features/index.ts`.
+**Touches shared files:** `src/features/router.ts`, `src/features/nav.ts`.
 
 ---
 
@@ -47,7 +48,7 @@ does.
 - [ ] The map needs no API key or paid tile service.
 - [ ] The aggregation query is tested.
 
-**Touches shared files:** `src/features/index.ts`.
+**Touches shared files:** `src/features/router.ts`, `src/features/nav.ts`.
 
 ---
 
@@ -63,7 +64,7 @@ Is sync activity going up or down? A daily trend answers it at a glance.
 - [ ] Days with no sync appear as zero, not as a gap.
 - [ ] The query is tested, including a day with no syncs.
 
-**Touches shared files:** `src/features/index.ts`.
+**Touches shared files:** `src/features/router.ts`, `src/features/nav.ts`.
 
 ---
 
@@ -82,7 +83,7 @@ From any list, a supervisor wants to open one device and see its whole history.
 - [ ] Device serials in the recent syncs table link to this page.
 - [ ] The queries are tested.
 
-**Touches shared files:** `src/features/index.ts`, and `src/features/device-syncs/ui/SyncTable.tsx`,
+**Touches shared files:** `src/features/router.ts`, `src/features/nav.ts`, and `src/features/device-syncs/ui/SyncTable.tsx`,
 which belongs to another feature. Discuss how one feature should link to another.
 
 ---
@@ -101,7 +102,7 @@ Sync problems are often people problems. Supervisors want to see activity per us
 - [ ] Users with no activity in the period are shown.
 - [ ] The query is tested.
 
-**Touches shared files:** `src/features/index.ts`.
+**Touches shared files:** `src/features/router.ts`, `src/features/nav.ts`.
 
 ---
 
@@ -170,7 +171,10 @@ Conventions exist only in `AGENTS.md`. Nothing stops a feature from reaching int
 - [ ] A linter runs with a single `pnpm` command.
 - [ ] Unused files, exports and dependencies are reported.
 - [ ] A rule fails when code outside `src/features/<name>/` imports from inside another feature's
-      folder. `src/features/index.ts` is the only exception.
+      folder. The two registry files, `src/features/router.ts` and `src/features/nav.ts`, are the
+      only exceptions.
+- [ ] A rule fails when code that runs in the browser imports from `src/server/` (type imports
+      excepted). Today only `src/ui/AppShell.test.ts` guards this, and only for the shell.
 - [ ] The existing code passes.
 - [ ] The choices are recorded in an ADR.
 

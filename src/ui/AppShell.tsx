@@ -1,7 +1,7 @@
 import { AppShell as MantineAppShell, Group, NavLink, Title } from '@mantine/core'
 import { Link, useRouterState } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
-import { navItems } from '#/features'
+import { navItems } from '#/features/nav'
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
