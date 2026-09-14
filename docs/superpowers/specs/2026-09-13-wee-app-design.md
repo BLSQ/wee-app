@@ -67,15 +67,16 @@ has 1 332 org units:
 | Level | Meaning | Count | Geometry |
 | --- | --- | --- | --- |
 | 1 | Country (Sierra Leone) | 1 | — |
-| 2 | Province — in practice a district | 9 | Polygon, all present |
+| 2 | Province — in practice a district | 13 | Polygon, all present |
 | 3 | District — in practice a chiefdom | 152 | Polygon, all present |
-| 4 | Health facility | 1 170 | 601 have GPS points |
+| 4 | Health facility | 1 166 | 601 org units have GPS points |
 
 **Level is derived from depth in the parent chain, not from
-`org_unit_type_id`.** Seventy-one facilities in source version 1 carry the
-`Unknown` org unit type while being ordinary MCHP, CHP and CHC units parented
-to a chiefdom; Sierra Leone itself is typed `Unknown` too. Depth classifies all
-of them correctly and needs no special cases.
+`org_unit_type_id`.** Seventy-two org units in source version 1 carry the
+`Unknown` org unit type: Sierra Leone itself, four of its thirteen districts
+(Kenema, Koinadugu, Kono, Moyamba), and sixty-seven ordinary MCHP, CHP and CHC
+facilities. Counting by IASO type would report nine districts, which is wrong.
+Depth classifies all of them correctly and needs no special cases.
 
 The device tables are empty, so **all sync data is synthetic**.
 

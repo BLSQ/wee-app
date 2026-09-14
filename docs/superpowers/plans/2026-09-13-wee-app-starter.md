@@ -290,9 +290,9 @@ describe('org-units.json', () => {
 
   it('classifies by depth, not by IASO org unit type', () => {
     expect(byLevel(1)).toHaveLength(1)
-    expect(byLevel(2)).toHaveLength(9)
+    expect(byLevel(2)).toHaveLength(13)
     expect(byLevel(3)).toHaveLength(152)
-    expect(byLevel(4)).toHaveLength(1170)
+    expect(byLevel(4)).toHaveLength(1166)
   })
 
   it('carries a polygon for every district and chiefdom', () => {
@@ -432,7 +432,7 @@ async function main() {
     })
 
   // Level and path come from depth in the parent chain. IASO's org unit type is
-  // unreliable here: 71 facilities and the country itself are typed 'Unknown'.
+  // unreliable here: the country, 4 districts and 67 facilities are typed 'Unknown'.
   const byId = new Map(raw.map((unit) => [unit.id, unit]))
   const pathOf = new Map<number, number[]>()
   const ancestry = (id: number): number[] => {
@@ -486,7 +486,7 @@ Expected: `org units: 1332, users: 41`.
 Run: `pnpm test data/data.test.ts`
 Expected: PASS.
 
-If the level counts differ, the depth classification is wrong — fix `ancestry`, not the test. The spec fixes these numbers at 1 / 9 / 152 / 1170.
+If the level counts differ, the depth classification is wrong — fix `ancestry`, not the test. The spec fixes these numbers at 1 / 13 / 152 / 1166.
 
 - [ ] **Step 6: Check the committed size**
 
@@ -856,12 +856,12 @@ describe('generateSeedData', () => {
     expect(devices.filter((d) => !synced.has(d.id))).toHaveLength(12)
   })
 
-  it('places every device in one of the nine districts', () => {
+  it('places every device in one of the thirteen districts', () => {
     const { devices } = generateSeedData(input)
     const districts = new Set(
       devices.map((d) => districtOf(facilityById.get(d.org_unit_id)!.path)),
     )
-    expect(districts.size).toBe(9)
+    expect(districts.size).toBe(13)
   })
 
   it('keeps every sync inside the last 90 days', () => {
@@ -1133,9 +1133,9 @@ describe('the seeded database', () => {
     `.execute(db)
     expect(rows).toEqual([
       { level: 1, count: '1' },
-      { level: 2, count: '9' },
+      { level: 2, count: '13' },
       { level: 3, count: '152' },
-      { level: 4, count: '1170' },
+      { level: 4, count: '1166' },
     ])
   })
 
