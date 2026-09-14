@@ -156,12 +156,12 @@ the same database.
 
 Shape of the generated data:
 
-- ~200 devices distributed across facilities, weighted so that districts differ
-  in device density.
-- ~8 000 syncs spread over the preceding 90 days.
+- 200 devices spread round-robin across the thirteen districts, each attached
+  to a random facility of its district.
+- About 6 000 syncs spread over the preceding 90 days.
 - Calibrated so the dashboard has something to show: three districts healthy,
-  two that stopped syncing about ten days ago, one nearly silent, and a handful
-  of devices that have never synced at all.
+  two that stopped syncing about ten days ago, one nearly silent, seven mixed,
+  and 12 devices that have never synced at all.
 
 Determinism is not a convenience — it is what makes the testing strategy in
 §5.3 work.
@@ -219,7 +219,7 @@ outside it: a three-line route file, and two lines in `src/features/index.ts`.
 
 ```ts
 // src/features/index.ts
-import { router } from '~/server/trpc/base'
+import { router } from '#/server/trpc/base'
 import { deviceSyncsRouter } from './device-syncs/api/router'
 
 export const appRouter = router({

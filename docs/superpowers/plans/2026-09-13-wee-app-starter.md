@@ -89,7 +89,7 @@ Stop it with `pg_ctl -D "$PGDATA" stop`. This cluster is a local convenience onl
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: a working `pnpm dev`, `pnpm test`, `pnpm format`. Path alias `~/*` → `src/*`.
+- Produces: a working `pnpm dev`, `pnpm test`, `pnpm format`. Path alias `#/*` → `src/*`, declared in `package.json` `imports`.
 
 - [ ] **Step 1: Scaffold TanStack Start outside the repo, then copy in**
 
@@ -713,7 +713,7 @@ Create `src/server/db/migrations.test.ts`:
 ```ts
 import { afterAll, describe, expect, it } from 'vitest'
 import { sql } from 'kysely'
-import { testDb } from '~/server/db'
+import { testDb } from '#/server/db'
 
 const db = testDb()
 afterAll(() => db.destroy())
@@ -1121,7 +1121,7 @@ Create `src/server/db/seed/seeded-database.test.ts`:
 ```ts
 import { afterAll, describe, expect, it } from 'vitest'
 import { sql } from 'kysely'
-import { testDb } from '~/server/db'
+import { testDb } from '#/server/db'
 
 const db = testDb()
 afterAll(() => db.destroy())
@@ -1214,7 +1214,7 @@ Create `src/server/trpc/base.ts`:
 ```ts
 import { initTRPC } from '@trpc/server'
 import superjson from 'superjson'
-import { createDb, type Database } from '~/server/db'
+import { createDb, type Database } from '#/server/db'
 import type { Kysely } from 'kysely'
 
 export type Context = { db: Kysely<Database> }
@@ -1239,7 +1239,7 @@ export const publicProcedure = t.procedure
 Create `src/features/index.ts`:
 
 ```ts
-import { router } from '~/server/trpc/base'
+import { router } from '#/server/trpc/base'
 
 /**
  * The only file a feature slice touches outside its own folder.
@@ -1263,8 +1263,8 @@ Create `src/routes/api/trpc/$.ts`:
 ```ts
 import { createFileRoute } from '@tanstack/react-router'
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { appRouter } from '~/features'
-import { createContext } from '~/server/trpc/base'
+import { appRouter } from '#/features'
+import { createContext } from '#/server/trpc/base'
 
 const handle = ({ request }: { request: Request }) =>
   fetchRequestHandler({
@@ -1288,7 +1288,7 @@ import { createTRPCClient, httpBatchLink } from '@trpc/client'
 import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query'
 import { QueryClient } from '@tanstack/react-query'
 import superjson from 'superjson'
-import type { AppRouter } from '~/features'
+import type { AppRouter } from '#/features'
 
 export const queryClient = new QueryClient()
 
@@ -1356,7 +1356,7 @@ Create `src/features/device-syncs/api/queries.test.ts`:
 
 ```ts
 import { afterAll, describe, expect, it } from 'vitest'
-import { testDb } from '~/server/db'
+import { testDb } from '#/server/db'
 import { listRecentSyncs } from './queries'
 
 const db = testDb()
@@ -1412,7 +1412,7 @@ Create `src/features/device-syncs/api/queries.ts`:
 
 ```ts
 import { sql, type Kysely } from 'kysely'
-import type { Database } from '~/server/db'
+import type { Database } from '#/server/db'
 
 export type RecentSync = {
   id: number
@@ -1496,7 +1496,7 @@ Create `src/features/device-syncs/api/router.ts`:
 
 ```ts
 import { z } from 'zod'
-import { publicProcedure, router } from '~/server/trpc/base'
+import { publicProcedure, router } from '#/server/trpc/base'
 import { listRecentSyncs } from './queries'
 
 export const deviceSyncsRouter = router({
@@ -1511,7 +1511,7 @@ export const deviceSyncsRouter = router({
 Replace the body of `src/features/index.ts`:
 
 ```ts
-import { router } from '~/server/trpc/base'
+import { router } from '#/server/trpc/base'
 import { deviceSyncsRouter } from './device-syncs/api/router'
 
 /**
@@ -1589,7 +1589,7 @@ Create `src/ui/AppShell.tsx`:
 import { AppShell as MantineAppShell, Group, NavLink, Title } from '@mantine/core'
 import { Link, useRouterState } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
-import { navItems } from '~/features'
+import { navItems } from '#/features'
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
@@ -1628,9 +1628,9 @@ Rewrite `src/routes/__root.tsx`, keeping whatever `HeadContent`/`Scripts` shape 
 import { MantineProvider } from '@mantine/core'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { AppShell } from '~/ui/AppShell'
-import { theme } from '~/ui/theme'
-import { queryClient } from '~/lib/trpc'
+import { AppShell } from '#/ui/AppShell'
+import { theme } from '#/ui/theme'
+import { queryClient } from '#/lib/trpc'
 import '@mantine/core/styles.css'
 
 export const Route = createRootRoute({
@@ -1706,7 +1706,7 @@ Create `src/features/device-syncs/ui/SyncsPage.tsx`:
 ```tsx
 import { Alert, Loader, Stack, Title } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
-import { trpc } from '~/lib/trpc'
+import { trpc } from '#/lib/trpc'
 import { SyncTable } from './SyncTable'
 
 export function SyncsPage() {
@@ -1731,7 +1731,7 @@ Create `src/routes/syncs.tsx`:
 
 ```tsx
 import { createFileRoute } from '@tanstack/react-router'
-import { SyncsPage } from '~/features/device-syncs/ui/SyncsPage'
+import { SyncsPage } from '#/features/device-syncs/ui/SyncsPage'
 
 export const Route = createFileRoute('/syncs')({ component: SyncsPage })
 ```
