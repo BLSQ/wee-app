@@ -1,0 +1,7 @@
+.output
+dist
+pnpm-lock.yaml
+data/*.json
+skills
+docs/superpowers
+src/routeTree.gen.ts

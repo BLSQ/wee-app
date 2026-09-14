@@ -1,9 +1,12 @@
-.superpowers/
 node_modules/
-.env
-.env*.local
-.vercel/
+.DS_Store
 dist/
 .output/
+.nitro/
+.tanstack/
+.vercel/
+.env
+.env*.local
+.superpowers/
 .claude/settings.local.json
 .claude/.cc-writes/
