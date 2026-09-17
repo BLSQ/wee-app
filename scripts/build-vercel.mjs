@@ -65,8 +65,11 @@ export function buildVercelOutput({ cwd = process.cwd() } = {}) {
   writeFileSync(join(functionDir, 'index.mjs'), ENTRY)
   writeFileSync(
     join(functionDir, '.vc-config.json'),
-    JSON.stringify({ runtime: 'nodejs22.x', handler: 'index.mjs', launcherType: 'Nodejs' }, null, 2) +
-      '\n',
+    JSON.stringify(
+      { runtime: 'nodejs22.x', handler: 'index.mjs', launcherType: 'Nodejs' },
+      null,
+      2,
+    ) + '\n',
   )
 
   // Serve real files first; everything else is the application.
