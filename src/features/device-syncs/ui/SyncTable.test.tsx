@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderWithProviders, screen, within } from '#/ui/test-helpers'
 import type { RecentSync } from '../api/queries'
 import { SyncTable } from './SyncTable'
@@ -31,5 +31,30 @@ describe('SyncTable', () => {
     expect(cells[3]).toBe('Bo')
     expect(cells.slice(5)).toEqual(['12', '3', '5'])
     expect(screen.getByRole('row', { name: /SL-0007/ })).toHaveTextContent('fatu')
+  })
+
+  describe('the sync date', () => {
+    // Only Date is faked, so nothing that waits on a timer is affected.
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-09-10T12:00:00Z'))
+    })
+    afterEach(() => vi.useRealTimers())
+
+    it.each([
+      ['2026-09-10T08:00:00Z', 'today'],
+      ['2026-09-09T08:00:00Z', 'yesterday'],
+      ['2026-09-05T08:00:00Z', '5 days ago'],
+    ])('reads a sync from %s as "%s"', (syncedAt, label) => {
+      renderWithProviders(<SyncTable syncs={[sync({ syncedAt: new Date(syncedAt) })]} />)
+
+      expect(screen.getByRole('row', { name: /SL-0042/ })).toHaveTextContent(label)
+    })
+  })
+
+  it('says so when there is no sync', () => {
+    renderWithProviders(<SyncTable syncs={[]} />)
+
+    expect(screen.getByText('No syncs yet')).toBeVisible()
   })
 })

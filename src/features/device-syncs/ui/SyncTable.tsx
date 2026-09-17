@@ -26,6 +26,15 @@ export function SyncTable({ syncs }: { syncs: RecentSync[] }) {
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
+        {syncs.length === 0 && (
+          <Table.Tr>
+            <Table.Td colSpan={8}>
+              <Text size="sm" c="dimmed" ta="center">
+                No syncs yet
+              </Text>
+            </Table.Td>
+          </Table.Tr>
+        )}
         {syncs.map((sync) => (
           <Table.Tr key={sync.id}>
             <Table.Td>{sync.deviceSerial}</Table.Td>
