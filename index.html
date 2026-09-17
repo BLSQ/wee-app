@@ -435,7 +435,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     <div class="scroll"><table>
       <tr><th>You know</th><th>Here</th><th></th></tr>
       <tr><td>Django ORM</td><td><strong>Kysely</strong></td><td>Typed SQL builder, not an ORM</td></tr>
-      <tr><td>DRF views</td><td><strong>tRPC</strong></td><td>Typed functions called from the front end</td></tr>
+      <tr><td>DRF views</td><td><strong>tRPC</strong></td><td>Typed functions called from the frontend</td></tr>
       <tr><td>Django migrations</td><td>Kysely migrations</td><td>Numbered files</td></tr>
       <tr><td>pytest</td><td><strong>Vitest</strong></td><td>Queries on an in-process Postgres (PGlite); each test inserts its rows</td></tr>
       <tr><td></td><td><strong>Testing Library</strong></td><td>Components in jsdom: render with props, find by role and text</td></tr>
@@ -450,7 +450,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
 <section class="slide" data-part="wee-app" data-title="front and back">
   <div class="body">
     <p class="eyebrow">Part 2 · Wee-App</p>
-    <h2>Front end and back end</h2>
+    <h2>Frontend and backend</h2>
     <div class="zones" aria-label="A request, from the browser to the database">
       <div class="zone">
         <span class="zl">Browser</span>
@@ -471,7 +471,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
         <div class="node a"><b>Postgres</b><span>Docker locally, Neon when deployed</span></div>
       </div>
     </div>
-<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li></ul>
+<ul><li>A single TypeScript repo, so the frontend reuses the backend's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li></ul>
   </div>
   <aside class="notes">Three places where code runs: the browser, the Node.js server, and the database. The page asks for data; tRPC carries the call to the server, where a procedure checks the input and calls a query; the query sends SQL to Postgres. The rows come back the same way, and the page hands them to the component. If there is time, open src/features/device-syncs/ and show the files: they are short. A new feature usually means the same files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
 </section>
