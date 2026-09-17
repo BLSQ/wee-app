@@ -9,9 +9,12 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
   Start from `using-superpowers`.
 - Before brainstorming, read every file in `docs/adr/`.
 - After implementing a plan, propose ADR additions or updates: use the `writing-adrs` skill.
-- Offer the brainstorming visual companion for any layout, map or data-shape question.
-  Do not wait to be asked.
-- Work in a git worktree and open a pull request. Never commit to `main`.
+- Worktree first: run `using-git-worktrees` before the first step of `brainstorming` or
+  `systematic-debugging`, without asking. Specs, plans and fixes are committed there, then go
+  into a pull request. Never commit to `main`.
+- Use the brainstorming visual companion whenever it is relevant, on every brainstorming path
+  and when debugging. Offer it at the first layout, map, diagram or data-shape question, without
+  waiting to be asked; once accepted, it is the default for such questions.
 - In a fresh clone or worktree: `pnpm install && docker compose up -d && pnpm db:reset`.
   `pnpm install` writes `.env` itself; never hand-edit it to point at a deployed database.
 - A feature lives in `src/features/<name>/` and registers itself in `src/features/router.ts`
