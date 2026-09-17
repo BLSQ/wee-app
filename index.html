@@ -676,12 +676,12 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     <p class="eyebrow">Part 3 · How we work</p>
     <h2>Read what is already written</h2>
     <div class="cols">
-      <div class="rule-top b"><h3>The ADRs</h3><p class="mono">docs/adr/</p><ul><li>Fourteen short files</li><li>Start with 0002, 0003, 0010</li></ul></div>
-      <div class="rule-top b"><h3>Specs and plans</h3><p class="mono">docs/superpowers/</p><ul><li>What your agent will produce</li><li>Shortest: the Vercel function</li></ul></div>
+      <div class="rule-top b"><h3>The ADRs</h3><p class="mono">docs/adr/</p><ul><li>Fourteen short files</li><li>Start with 0002, 0003, 0008</li></ul></div>
+      <div class="rule-top b"><h3>Specs and plans</h3><p class="mono">docs/superpowers/</p><ul><li>What your agent will produce</li><li>Start with: tests on an in-process Postgres (spec and plan, a page each)</li></ul></div>
     </div>
     <p class="dim">While <code>pnpm install</code> runs, or while the agent implements.</p>
   </div>
-  <aside class="notes">Having read the ADRs makes it easier to follow, and to disagree with, what the agent proposes. The first specs were written without today's pace budget, so they are longer than the ones participants will get.</aside>
+  <aside class="notes">Having read the ADRs makes it easier to follow, and to disagree with, what the agent proposes. The suggested spec and plan are about how the tests get their database, which a Django developer can follow without knowing the stack, and they were written under today's pace rules, so they have the size participants will get. The first specs, from 13 September, were written before those rules and are much longer.</aside>
 </section>
 
 <section class="slide" data-part="round table" data-title="round table">
