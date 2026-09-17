@@ -1,7 +1,7 @@
 # Run the tests on an in-process Postgres — Design
 
 **Date:** 2026-09-17
-**Status:** Proposed
+**Status:** Approved
 
 ## Purpose
 

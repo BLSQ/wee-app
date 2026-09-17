@@ -18,8 +18,16 @@ We want those queries to be visible, testable in isolation, and typed end to end
 ## Consequences
 
 The SQL a query sends is readable in the code that sends it, which is what a reviewer needs to
-judge a dashboard query. Queries are plain functions taking `db`, so they are tested directly
-against a database.
+judge a dashboard query.
+
+Queries are plain functions taking `db`, so a test calls them directly. Tests run them on PGlite, a
+Postgres compiled to WebAssembly that lives in the test process, through the `PGliteDialect` that
+Kysely ships. Each test file gets an empty, migrated database from `createTestDb()` in
+`src/server/db/testing.ts` and inserts the rows it needs, so `pnpm test` needs no server and a test
+may write. Mocking `db` was set aside: the logic of a query is its SQL, and a mock would not run it.
+
+PGlite is not the Postgres 17 that Neon runs, and it holds a single connection. A feature PGlite
+lacks would show in the preview deployment and not in the tests.
 
 There are no models, relations or lazy loading. Writing a join is the developer's job.
 
