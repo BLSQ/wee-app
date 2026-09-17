@@ -452,7 +452,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <span class="arrow">→</span>
       <div class="node"><b>Postgres</b><span>Docker locally, Neon deployed, PGlite in tests</span></div>
     </div>
-<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li><li>Tested: the queries, and the components that take props. Pages and tRPC are not mocked or tested</li></ul>
+<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li><li>Tested: the queries, and the components that take props. Pages and thin tRPC procedures are not; nothing is mocked</li></ul>
   </div>
   <aside class="notes">If there is time, open src/features/device-syncs/ and show the four files: they are short. A new feature usually means the same four files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
 </section>
@@ -517,7 +517,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
   <div class="body">
     <p class="eyebrow">Part 2 · Wee-App</p>
     <h2>Agent instructions: <code>CLAUDE.md</code></h2>
-    <div class="cols"><div class="rule-top b"><h3>Rules</h3><ul><li>Everything in English</li><li>Skills are mandatory</li><li>Read the ADRs first; propose ADRs after</li><li>Worktree, then pull request; never <code>main</code></li><li>No linter, e2e, auth or CI: they are issues</li></ul></div><div class="rule-top a"><h3>Pace, for today</h3><ul><li>Questions in batches of three, two batches at most</li><li>Then two or three approaches</li><li>One-page spec, one-page plan</li><li>No sub-agents, one round of review</li></ul></div></div>
+    <div class="cols"><div class="rule-top b"><h3>Rules</h3><ul><li>Everything in English</li><li>Skills are mandatory</li><li>Read the ADRs first; propose ADRs after</li><li>Worktree, then pull request; never <code>main</code></li><li>Test queries and components that take props; no mocks</li><li>No linter, e2e, auth or CI: they are issues</li></ul></div><div class="rule-top a"><h3>Pace, for today</h3><ul><li>Questions in batches of three, two batches at most</li><li>Then two or three approaches</li><li>One-page spec, one-page plan</li><li>No sub-agents, one round of review</li></ul></div></div>
   </div>
   <aside class="notes">The file is about fifty lines, short on purpose; details live in skills and ADRs. The pace rules shorten each Superpowers step and skip none. Without them the agent asks its questions one at a time, with no limit, and writes longer specs and plans. .claude/settings.json makes you, not Claude, the author of your commits.</aside>
 </section>
