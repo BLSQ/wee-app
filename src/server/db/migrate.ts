@@ -1,23 +1,30 @@
 import { promises as fs } from 'node:fs'
 import * as path from 'node:path'
-import { FileMigrationProvider, Migrator } from 'kysely/migration'
-import { createDb } from './index.ts'
+import type { Kysely } from 'kysely'
+import { FileMigrationProvider, type MigrationProvider, Migrator } from 'kysely/migration'
+import type { Database } from './types.ts'
 
-export async function migrate(connectionString: string): Promise<void> {
-  const db = createDb(connectionString)
-  const migrator = new Migrator({
-    db,
-    provider: new FileMigrationProvider({
-      fs,
-      path,
-      migrationFolder: path.resolve('src/server/db/migrations'),
-    }),
+// Loads the migration files with a native import(), which needs tsx: fine for the scripts.
+const migrationFiles = () =>
+  new FileMigrationProvider({
+    fs,
+    path,
+    migrationFolder: path.resolve('src/server/db/migrations'),
   })
+
+/** Migrates `db` to the latest schema. The caller owns the connection. */
+export async function migrate(
+  db: Kysely<Database>,
+  {
+    provider = migrationFiles(),
+    log = console.log,
+  }: { provider?: MigrationProvider; log?: (line: string) => void } = {},
+): Promise<void> {
+  const migrator = new Migrator({ db, provider })
 
   const { error, results } = await migrator.migrateToLatest()
   for (const result of results ?? []) {
-    console.log(`${result.status}: ${result.migrationName}`)
+    log(`${result.status}: ${result.migrationName}`)
   }
-  await db.destroy()
   if (error) throw error
 }

@@ -1,8 +1,15 @@
-import { sql } from 'kysely'
-import { afterAll, describe, expect, it } from 'vitest'
-import { testDb } from '#/server/db'
+import { type Kysely, sql } from 'kysely'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import type { Database } from '#/server/db'
+import { createTestDb } from '#/server/db/testing'
+import { seed } from './run'
 
-const db = testDb()
+// The only test file that reads the seed: it checks that the seed script still works.
+let db: Kysely<Database>
+beforeAll(async () => {
+  db = await createTestDb()
+  await seed(db)
+})
 afterAll(() => db.destroy())
 
 describe('the seeded database', () => {
