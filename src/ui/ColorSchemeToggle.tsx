@@ -14,8 +14,9 @@ export function ColorSchemeToggle() {
       aria-label="Toggle color scheme"
       onClick={() => setColorScheme(computed === 'dark' ? 'light' : 'dark')}
     >
-      <Box component={IconMoon} size={18} stroke={1.5} darkHidden />
-      <Box component={IconSun} size={18} stroke={1.5} lightHidden />
+      {/* Box consumes `size` itself, so the icon size goes through width and height. */}
+      <Box component={IconMoon} width={18} height={18} stroke={1.5} darkHidden />
+      <Box component={IconSun} width={18} height={18} stroke={1.5} lightHidden />
     </ActionIcon>
   )
 }

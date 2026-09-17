@@ -18,4 +18,8 @@ describe('ColorSchemeToggle', () => {
     expect(html).toMatch(/<svg[^>]*class="[^"]*tabler-icon-moon[^"]*mantine-dark-hidden/)
     expect(html).toMatch(/<svg[^>]*class="[^"]*tabler-icon-sun[^"]*mantine-light-hidden/)
   })
+
+  it('sizes the icons at 18px', () => {
+    expect(html.match(/<svg[^>]*width="18"[^>]*height="18"/g)).toHaveLength(2)
+  })
 })
