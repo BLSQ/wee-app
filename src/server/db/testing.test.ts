@@ -1,10 +1,10 @@
-import { sql } from 'kysely'
+import { type Kysely, sql } from 'kysely'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import type { Kysely } from 'kysely'
 import type { Database } from './types'
 import {
   createTestDb,
   insertDevice,
+  insertFacility,
   insertOrgUnit,
   insertSync,
   insertUser,
@@ -65,9 +65,18 @@ describe('insertOrgUnit', () => {
   })
 })
 
+describe('insertFacility', () => {
+  it('builds a level 4 unit with a four-segment path', async () => {
+    const facility = await insertFacility(db, { name: 'Bo CHC' })
+    expect(facility).toMatchObject({ name: 'Bo CHC', level: 4 })
+    expect(facility.path.split('.')).toHaveLength(4)
+    expect(facility.path.endsWith(`.${facility.id}`)).toBe(true)
+  })
+})
+
 describe('insertDevice', () => {
   it('attaches the device to the given facility', async () => {
-    const facility = await insertOrgUnit(db, { level: 4 })
+    const facility = await insertFacility(db)
     const device = await insertDevice(db, { serial: 'SL-0042', facility })
     expect(device).toMatchObject({ serial: 'SL-0042', org_unit_id: facility.id })
   })

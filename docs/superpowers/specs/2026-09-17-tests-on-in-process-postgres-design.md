@@ -20,7 +20,8 @@ Tests run on PGlite, a Postgres compiled to WebAssembly that runs inside the tes
     `Kysely<Database>`. One per test file, in `beforeAll`.
   - `resetDb(db)`: truncates the four tables and restarts identities. Called in `beforeEach`.
   - `insertOrgUnit`, `insertUser`, `insertDevice`, `insertSync`: each inserts one row, fills
-    defaults for the fields the test does not name, and returns the row.
+    defaults for the fields the test does not name, and returns the row. `insertFacility` builds the
+    four levels a facility needs; it was added after review.
 - `migrate(db)` and `seed(db)` take a `Kysely<Database>` instead of a connection string. The scripts
   pass `createDb(url)` and destroy it.
 - Each test inserts the rows it needs. No test reads the seed, except one that runs `seed(db)` on

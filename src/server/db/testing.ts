@@ -41,7 +41,7 @@ const nextId = () => ++lastId
 /** Without a parent, a level 1 unit. With one, a unit one level below it, on its path. */
 export async function insertOrgUnit(
   db: Kysely<Database>,
-  { name, level, parent }: { name?: string; level?: number; parent?: OrgUnit } = {},
+  { name, parent }: { name?: string; parent?: OrgUnit } = {},
 ): Promise<OrgUnit> {
   const id = nextId()
   return db
@@ -50,7 +50,7 @@ export async function insertOrgUnit(
       id,
       name: name ?? `Org unit ${id}`,
       parent_id: parent?.id ?? null,
-      level: level ?? (parent ? parent.level + 1 : 1),
+      level: parent ? parent.level + 1 : 1,
       path: parent ? `${parent.path}.${id}` : `${id}`,
       latitude: null,
       longitude: null,
@@ -72,7 +72,7 @@ export async function insertUser(
     .executeTakeFirstOrThrow()
 }
 
-/** Without a facility, the device gets a new one under a new district and country. */
+/** Without a facility, the device gets a new one, from `insertFacility`. */
 export async function insertDevice(
   db: Kysely<Database>,
   { serial, facility }: { serial?: string; facility?: OrgUnit } = {},
@@ -122,8 +122,13 @@ export async function insertSync(
     .executeTakeFirstOrThrow()
 }
 
-async function insertFacility(db: Kysely<Database>): Promise<OrgUnit> {
+/** A level 4 unit under a new chiefdom, district and country, as in the real hierarchy. */
+export async function insertFacility(
+  db: Kysely<Database>,
+  { name }: { name?: string } = {},
+): Promise<OrgUnit> {
   const country = await insertOrgUnit(db)
   const district = await insertOrgUnit(db, { parent: country })
-  return insertOrgUnit(db, { parent: district, level: 4 })
+  const chiefdom = await insertOrgUnit(db, { parent: district })
+  return insertOrgUnit(db, { name, parent: chiefdom })
 }

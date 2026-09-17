@@ -27,8 +27,9 @@ describe('listRecentSyncs', () => {
   })
 
   it('returns the most recent syncs first', async () => {
-    const older = await insertSync(db, { syncedAt: new Date('2026-09-01T08:00:00Z') })
+    // Inserted newest first, so the ids alone would give the opposite order.
     const newer = await insertSync(db, { syncedAt: new Date('2026-09-02T08:00:00Z') })
+    const older = await insertSync(db, { syncedAt: new Date('2026-09-01T08:00:00Z') })
 
     const rows = await listRecentSyncs(db, { limit: 10 })
 
@@ -75,13 +76,13 @@ describe('listRecentSyncs', () => {
 
   it('sees a sync written after a first read', async () => {
     const device = await insertDevice(db)
-    await insertSync(db, { device, syncedAt: new Date('2026-09-01T08:00:00Z') })
+    const first = await insertSync(db, { device, syncedAt: new Date('2026-09-03T08:00:00Z') })
     expect(await listRecentSyncs(db, { limit: 10 })).toHaveLength(1)
 
-    const late = await insertSync(db, { device, syncedAt: new Date('2026-09-03T08:00:00Z') })
+    // Written later, but synced earlier: it belongs after the first one.
+    const late = await insertSync(db, { device, syncedAt: new Date('2026-09-01T08:00:00Z') })
 
     const rows = await listRecentSyncs(db, { limit: 10 })
-    expect(rows).toHaveLength(2)
-    expect(rows[0].id).toBe(late.id)
+    expect(rows.map((row) => row.id)).toEqual([first.id, late.id])
   })
 })

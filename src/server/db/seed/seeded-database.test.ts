@@ -33,8 +33,7 @@ describe('the seeded database', () => {
     expect(rows[0]).toEqual({ devices: 200, users: 41 })
   })
 
-  // Measured against the most recent sync rather than now(), so the assertion
-  // still holds when the test database was seeded days before the tests run.
+  // Measured against the most recent sync rather than now(), so the wall clock plays no part.
   it('leaves some districts visibly behind the others', async () => {
     const { rows } = await sql<{ days_behind: number }>`
       with latest as (
