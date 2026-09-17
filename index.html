@@ -360,7 +360,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     <p class="dim">Real org units from an IASO dump, synthetic syncs, no personal data.</p>
     <p class="links"><span><b>App</b> <a href="https://wee-app-one.vercel.app" target="_blank" rel="noopener">wee-app-one.vercel.app</a></span></p>
   </div>
-  <aside class="notes">The seed is deterministic: everybody has the same rows, and tests assert against them. Devices have profiles in the seed (healthy, dropped, silent, mixed), which makes "who stopped syncing" an interesting question. 601 facilities have GPS coordinates.</aside>
+  <aside class="notes">The seed is deterministic: everybody sees the same rows in the app. Tests do not read it; each test inserts the rows it needs. Devices have profiles in the seed (healthy, dropped, silent, mixed), which makes "who stopped syncing" an interesting question. 601 facilities have GPS coordinates.</aside>
 </section>
 
 <section class="slide" data-part="wee-app" data-title="database schema">
@@ -427,7 +427,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <tr><td>Django ORM</td><td><strong>Kysely</strong></td><td>Typed SQL builder, not an ORM</td></tr>
       <tr><td>DRF views</td><td><strong>tRPC</strong></td><td>Typed functions called from the front end</td></tr>
       <tr><td>Django migrations</td><td>Kysely migrations</td><td>Numbered files</td></tr>
-      <tr><td>pytest</td><td><strong>Vitest</strong></td><td>Against a seeded Postgres, no mocks</td></tr>
+      <tr><td>pytest</td><td><strong>Vitest</strong></td><td>On an in-process Postgres (PGlite); each test inserts its rows</td></tr>
       <tr><td>React + MUI</td><td>React + <strong>Mantine</strong></td><td>Components and charts; MapLibre for maps</td></tr>
       <tr><td>A server</td><td><strong>Vercel</strong> + <strong>Neon</strong></td><td>One URL and one database per pull request</td></tr>
     </table></div>
