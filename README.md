@@ -23,7 +23,8 @@ pnpm db:reset       # migrates and seeds the application and test databases
 pnpm dev            # http://localhost:3000
 ```
 
-Postgres runs in Docker on port 55432. The seed is synthetic sync activity over real
+Postgres runs in Docker on port 55432, in one container shared by every clone and git worktree on
+the machine: a new worktree only needs `pnpm install`. The seed is synthetic sync activity over real
 Sierra Leone org units, without personal data. It is relative to today's date: run
 `pnpm db:reset` again to refresh it.
 

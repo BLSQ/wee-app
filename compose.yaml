@@ -1,3 +1,7 @@
+# A fixed project name: every clone and git worktree on the machine shares one container and one
+# volume, instead of each directory starting its own Postgres on the same port.
+name: wee-app
+
 services:
   db:
     image: postgres:17
@@ -11,7 +15,6 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./docker/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres -d wee_app']
       interval: 2s

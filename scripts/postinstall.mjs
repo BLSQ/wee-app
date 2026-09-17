@@ -15,6 +15,8 @@ export function ensureEnvFile({ cwd = process.cwd(), env = process.env } = {}) {
 
 if (import.meta.filename === process.argv[1]) {
   if (ensureEnvFile() === 'created') {
-    console.log('Created .env from .env.example. Next: docker compose up -d && pnpm db:reset')
+    console.log(
+      'Created .env from .env.example. First time on this machine: docker compose up -d && pnpm db:reset',
+    )
   }
 }
