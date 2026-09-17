@@ -23,12 +23,12 @@ function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
         <HeadContent />
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          <MantineProvider theme={theme}>
+          <MantineProvider theme={theme} defaultColorScheme="auto">
             <AppShell>{children}</AppShell>
           </MantineProvider>
         </QueryClientProvider>
