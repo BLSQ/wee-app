@@ -339,9 +339,9 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     <p class="eyebrow">Part 1 · Why</p>
     <h2>Why ADRs work well with agents</h2>
     <div class="cols"><div><ul><li>An agent starts each session without history</li><li>It reads <code>docs/adr/</code> before brainstorming</li><li>After a plan, it proposes ADRs; you decide</li></ul></div>
-      <div class="rule-top b"><h3>From this repo</h3><p class="mono">0004 Neon and Vercel, without Nitro</p><p class="mono">0010 Split the feature registry by runtime</p><p class="mono">0012 Migrate during the deploy build</p></div></div>
+      <div class="rule-top b"><h3>From this repo</h3><p class="mono">0006 Synthetic seed derived from anonymised IASO data</p><p class="mono">0008 No authentication yet</p><p class="mono">0012 Migrate during the deploy build</p></div></div>
   </div>
-  <aside class="notes">Without ADRs an agent may propose again an option that was already rejected. Story for 0010: the browser crashed with "Can't find variable: Buffer" because a client file imported a registry that also exported the server router, which pulled the Postgres driver into the bundle. Fourteen ADRs so far.</aside>
+  <aside class="notes">Without ADRs an agent may propose again an option that was already rejected. Example with 0008: sign-in is deferred to issue #8, because it touches the root route, the schema and the deployment secrets, and would collide with every feature built in parallel. An agent that has not read this may see the missing sign-in as a gap and add it in passing. 0012 comes from an incident: production was never migrated, because migrations were a manual step. Fourteen ADRs so far.</aside>
 </section>
 
 <section class="slide" data-part="wee-app" data-title="use case">
