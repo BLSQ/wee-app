@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<style>body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Wee-App Workshop</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#EEF1F6; --surface:#FFFFFF; --ink:#111A2E; --muted:#56637F; --line:#CBD3E3;
+  --accent:#1F4FD8; --accent-soft:#DCE5FB;
+  --red:#C0342B; --red-soft:#F9E1DE; --green:#1A7F53; --green-soft:#D9F0E5; --amber:#9A6A12; --amber-soft:#F6EACB;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1322; --surface:#161F36; --ink:#E6EBF7; --muted:#97A4C2; --line:#2B3754;
+    --accent:#8CA8FF; --accent-soft:#1D2A52;
+    --red:#FF8478; --red-soft:#3A1B1D; --green:#5FD39A; --green-soft:#13322A; --amber:#F0C265; --amber-soft:#3A2F14;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1322; --surface:#161F36; --ink:#E6EBF7; --muted:#97A4C2; --line:#2B3754;
+  --accent:#8CA8FF; --accent-soft:#1D2A52;
+  --red:#FF8478; --red-soft:#3A1B1D; --green:#5FD39A; --green-soft:#13322A; --amber:#F0C265; --amber-soft:#3A2F14;
+}
+html{scroll-snap-type:y proximity; scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--ground); color:var(--ink); font-family:"IBM Plex Sans",system-ui,sans-serif; line-height:1.45}
+.slide{
+  min-height:100svh; scroll-snap-align:start; box-sizing:border-box;
+  padding-inline:clamp(16px,6vw,96px); padding-block:clamp(20px,4vh,56px) 0;
+  display:flex; flex-direction:column; gap:clamp(16px,3vh,32px);
+  font-size:clamp(1.02rem,1.55vw,1.42rem); border-bottom:1px solid var(--line);
+}
+.body{flex:1; display:flex; flex-direction:column; justify-content:center; gap:clamp(16px,3vh,32px); max-width:1240px; width:100%; margin-inline:auto}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.72em; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); margin:0}
+h1,h2{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif; text-wrap:balance; margin:0; letter-spacing:-.02em; line-height:1.04}
+h1{font-size:clamp(2.4rem,3.7em,5.4rem); font-weight:800}
+h2{font-size:2.2em; font-weight:700}
+h3{font-family:"Bricolage Grotesque",sans-serif; font-size:1.12em; margin:0; font-weight:700}
+p{margin:0; max-width:64ch}
+.lede{font-size:1.18em; color:var(--muted); max-width:52ch}
+ul{margin:0; padding-left:1.1em; display:flex; flex-direction:column; gap:.45em; max-width:66ch}
+li::marker{color:var(--accent)}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.9em}
+code{background:var(--accent-soft); padding:.08em .35em; border-radius:4px}
+strong{font-weight:600}
+.red{color:var(--red)} .green{color:var(--green)} .amber{color:var(--amber)} .dim{color:var(--muted)}
+.cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr)); gap:clamp(16px,2.4vw,36px); align-items:start}
+.cols > div{display:flex; flex-direction:column; gap:.6em}
+.rule-top{border-top:3px solid var(--ink); padding-top:.7em}
+.rule-top.r{border-color:var(--red)} .rule-top.g{border-color:var(--green)} .rule-top.a{border-color:var(--amber)} .rule-top.b{border-color:var(--accent)}
+.cmd{background:var(--ink); color:var(--ground); font-family:"IBM Plex Mono",monospace; font-size:.9em; padding:1em 1.2em; border-radius:6px; overflow-x:auto; white-space:pre}
+.cmd .p{opacity:.55}
+.law{font-family:"IBM Plex Mono",monospace; font-weight:500; font-size:1.02em; letter-spacing:.02em; padding:.9em 1.1em; background:var(--surface); border-left:6px solid var(--red)}
+.law small{display:block; font-size:.62em; letter-spacing:.08em; color:var(--muted); margin-bottom:.4em; text-transform:uppercase}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse; width:100%; font-size:.86em}
+th{font-family:"IBM Plex Mono",monospace; font-size:.76em; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); text-align:left; font-weight:500}
+th,td{padding:.55em .9em .55em 0; border-bottom:1px solid var(--line); vertical-align:top}
+td.num{font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace; white-space:nowrap}
+.tag{font-family:"IBM Plex Mono",monospace; font-size:.74em; padding:.1em .5em; border-radius:3px; background:var(--accent-soft); color:var(--accent); white-space:nowrap}
+.tag.s{background:var(--green-soft); color:var(--green)} .tag.m{background:var(--amber-soft); color:var(--amber)} .tag.l{background:var(--red-soft); color:var(--red)}
+/* timeline drawn to scale: flex-grow = minutes */
+.timeline{display:flex; gap:3px; width:100%}
+.timeline > div{flex-basis:0; min-width:0; display:flex; flex-direction:column; gap:.35em}
+.timeline .bar{height:18px; background:var(--accent)}
+.timeline .build .bar{background:var(--green)} .timeline .talk .bar{background:var(--accent)} .timeline .share .bar{background:var(--amber)}
+.timeline .t{font-family:"IBM Plex Mono",monospace; font-size:.68em; color:var(--muted)}
+.timeline .l{font-size:.74em; line-height:1.2; overflow-wrap:anywhere}
+.legend{display:flex; flex-wrap:wrap; gap:1.2em; font-size:.78em; color:var(--muted)}
+.legend i{display:inline-block; width:.9em; height:.9em; margin-right:.4em; vertical-align:-.1em}
+/* loop */
+.loop{display:flex; flex-wrap:wrap; gap:10px; align-items:stretch}
+.step{flex:1 1 150px; background:var(--surface); padding:.8em .9em; display:flex; flex-direction:column; gap:.35em; border-top:3px solid var(--accent); font-size:.82em}
+.step b{font-family:"Bricolage Grotesque",sans-serif; font-size:1.25em}
+.step .gate{font-family:"IBM Plex Mono",monospace; font-size:.8em; color:var(--amber); letter-spacing:.04em}
+.rgr{display:flex; flex-wrap:wrap; gap:12px}
+.rgr > div{flex:1 1 220px; padding:1em 1.1em; display:flex; flex-direction:column; gap:.4em}
+.rgr .r{background:var(--red-soft)} .rgr .g{background:var(--green-soft)} .rgr .f{background:var(--accent-soft)}
+.rgr b{font-family:"Bricolage Grotesque",sans-serif; font-size:1.5em}
+.rgr .r b{color:var(--red)} .rgr .g b{color:var(--green)} .rgr .f b{color:var(--accent)}
+.env{display:grid; grid-template-columns:auto repeat(3,minmax(150px,1fr)); gap:3px; font-size:.8em; min-width:620px}
+.env > div{background:var(--surface); padding:.7em .8em}
+.env .h{background:transparent; font-family:"IBM Plex Mono",monospace; font-size:.8em; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.env .row{background:transparent; font-family:"Bricolage Grotesque",sans-serif; font-weight:700; padding-left:0}
+.tree{font-family:"IBM Plex Mono",monospace; font-size:.8em; line-height:1.55; white-space:pre; background:var(--surface); padding:1em 1.2em; overflow-x:auto}
+.tree em{font-style:normal; color:var(--muted)} .tree mark{background:var(--amber-soft); color:var(--amber)}
+
+/* diagrams */
+.flow{display:flex; flex-wrap:wrap; gap:8px; align-items:stretch}
+.node{flex:1 1 170px; background:var(--surface); padding:.8em .9em; border-top:3px solid var(--accent); display:flex; flex-direction:column; gap:.35em; font-size:.82em}
+.node b{font-family:"Bricolage Grotesque",sans-serif; font-size:1.2em}
+.node.g{border-color:var(--green)} .node.r{border-color:var(--red)} .node.a{border-color:var(--amber)}
+.arrow{align-self:center; color:var(--muted); font-family:"IBM Plex Mono",monospace}
+.anatomy{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:3px; font-size:.78em}
+.anatomy > div{padding:.55em .8em; background:var(--surface)}
+.anatomy .c{font-family:"IBM Plex Mono",monospace; overflow-wrap:anywhere}
+.anatomy .e{background:transparent; color:var(--muted)}
+.map{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; font-size:.8em}
+.map > div{display:flex; flex-direction:column; gap:6px}
+.map .head{font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:1.15em; border-bottom:3px solid var(--accent); padding-bottom:.3em}
+.chip{font-family:"IBM Plex Mono",monospace; font-size:.86em; background:var(--surface); padding:.4em .55em; overflow-wrap:anywhere}
+.chip.ours{background:var(--green-soft); color:var(--green)} .chip.off{color:var(--muted); text-decoration:line-through} .chip.when{background:var(--amber-soft); color:var(--amber)}
+.pairs{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:6px 10px; font-size:.84em}
+.pairs > div{padding:.6em .8em}
+.pairs .think{background:var(--red-soft); font-family:"IBM Plex Mono",monospace; font-size:.92em}
+.pairs .reply{background:var(--green-soft)}
+.pairs .ph{background:transparent; padding-block:0; font-family:"IBM Plex Mono",monospace; font-size:.76em; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.struck{display:flex; flex-wrap:wrap; gap:6px; font-size:.78em}
+.struck span{font-family:"IBM Plex Mono",monospace; background:var(--surface); padding:.3em .55em; color:var(--muted); text-decoration:line-through}
+.struck span.stop{text-decoration:none; background:var(--red-soft); color:var(--red)}
+.term{background:var(--ink); color:var(--ground); font-family:"IBM Plex Mono",monospace; font-size:.78em; padding:.9em 1em; border-radius:6px; white-space:pre-wrap; overflow-wrap:anywhere}
+.term .cap{display:block; opacity:.55; margin-bottom:.4em}
+.browser{border:1px solid var(--line); background:var(--surface); border-radius:8px; overflow:hidden; font-size:.78em}
+.browser .bar{display:flex; gap:6px; align-items:center; padding:8px 10px; border-bottom:1px solid var(--line); font-family:"IBM Plex Mono",monospace; color:var(--muted)}
+.browser .bar i{width:9px; height:9px; border-radius:50%; background:var(--line)}
+.browser .opts{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:12px}
+.opt{border:2px solid var(--line); padding:8px; display:flex; flex-direction:column; gap:6px}
+.opt.sel{border-color:var(--accent)}
+.opt .w{background:var(--line); height:10px} .opt .w.tall{height:64px} .opt .w.half{width:55%}
+.opt .split{display:grid; grid-template-columns:1.4fr 1fr; gap:6px}
+.opt b{font-family:"IBM Plex Mono",monospace; font-weight:500}
+
+.er{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-start}
+.tbl{flex:1 1 190px; background:var(--surface); font-family:"IBM Plex Mono",monospace; font-size:.7em; border-top:3px solid var(--accent)}
+.tbl.main{border-color:var(--green)}
+.tbl .name{display:flex; justify-content:space-between; gap:.6em; padding:.55em .7em; font-weight:500; font-size:1.12em; border-bottom:1px solid var(--line)}
+.tbl .name small{color:var(--muted); font-weight:400}
+.tbl .col{display:flex; justify-content:space-between; gap:.8em; padding:.28em .7em}
+.tbl .col span:last-child{color:var(--muted); text-align:right}
+.tbl .col.fk span:first-child{color:var(--accent)}
+.tbl .col.pk span:first-child{font-weight:500}
+.rel{align-self:center; font-family:"IBM Plex Mono",monospace; font-size:.7em; color:var(--muted); text-align:center; line-height:1.2}
+.notes{display:none; background:var(--amber-soft); color:var(--ink); font-size:.78em; padding:.9em 1.1em; max-width:1240px; width:100%; margin-inline:auto; box-sizing:border-box; border-left:4px solid var(--amber)}
+.notes::before{content:"Speaker notes"; display:block; font-family:"IBM Plex Mono",monospace; font-size:.8em; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); margin-bottom:.3em}
+body.show-notes .notes{display:block}
+.runner{font-family:"IBM Plex Mono",monospace; font-size:.68em; color:var(--muted); display:flex; justify-content:space-between; gap:1em; flex-wrap:wrap; padding-block:1em; max-width:1240px; width:100%; margin-inline:auto}
+.runner .ok{color:var(--green)}
+.hint{position:fixed; right:16px; bottom:12px; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); background:var(--surface); border:1px solid var(--line); padding:4px 8px; border-radius:4px}
+.hint button{font:inherit; color:var(--accent); background:none; border:0; cursor:pointer; padding:0 2px; text-decoration:underline}
+.hint button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+@media (max-width:640px){h2{font-size:1.8em} .timeline{flex-direction:column; gap:10px} .timeline > div{flex-grow:0 !important; flex-direction:row; align-items:baseline; gap:.7em} .timeline .bar{width:18px; height:.8em; flex:none} .timeline .l{font-size:.9em}}
+@media print{.slide{min-height:auto; page-break-after:always} .hint{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ───────── OPENING ───────── -->
+<section class="slide" data-part="opening" data-title="title">
+  <div class="body">
+    <p class="eyebrow">Bluesquare workshop · 3 hours · pairs</p>
+    <h1>Spec-driven development and <span class="red">T</span><span class="green">D</span>D with coding agents</h1>
+    <p class="lede">A hands-on workshop with Claude Code and Superpowers, on a small app about IASO device syncs.</p>
+  </div>
+  <aside class="notes">Set expectations: this is not a React course and nobody is expected to know the stack. The subject is a way of working with an agent; the app is a playground for it.</aside>
+</section>
+
+<section class="slide" data-part="opening" data-title="goals">
+  <div class="body">
+    <p class="eyebrow">Today</p>
+    <h2>Goals of the workshop</h2>
+    <div class="cols">
+      <div class="rule-top g"><h3>What we would like you to leave with</h3><ul>
+        <li>Having tried spec-driven development and TDD with an agent, on a small but real codebase</li>
+        <li>Having seen what ADRs bring when working with agents</li>
+        <li>An opinion of your own: where this could help in your work, and where it would not</li>
+      </ul></div>
+      <div class="rule-top a"><h3>Not goals</h3><ul>
+        <li>Learning TypeScript, React or this stack</li>
+        <li>Finishing your issue</li>
+        <li>Convincing you to work this way all the time</li>
+      </ul></div>
+    </div>
+  </div>
+  <aside class="notes">Worth saying early: the app and its stack are a pretext. People who mostly write Python are at no disadvantage here.</aside>
+</section>
+
+<section class="slide" data-part="opening" data-title="run sheet">
+  <div class="body">
+    <p class="eyebrow">Today</p>
+    <h2>Plan for the three hours</h2>
+    <div class="timeline" aria-label="Run sheet, drawn to scale over 180 minutes">
+      <div class="talk" style="flex-grow:30"><span class="bar"></span><span class="t">0:00</span><span class="l">Why and how</span></div>
+      <div class="talk" style="flex-grow:10"><span class="bar"></span><span class="t">0:30</span><span class="l">Wee-App</span></div>
+      <div class="share" style="flex-grow:15"><span class="bar"></span><span class="t">0:40</span><span class="l">Roadmap tour, pick an issue</span></div>
+      <div class="build" style="flex-grow:50"><span class="bar"></span><span class="t">0:55</span><span class="l">Build, round 1: brainstorm, spec, plan, first tests</span></div>
+      <div class="share" style="flex-grow:20"><span class="bar"></span><span class="t">1:45</span><span class="l">Round table + inside Superpowers</span></div>
+      <div class="build" style="flex-grow:35"><span class="bar"></span><span class="t">2:05</span><span class="l">Build, round 2: finish, PR, cross-review</span></div>
+      <div class="share" style="flex-grow:12"><span class="bar"></span><span class="t">2:40</span><span class="l">Demos</span></div>
+      <div class="share" style="flex-grow:8"><span class="bar"></span><span class="t">2:52</span><span class="l">Retro</span></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>I talk</span><span><i style="background:var(--green)"></i>you build</span><span><i style="background:var(--amber)"></i>we talk</span></div>
+  </div>
+  <aside class="notes">The 1:45 checkpoint helps with the waiting time, and the Superpowers internals are easier to discuss once everybody has seen them at work.</aside>
+</section>
+
+<!-- ───────── WHY ───────── -->
+<section class="slide" data-part="why" data-title="tdd before agents">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>TDD before agents: benefits and costs</h2>
+    <div class="cols">
+      <div class="rule-top g"><h3>Benefits</h3><ul><li>Tests that describe behaviour, not implementation</li><li>Design pressure: hard to test means badly shaped</li><li>A safety net for later changes</li></ul></div>
+      <div class="rule-top r"><h3>Costs, in practice</h3><ul><li>More to write before anything shows on screen</li><li>Tests to rewrite when the design changes</li><li>Often dropped when a deadline gets close</li><li>Many teams end up writing tests afterwards</li></ul></div>
+    </div>
+  </div>
+  <aside class="notes">Ask the room: who does strict TDD today? Who tried and stopped, and why? Collect two or three answers.</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="what changed">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>What changes with coding agents</h2>
+    <div class="cols">
+      <div class="rule-top b"><h3>Writing tests costs less</h3><p>The agent writes the tests, and rewrites them when the design changes. Most of the cost listed on the previous slide goes away.</p></div>
+      <div class="rule-top b"><h3>Reviewing takes more effort</h3><p>An agent can produce several hundred lines in a few minutes. Reading all of it carefully is hard, so automated checks become more useful.</p></div>
+      <div class="rule-top b"><h3>Tests give the agent a feedback loop</h3><p>With tests to run, the agent can work on its own for longer and correct itself, and "done" can be checked.</p></div>
+    </div>
+  </div>
+  <aside class="notes">With an agent, producing code is less of a bottleneck; knowing whether the code does what we wanted becomes a bigger one. Tests and specs both help with that.</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="red green refactor">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>Red, green, refactor</h2>
+    <div class="rgr">
+      <div class="r"><b>Red</b><span>Write one test for one behaviour. Run it. <strong>Watch it fail, for the right reason.</strong></span></div>
+      <div class="g"><b>Green</b><span>Write just enough code to make it pass.</span></div>
+      <div class="f"><b>Refactor</b><span>Clean up while the tests stay green.</span></div>
+    </div>
+    <p class="lede">Seeing the test fail first confirms that it actually tests something. Agents tend to skip this step; the TDD skill asks for it explicitly.</p>
+  </div>
+  <aside class="notes">During the build rounds, this is the thing to watch in the terminal: does the agent run the test and show the failure before writing the implementation?</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="spec-driven">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>Spec-driven development</h2>
+    <div class="cols">
+      <div><ul>
+        <li>Agree on <strong>what and why</strong> before any code exists</li>
+        <li>A short spec is quicker to review than a large diff</li>
+        <li>A chat session gets compacted or closed; <strong>a file in the repo stays</strong></li>
+        <li>The spec can be read later by another agent, or by a colleague</li>
+      </ul></div>
+      <div class="rule-top a"><h3>Today's spec is half a page</h3><p>Purpose. Shape of the query or the component. Acceptance criteria. Out of scope.</p><p class="dim">The "out of scope" section is often the most useful one.</p></div>
+    </div>
+  </div>
+  <aside class="notes">A misunderstanding is usually cheaper to fix in the spec than in the plan, and cheaper in the plan than in the code.</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="the loop">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>The workflow: brainstorm, spec, plan, implement</h2>
+    <div class="loop">
+      <div class="step"><b>Brainstorm</b><span>Agent reads the issue and the ADRs, asks questions, proposes approaches.</span><span class="gate">gate · you pick</span></div>
+      <div class="step"><b>Spec</b><span>Agent writes it and commits it in a worktree.</span><span class="gate">gate · you review</span></div>
+      <div class="step"><b>Plan</b><span>Small steps, each with its test.</span><span class="gate">gate · you read it</span></div>
+      <div class="step" style="border-color:var(--green)"><b>Implement</b><span>Red, green, refactor, commit. Repeat.</span></div>
+      <div class="step"><b>Verify</b><span>Tests, types, and the page in a browser.</span></div>
+      <div class="step"><b>Pull request</b><span>Preview deployment with its own database.</span><span class="gate">gate · another pair reviews</span></div>
+      <div class="step"><b>ADR</b><span>Agent proposes what is worth recording.</span><span class="gate">gate · you decide</span></div>
+    </div>
+  </div>
+  <aside class="notes">Point out the gates: they are the moments where the pair decides. Between them there is waiting time, which we try to use (see "While the agent works").</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="the tools">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>Three tools for spec-driven development</h2>
+    <div class="scroll"><table>
+      <tr><th></th><th>GitHub Spec Kit</th><th>GSD</th><th>Superpowers</th></tr>
+      <tr><td class="dim">Who</td><td>GitHub</td><td>Community project (GSD Core); the original repository was archived in June 2026</td><td>Jesse Vincent (obra)</td></tr>
+      <tr><td class="dim">What you install</td><td>A CLI, <code>specify</code>, which adds slash commands to your agent</td><td><code>npx @opengsd/gsd-core</code>, which adds commands and sub-agents</td><td>A plugin made of skills (Markdown files)</td></tr>
+      <tr><td class="dim">Steps</td><td>constitution → specify → plan → tasks → implement → converge</td><td>discuss → plan → execute → verify → ship</td><td>brainstorm → spec → plan → implement (TDD) → review</td></tr>
+      <tr><td class="dim">Who drives</td><td>You run each command</td><td>You run each phase; execution runs in parallel sub-agents</td><td>Skills load by themselves when their description matches the situation</td></tr>
+      <tr><td class="dim">Written in the repo</td><td>A constitution, then a spec, a plan and tasks per feature</td><td><code>PROJECT.md</code>, <code>ROADMAP.md</code>, <code>STATE.md</code>, per-phase plans</td><td>One spec and one plan per piece of work</td></tr>
+      <tr><td class="dim">Main concern</td><td>Agree on what and why before how</td><td>Context rot: each task starts from a fresh context</td><td>Keeping the agent on the method: gates, TDD, debugging rules</td></tr>
+      <tr><td class="dim">Tests</td><td>Left to the project constitution</td><td>A verify phase after the build</td><td>Test first, required by a skill</td></tr>
+      <tr><td class="dim">Agents</td><td>Copilot by default, many others</td><td>Claude Code, Codex, Cursor, Copilot and others</td><td>Claude Code first; also Codex, Copilot CLI, Gemini CLI</td></tr>
+    </table></div>
+    <p class="dim">Others in the same family: Kiro, OpenSpec, BMAD. Today we use Superpowers: on top of a method, it tries to keep the agent disciplined about following it (next slide).</p>
+  </div>
+  <aside class="notes">Keep this short: the three tools share the idea of writing intent down before code. Differences are mostly about who drives (you, command by command, or skills that trigger on their own) and what each one worries about most. Checked against the projects' READMEs in September 2026; these tools change quickly.</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="discipline">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>Superpowers: a method and some discipline</h2>
+    <div class="cols">
+      <div><p>Agents know TDD, but they tend to skip steps when a task looks simple or when they are stuck.</p><p>The skills try to prevent that with explicit gates, a few "iron laws", and lists of common excuses with an answer to each.</p></div>
+      <div style="gap:12px">
+        <div class="law"><small>test-driven-development</small>No production code without a failing test first</div>
+        <div class="law"><small>systematic-debugging</small>No fixes without root cause investigation first</div>
+        <div class="law"><small>verification-before-completion</small>No completion claims without fresh verification evidence</div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">We come back to these at the checkpoint, with examples from building this very repository.</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="when it pays">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>When is it worth it?</h2>
+    <div class="cols">
+      <div class="rule-top r"><h3>Throwaway prototype</h3><p><strong class="red">Usually not.</strong> The goal is to explore quickly, and the process slows that down.</p></div>
+      <div class="rule-top a"><h3>A task of a day or two</h3><p><strong class="amber">Debatable.</strong> Recent models often manage with a direct prompt, and the process may cost more time than it saves.</p></div>
+      <div class="rule-top g"><h3>Several days to weeks</h3><p><strong class="green">Often yes.</strong> The work no longer fits in one session or one reviewable diff; the spec and the plan help keep track.</p></div>
+      <div class="rule-top g"><h3>A product that lives</h3><p><strong class="green">Yes.</strong> Specs and ADRs also keep a record of why things were built this way.</p></div>
+    </div>
+    <p class="dim">Note: today's issues are small (S and M), and the repo has a "pace budget" so that the whole workflow fits in three hours. Today is more about discovering the workflow than measuring a time gain.</p>
+  </div>
+  <aside class="notes">Somebody may say "I would have done this faster with a plain prompt". That is probably true at this size. Invite them to imagine the same workflow on a three-week IASO feature. These thresholds are an opinion, open to discussion.</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="what is an adr">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>Architecture Decision Records (ADRs)</h2>
+    <div class="cols">
+      <div>
+        <p>An ADR is a short document, usually one page, that records <strong>one technical decision</strong> and the reasons behind it. ADRs are numbered and kept in the repository, next to the code.</p>
+        <ul>
+          <li><strong>Context</strong>: the situation and the constraints</li>
+          <li><strong>Decision</strong>: what was chosen, and what was considered and rejected</li>
+          <li><strong>Consequences</strong>: what this makes easier or harder, and when to revisit</li>
+        </ul>
+        <p class="dim">Useful later, when someone wonders why something was done this way. When a decision changes, the usual practice is to write a new ADR that supersedes the old one.</p>
+      </div>
+      <div class="tree" style="white-space:pre-wrap"><strong>0007. GeoJSON in jsonb instead of PostGIS</strong>
+<em>Status: Accepted</em>
+
+<em>Context</em>
+The dashboard draws districts on a MapLibre map. IASO stores geometry with PostGIS.
+
+<em>Decision</em>
+Simplified GeoJSON in a jsonb column. No PostGIS extension.
+
+<em>Consequences</em>
+The database needs no extension. There are no spatial queries in SQL. Revisit if a ticket needs one.</div>
+    </div>
+  </div>
+  <aside class="notes">Some participants will not know the concept: take the time to read the example aloud. It is a condensed version of docs/adr/0007 in the repo. The format comes from Michael Nygard (2011).</aside>
+</section>
+
+<section class="slide" data-part="why" data-title="adrs and agents">
+  <div class="body">
+    <p class="eyebrow">Part 1 · Why</p>
+    <h2>Why ADRs work well with agents</h2>
+    <div class="cols">
+      <div><ul>
+        <li>An agent starts each session without history, so it may propose again an option that was already rejected</li>
+        <li>ADRs are short, so the agent can read all of <code>docs/adr/</code> before brainstorming</li>
+        <li>After a plan is implemented, the agent proposes ADR additions, and you decide</li>
+        <li>Writing them costs little: the agent drafts, you review</li>
+      </ul></div>
+      <div class="rule-top b"><h3>From this repo</h3><p class="mono">0004 Neon and Vercel, without Nitro</p><p class="mono">0010 Split the feature registry by runtime</p><p class="mono">0012 Migrate during the deploy build</p><p class="dim">Fourteen so far.</p></div>
+    </div>
+  </div>
+  <aside class="notes">Story for 0010: the browser crashed with "Can't find variable: Buffer" because a client file imported a registry that also exported the server router, which pulled the Postgres driver into the bundle. The ADR and one test now help avoid this in later sessions.</aside>
+</section>
+
+<!-- ───────── WEE-APP ───────── -->
+<section class="slide" data-part="wee-app" data-title="use case">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>The use case: IASO device synchronisations</h2>
+    <div class="cols">
+      <div><p>IASO mobile devices synchronise their data. When a device stops syncing, data stops arriving from that area, and it can take a while before someone notices. Who has not synced recently, and where?</p><p>Wee-App is a small dashboard over those syncs. Today it has <strong>one page with one table</strong>. The rest is in the backlog.</p></div>
+      <div class="scroll"><table>
+        <tr><th>In the database</th><th></th></tr>
+        <tr><td>Org units</td><td class="num">1,332</td></tr>
+        <tr><td class="dim">country / districts / chiefdoms / facilities</td><td class="num dim">1 / 13 / 152 / 1,166</td></tr>
+        <tr><td>Facilities with GPS</td><td class="num">601</td></tr>
+        <tr><td>Devices <span class="dim">(12 never synced)</span></td><td class="num">200</td></tr>
+        <tr><td>Syncs over 90 days</td><td class="num">6,066</td></tr>
+        <tr><td>Users, anonymised</td><td class="num">41</td></tr>
+      </table></div>
+    </div>
+    <p class="dim">Real org-unit pyramid from an IASO dump, synthetic syncs, no personal data. The seed is deterministic: everybody has the same rows, and tests assert against them.</p>
+  </div>
+  <aside class="notes">A sync row: device, user, date, number of submissions, org units and entities synced. Devices have profiles in the seed: healthy, dropped, silent, mixed. That is what makes "who stopped syncing" an interesting question.</aside>
+</section>
+
+<section class="slide" data-part="wee-app" data-title="database schema">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>The database: four tables</h2>
+    <div class="er">
+      <div class="tbl"><div class="name"><span>org_unit</span><small>1,332 rows</small></div>
+        <div class="col pk"><span>id</span><span>integer, PK</span></div>
+        <div class="col"><span>name</span><span>text</span></div>
+        <div class="col fk"><span>parent_id</span><span>→ org_unit</span></div>
+        <div class="col"><span>level</span><span>1 to 4</span></div>
+        <div class="col"><span>path</span><span>text</span></div>
+        <div class="col"><span>latitude, longitude</span><span>facilities</span></div>
+        <div class="col"><span>geometry</span><span>jsonb</span></div>
+      </div>
+      <span class="rel">1<br>←<br>n</span>
+      <div class="tbl"><div class="name"><span>device</span><small>200 rows</small></div>
+        <div class="col pk"><span>id</span><span>integer, PK</span></div>
+        <div class="col"><span>serial</span><span>text, unique</span></div>
+        <div class="col fk"><span>org_unit_id</span><span>→ org_unit</span></div>
+      </div>
+      <span class="rel">1<br>←<br>n</span>
+      <div class="tbl main"><div class="name"><span>device_sync</span><small>6,066 rows</small></div>
+        <div class="col pk"><span>id</span><span>identity, PK</span></div>
+        <div class="col fk"><span>device_id</span><span>→ device</span></div>
+        <div class="col fk"><span>user_id</span><span>→ app_user</span></div>
+        <div class="col"><span>synced_at</span><span>timestamptz</span></div>
+        <div class="col"><span>submission_count</span><span>integer</span></div>
+        <div class="col"><span>org_unit_count</span><span>integer</span></div>
+        <div class="col"><span>entity_count</span><span>integer</span></div>
+      </div>
+      <span class="rel">n<br>→<br>1</span>
+      <div class="tbl"><div class="name"><span>app_user</span><small>41 rows</small></div>
+        <div class="col pk"><span>id</span><span>integer, PK</span></div>
+        <div class="col"><span>username</span><span>text, unique</span></div>
+      </div>
+    </div>
+    <ul>
+      <li><code>path</code> holds the ancestor ids joined by dots, for example <code>1.14.203.1877</code>: the district of any org unit is the second segment</li>
+      <li>Levels: 1 country, 2 district, 3 chiefdom, 4 facility. Districts and chiefdoms have a <code>geometry</code> (GeoJSON); facilities have coordinates.</li>
+      <li>A device that never synced has no row in <code>device_sync</code></li>
+    </ul>
+  </div>
+  <aside class="notes">This is a simplified version of the IASO model: org units keep the IASO hierarchy, the rest is reduced to what the dashboard needs. The path example is illustrative. Types are in src/server/db/types.ts, the migration in src/server/db/migrations/001-initial-schema.ts.</aside>
+</section>
+
+<section class="slide" data-part="wee-app" data-title="stack for python people">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>The stack, for those coming from Python and Django</h2>
+    <div class="scroll"><table>
+      <tr><th>You know</th><th>Here it is</th><th>In one line</th></tr>
+      <tr><td>Django ORM</td><td><strong>Kysely</strong></td><td>A typed SQL query builder, not an ORM.</td></tr>
+      <tr><td>DRF views</td><td><strong>tRPC</strong></td><td>The API is made of typed functions that the front end calls directly.</td></tr>
+      <tr><td>Django migrations</td><td>Kysely migrations</td><td>Numbered files in <code>src/server/db/migrations/</code>.</td></tr>
+      <tr><td>pytest</td><td><strong>Vitest</strong></td><td>Tests run against a seeded Postgres, without mocks.</td></tr>
+      <tr><td>React + MUI in IASO</td><td>React + <strong>Mantine</strong>, TanStack Start</td><td>File-based routes, charts and MapLibre available.</td></tr>
+      <tr><td>A server somewhere</td><td><strong>Vercel</strong> + <strong>Neon</strong></td><td>Every pull request gets its own URL and its own database.</td></tr>
+    </table></div>
+    <p class="lede">It is fine not to know this stack. The agent handles the syntax; you can focus on what the feature should do, and on reviewing.</p>
+  </div>
+  <aside class="notes">Reassure the Python people explicitly. Not knowing the stack also makes the exercise interesting: you steer through the spec and the tests rather than through the code.</aside>
+</section>
+
+<section class="slide" data-part="wee-app" data-title="front and back">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>Front end and back end: how the existing page gets its data</h2>
+    <div class="flow">
+      <div class="node"><b>Page</b><span class="mono">ui/SyncsPage.tsx</span><span>A React component calls <code>trpc.deviceSyncs.list</code> with <code>{ limit: 50 }</code>.</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><b>HTTP</b><span class="mono">/api/trpc</span><span>One endpoint for the whole API. Nothing to write here.</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><b>Procedure</b><span class="mono">api/router.ts</span><span>Validates the input, then calls the query. Comparable to a view.</span></div>
+      <span class="arrow">→</span>
+      <div class="node g"><b>Query</b><span class="mono">api/queries.ts</span><span><code>listRecentSyncs(db, { limit })</code>: a plain function written with Kysely. <strong>This is what the tests cover.</strong></span></div>
+      <span class="arrow">→</span>
+      <div class="node"><b>Postgres</b><span>Docker locally, Neon once deployed.</span></div>
+    </div>
+    <ul>
+      <li>Everything is TypeScript in one repository, and the page knows the type of the rows it receives, without generated code</li>
+      <li>Front end and back end of a feature live in the same folder: <code>ui/</code> and <code>api/</code></li>
+      <li>Server code never ends up in the browser: <code>ui/</code> only imports types from the server side</li>
+    </ul>
+  </div>
+  <aside class="notes">If there is time, open src/features/device-syncs/ and show the four files: they are short. A new feature usually means the same four files in a new folder, plus one line in each registry.</aside>
+</section>
+
+<section class="slide" data-part="wee-app" data-title="environments">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>Environments: local, pull request, production</h2>
+    <div class="scroll"><div class="env">
+      <div class="h"></div><div class="h">Code</div><div class="h">App</div><div class="h">Database</div>
+      <div class="row">Your laptop</div><div>A git worktree per issue</div><div><code>pnpm dev</code> on :3000</div><div>Postgres in Docker on :55432, migrated and seeded by <code>pnpm db:reset</code></div>
+      <div class="row">Pull request</div><div>Your branch on GitHub</div><div>Vercel preview, its own URL</div><div>Neon branch forked from production when the preview is first created</div>
+      <div class="row">main</div><div>Merged PRs</div><div>Vercel production</div><div>Neon production</div>
+    </div></div>
+    <ul>
+      <li>Migrations run inside the Vercel build, on previews and on production alike</li>
+      <li><code>pnpm install</code> writes your <code>.env</code>. Never point it at a deployed database.</li>
+    </ul>
+  </div>
+  <aside class="notes">The preview URL is what each pair will demo at the end. Nothing to install for reviewers: open the link in the PR.</aside>
+</section>
+
+<section class="slide" data-part="wee-app" data-title="repo anatomy">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>Repository structure: one folder per feature</h2>
+    <div class="cols">
+      <div class="tree">src/features/
+├─ <mark>router.ts</mark>      <em>server registry</em>
+├─ <mark>nav.ts</mark>         <em>client registry</em>
+└─ device-syncs/   <em>the pattern to copy</em>
+   ├─ api/
+   │  ├─ queries.ts       <em>plain functions taking db</em>
+   │  ├─ queries.test.ts  <em>what gets tested</em>
+   │  └─ router.ts        <em>tRPC procedures</em>
+   └─ ui/
+      ├─ SyncsPage.tsx
+      └─ SyncTable.tsx</div>
+      <div><ul>
+        <li>Each pair works mostly in its own folder, which should limit conflicts</li>
+        <li>The two highlighted files are shared: each feature adds one line there. A merge conflict can happen, and is easy to resolve.</li>
+        <li>Browser code never imports from <code>src/server/</code></li>
+        <li>If you add a migration, say so in the channel: two files numbered <code>002</code> will collide</li>
+      </ul></div>
+    </div>
+  </div>
+  <aside class="notes">Issues 17 and 19 both touch the existing table. If both are picked, those two pairs should sit next to each other and be each other's reviewers.</aside>
+</section>
+
+<section class="slide" data-part="wee-app" data-title="what the agent is told">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>Agent instructions: <code>CLAUDE.md</code></h2>
+    <div class="cols">
+      <div><h3><code>CLAUDE.md</code></h3><ul>
+        <li>Everything in English</li>
+        <li>The skills are mandatory, not advisory</li>
+        <li>Read every ADR before brainstorming; propose ADRs after a plan</li>
+        <li>Worktree first, pull request after, never commit to <code>main</code></li>
+        <li>Offer the visual companion for layouts, maps, diagrams</li>
+        <li>No linter, e2e, auth or CI: they are issues, not gaps to fill in passing</li>
+      </ul></div>
+      <div class="rule-top a"><h3>Pace, for today only</h3><ul>
+        <li>At most three questions, in one batch</li>
+        <li>Half-page spec, one-page plan</li>
+        <li>No sub-agents, one round of review</li>
+      </ul><p class="dim">All the steps are kept, in a shorter form.</p></div>
+    </div>
+    <p class="dim">Also in the repo: <code>.claude/settings.json</code> makes you, not Claude, the author of your commits.</p>
+  </div>
+  <aside class="notes">The instruction file is kept short on purpose (about forty lines); details live in skills and ADRs, which are loaded when relevant.</aside>
+</section>
+
+<!-- ───────── HOW WE WORK ───────── -->
+<section class="slide" data-part="how we work" data-title="working mode">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>Working mode: pairs, issues, Kanban</h2>
+    <div class="cols">
+      <div class="rule-top b"><h3>Backlog</h3><p>GitHub issues. They describe a need; the solution is worked out during brainstorming.</p></div>
+      <div class="rule-top b"><h3>Kanban</h3><p class="mono">Todo → In progress → In review → Done</p><p>Assign yourselves, move the card. One card in progress per pair.</p></div>
+      <div class="rule-top b"><h3>Pair</h3><p><strong>Driver</strong> talks to the agent. <strong>Navigator</strong> reads the spec and the plan with a critical eye, and handles reviews. Swap at the checkpoint.</p></div>
+    </div>
+  </div>
+  <aside class="notes">One laptop per pair for the agent; the navigator's laptop is for GitHub, the preview URLs and the review of the other pair.</aside>
+</section>
+
+<section class="slide" data-part="how we work" data-title="roadmap">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>Roadmap: the open issues</h2>
+    <div class="cols">
+      <div class="scroll"><table>
+        <tr><th colspan="3">Features</th></tr>
+        <tr><td class="num">#2</td><td>List devices that have stopped syncing</td><td><span class="tag s">S</span></td></tr>
+        <tr><td class="num">#5</td><td>Chart syncs per day over the last 30 days</td><td><span class="tag s">S</span></td></tr>
+        <tr><td class="num">#6</td><td>Device detail page with its sync history</td><td><span class="tag s">S</span></td></tr>
+        <tr><td class="num">#3</td><td>Sync health per district on a map</td><td><span class="tag m">M</span></td></tr>
+        <tr><td class="num">#7</td><td>Sync activity per user</td><td><span class="tag m">M</span></td></tr>
+        <tr><td class="num">#17</td><td>Filter devices by user, on list and map</td><td><span class="tag m">M</span></td></tr>
+        <tr><td class="num">#19</td><td>Improve the table of synced devices</td><td><span class="tag m">M</span></td></tr>
+        <tr><td class="num">#20</td><td>Basic dashboard page</td><td><span class="tag m">M</span></td></tr>
+      </table></div>
+      <div class="scroll"><table>
+        <tr><th colspan="3">Cross-cutting</th></tr>
+        <tr><td class="num">#12</td><td>Pin the Node and pnpm versions</td><td><span class="tag s">S</span></td></tr>
+        <tr><td class="num">#10</td><td>Type-check and tests on every pull request</td><td><span class="tag s">S</span></td></tr>
+        <tr><td class="num">#9</td><td>End-to-end smoke test</td><td><span class="tag m">M</span></td></tr>
+        <tr><td class="num">#11</td><td>Linting, dead code, module boundaries</td><td><span class="tag m">M</span></td></tr>
+        <tr><td class="num">#13</td><td>Decide what documentation we need, write it</td><td><span class="tag m">M</span></td></tr>
+        <tr><td class="num">#8</td><td>Sign-in with a Bluesquare account</td><td><span class="tag l">L</span></td></tr>
+      </table></div>
+    </div>
+    <p class="dim">If something is missing, you can open an issue and take it. With an S, there may be time for a second one.</p>
+  </div>
+  <aside class="notes">Walk through them live on GitHub rather than on this slide. Steer: at least two cross-cutting issues should be taken, they generate the best ADR discussions. #8 will not finish in the time; it is still a great brainstorming and spec exercise. #10 lands early and benefits everyone. #17 and #19 overlap; #20 may overlap with #5.</aside>
+</section>
+
+<section class="slide" data-part="how we work" data-title="your one command">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>Getting started on an issue</h2>
+    <div class="cmd"><span class="p">$ </span>claude
+<span class="p">&gt; </span>/brainstorming https://github.com/BLSQ/wee-app/issues/&lt;n&gt;</div>
+    <div class="cols">
+      <div><h3>Then it will</h3><ul><li>create a worktree and a branch</li><li>read the issue and every ADR</li><li>ask you up to three questions, once</li><li>offer mockups in a browser tab for visual questions (worth accepting)</li></ul></div>
+      <div><h3>And you will</h3><ul><li>answer its questions from the user's point of view</li><li>read the spec before approving it</li><li>disagree with its proposals when you think it is wrong</li></ul></div>
+    </div>
+    <p class="dim">The skills are vendored in the repo, so it is <code>/brainstorming</code>. If you also have the plugin, <code>/superpowers:brainstorming</code> is the global copy, without today's context.</p>
+  </div>
+  <aside class="notes">Requires gh to be authenticated so the agent can read the issue. Check it during setup, not now.</aside>
+</section>
+
+<section class="slide" data-part="how we work" data-title="visual companion">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>The visual companion</h2>
+    <div class="cols">
+      <div>
+        <p>When a question is easier to show than to describe (a layout, a map, a diagram, the shape of the data), the agent can open a browser tab with mockups and let you choose there.</p>
+        <ul>
+          <li>It offers it once; if you accept, it uses it for later visual questions</li>
+          <li>Text questions stay in the terminal</li>
+          <li>It uses more tokens, which is acceptable today</li>
+        </ul>
+      </div>
+      <div class="browser" aria-label="Mock-up of the visual companion">
+        <div class="bar"><i></i><i></i><i></i><span>localhost · Which layout for "stopped syncing"?</span></div>
+        <div class="opts">
+          <div class="opt sel"><b>A · table only</b><span class="w half"></span><span class="w"></span><span class="w"></span><span class="w"></span><span class="w"></span><span class="w"></span></div>
+          <div class="opt"><b>B · map and list</b><span class="w half"></span><div class="split"><span class="w tall"></span><div style="display:flex;flex-direction:column;gap:6px"><span class="w"></span><span class="w"></span><span class="w"></span><span class="w"></span></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">The picture is an illustration, not a screenshot. If you have time before the workshop, replace it with a real capture from a brainstorming session on issue 3 (the map).</aside>
+</section>
+
+<section class="slide" data-part="how we work" data-title="cross review">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>Review by another pair</h2>
+    <div class="cols">
+      <div><ul>
+        <li>As soon as the spec is committed: push, open a <strong>draft pull request</strong>, assign the next pair as reviewers</li>
+        <li>They review your <strong>spec</strong> while your agent implements; feedback at that stage is easier to take into account</li>
+        <li>When the PR is ready, they review the code and the preview URL</li>
+        <li>Review ring: pair 1 → pair 2 → … → pair 1</li>
+      </ul></div>
+      <div class="rule-top b"><h3>What to look at</h3><ul>
+        <li>Does the spec answer the issue, and say what is out of scope?</li>
+        <li>Do the tests describe behaviour a user would recognise?</li>
+        <li>Does the preview do what the spec says?</li>
+        <li>Is there a decision here that deserves an ADR?</li>
+      </ul></div>
+    </div>
+  </div>
+  <aside class="notes">This helps with the waiting time: while one pair waits for its agent, it can review another pair.</aside>
+</section>
+
+<section class="slide" data-part="how we work" data-title="while the agent works">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>While the agent works</h2>
+    <div class="cols">
+      <div><ul>
+        <li>Read the plan before it executes (it is one page)</li>
+        <li>Review the other pair's spec</li>
+        <li>Watch for the red step: did the test fail first?</li>
+        <li>When the agent says "this should work now", check it</li>
+        <li>Write down one surprise for the round table</li>
+      </ul></div>
+      <div class="rule-top r"><h3>Brainstorming needs you</h3><p>That phase is a conversation: the agent waits for your answers. Breaks fit better during implementation.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-part="how we work" data-title="setup check">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>Setup check</h2>
+    <div class="cmd"><span class="p">$ </span>gh auth status
+<span class="p">$ </span>git clone git@github.com:BLSQ/wee-app.git &amp;&amp; cd wee-app
+<span class="p">$ </span>pnpm install &amp;&amp; docker compose up -d &amp;&amp; pnpm db:reset
+<span class="p">$ </span>pnpm test          <span class="p"># green</span>
+<span class="p">$ </span>pnpm dev           <span class="p"># http://localhost:3000 shows a table of syncs</span></div>
+    <p class="dim">Needs: Claude Code signed in, Docker running, Node 24, pnpm, write access to BLSQ/wee-app. Accept the trust prompt when Claude opens the repo.</p>
+  </div>
+  <aside class="notes">Ideally sent by email two days before, so this slide takes two minutes instead of twenty. The Docker image pull is the slow part on conference Wi-Fi.</aside>
+</section>
+
+<!-- ───────── CHECKPOINT ───────── -->
+<section class="slide" data-part="checkpoint" data-title="round table">
+  <div class="body">
+    <p class="eyebrow">Checkpoint · 1:45</p>
+    <h2>Round table: two minutes per pair</h2>
+    <ul class="lede" style="color:var(--ink)">
+      <li>Where are you in the loop?</li>
+      <li>What did the agent ask that you had not thought about?</li>
+      <li>What did you overrule?</li>
+      <li>Did you see a test fail before it passed?</li>
+    </ul>
+    <p class="dim">Leave the agent running while we talk. Then swap driver and navigator.</p>
+  </div>
+</section>
+
+<section class="slide" data-part="checkpoint" data-title="how a skill loads">
+  <div class="body">
+    <p class="eyebrow">Checkpoint · Inside Superpowers</p>
+    <h2>What a skill is, and how it gets loaded</h2>
+    <div class="flow">
+      <div class="node"><b>Session starts</b><span>Only the name and the one-line description of each skill are in the context.</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><b>Something happens</b><span>For example, a test fails during implementation.</span></div>
+      <span class="arrow">→</span>
+      <div class="node a"><b>A description matches</b><span class="mono">"Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes"</span></div>
+      <span class="arrow">→</span>
+      <div class="node g"><b>The skill is loaded</b><span>The agent reads the full file, says "Using systematic-debugging", and follows it.</span></div>
+    </div>
+    <div class="anatomy">
+      <div class="c">.claude/skills/systematic-debugging/SKILL.md</div><div class="e">One folder per skill, plain Markdown</div>
+      <div class="c">description: Use when encountering any bug…</div><div class="e">The trigger: when to load it</div>
+      <div class="c">## The Iron Law</div><div class="e">One rule, stated without exceptions</div>
+      <div class="c">## The Four Phases</div><div class="e">The procedure, as a checklist or a flowchart</div>
+      <div class="c">## Red Flags · ## Common Rationalizations</div><div class="e">The shortcuts the agent is likely to take, each with an answer</div>
+    </div>
+  </div>
+  <aside class="notes">This is why a large library of skills does not fill the context: only descriptions are loaded up front. In the plugin, a session-start hook injects the using-superpowers skill; in this repo, CLAUDE.md points to it.</aside>
+</section>
+
+<section class="slide" data-part="checkpoint" data-title="skills along the workflow">
+  <div class="body">
+    <p class="eyebrow">Checkpoint · Inside Superpowers</p>
+    <h2>Which skill you have seen, and when</h2>
+    <div class="map">
+      <div><span class="head">Brainstorm, spec</span><span class="chip ours">writing-adrs</span><span class="chip">using-git-worktrees</span><span class="chip">brainstorming</span></div>
+      <div><span class="head">Plan</span><span class="chip">writing-plans</span></div>
+      <div><span class="head">Implement</span><span class="chip">executing-plans</span><span class="chip">test-driven-development</span><span class="chip when">systematic-debugging</span><span class="chip off">subagent-driven-development</span></div>
+      <div><span class="head">Verify</span><span class="chip">verification-before-completion</span></div>
+      <div><span class="head">Pull request</span><span class="chip">requesting-code-review</span><span class="chip">receiving-code-review</span><span class="chip">finishing-a-development-branch</span></div>
+      <div><span class="head">ADR</span><span class="chip ours">writing-adrs</span></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--green-soft)"></i>written for this repo</span><span><i style="background:var(--amber-soft)"></i>only when something breaks</span><span><span style="text-decoration:line-through">struck</span>: switched off today by the pace budget</span></div>
+  </div>
+  <aside class="notes">Ask the pairs which of these they saw announced in their terminal ("Using … to …"). Fourteen skills are vendored in .claude/skills/.</aside>
+</section>
+
+<section class="slide" data-part="checkpoint" data-title="excuses and answers">
+  <div class="body">
+    <p class="eyebrow">Checkpoint · Inside Superpowers</p>
+    <h2>Skills list the usual excuses, with an answer</h2>
+    <div class="pairs">
+      <div class="ph">What the agent is tempted to think</div><div class="ph">What the skill replies</div>
+      <div class="think">"This is too simple to need a design"</div><div class="reply">Simple means a short design, not no design. Two sentences in chat, then approval.</div>
+      <div class="think">"Too simple to test"</div><div class="reply">Simple code breaks. Test takes 30 seconds.</div>
+      <div class="think">"Emergency, no time for process"</div><div class="reply">Systematic debugging is faster than guess-and-check thrashing.</div>
+      <div class="think">"One more fix attempt"</div><div class="reply">3+ failures = architectural problem. Question pattern, don't fix again.</div>
+    </div>
+    <p class="dim">Quoted from <code>brainstorming</code>, <code>test-driven-development</code> and <code>systematic-debugging</code>.</p>
+  </div>
+  <aside class="notes">The shortcuts an agent takes look a lot like the ones developers take under pressure. The skills are plain Markdown: participants can read them, and write their own.</aside>
+</section>
+
+<section class="slide" data-part="checkpoint" data-title="systematic debugging">
+  <div class="body">
+    <p class="eyebrow">Checkpoint · Inside Superpowers</p>
+    <h2>Systematic debugging: four phases and a limit</h2>
+    <div class="flow">
+      <div class="node"><b>1 · Root cause</b><span>Read the error, reproduce, check recent changes. No fix yet.</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><b>2 · Pattern</b><span>Find something similar that works; list the differences.</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><b>3 · Hypothesis</b><span>One at a time, tested with the smallest possible change.</span></div>
+      <span class="arrow">→</span>
+      <div class="node g"><b>4 · Fix</b><span>A failing test first, then one fix, then verify.</span></div>
+      <span class="arrow">→</span>
+      <div class="node r"><b>Fix failed?</b><span>Fewer than 3: back to phase 1.<br>3 or more: stop and discuss the architecture.</span></div>
+    </div>
+    <p><strong>While building this repo:</strong> the dev server failed with <code>Vite environment "ssr" is unavailable</code>.</p>
+    <div class="struck"><span>orphaned process</span><span>stale cache</span><span>plugin order</span><span>Node binary</span><span>start-up race</span><span>newer version</span><span>bisect: known-good commit fails too</span><span class="stop">stop: is this server layer needed?</span></div>
+    <p class="dim">It was not needed. The layer was removed, the Vercel adapter later went from 164 lines to 1, and ADR 0004 records the decision for future sessions.</p>
+  </div>
+  <aside class="notes">The layer was Nitro. Tell it as you lived it. The skill sets a fixed threshold after which it stops trying fixes and steps back.</aside>
+</section>
+
+<section class="slide" data-part="checkpoint" data-title="verification before completion">
+  <div class="body">
+    <p class="eyebrow">Checkpoint · Inside Superpowers</p>
+    <h2>Verification before completion</h2>
+    <p>Before saying "done", the agent has to run the check and show its output. An example from building this repo, with the first deployment adapter:</p>
+    <div class="cols">
+      <div class="term"><span class="cap"># what was checked: a smoke test, run inside the repo</span>$ node smoke-test.mjs
+✓ GET /syncs → 200</div>
+      <div class="term"><span class="cap"># what mattered: the preview deployment</span>$ curl -I https://…vercel.app/syncs
+HTTP/2 500
+FUNCTION_INVOCATION_FAILED</div>
+    </div>
+    <p class="dim">The local test passed because <code>node_modules</code> happened to be there; on Vercel it was not. Since then, "verified" for a deployment change means the HTTP status of the preview.</p>
+  </div>
+  <aside class="notes">Link back to the red step: it helps to have seen a check fail at least once, in conditions close to the real ones. The commands on the slide are simplified.</aside>
+</section>
+
+<!-- ───────── CLOSE ───────── -->
+<section class="slide" data-part="close" data-title="demos">
+  <div class="body">
+    <p class="eyebrow">Close · 2:40</p>
+    <h2>Demos: two minutes per pair</h2>
+    <div class="cols">
+      <div class="rule-top b"><h3>The preview URL</h3><p>The feature, on real seeded data.</p></div>
+      <div class="rule-top b"><h3>The spec</h3><p>A part of it that influenced what got built.</p></div>
+      <div class="rule-top b"><h3>One test</h3><p>One that describes the feature well.</p></div>
+    </div>
+    <p class="dim">If the issue is not finished, show where you are in the workflow.</p>
+  </div>
+</section>
+
+<section class="slide" data-part="close" data-title="retro">
+  <div class="body">
+    <p class="eyebrow">Close · 2:52</p>
+    <h2>Retro</h2>
+    <ul class="lede" style="color:var(--ink)">
+      <li>Where did the spec or the tests save you?</li>
+      <li>Where was the ceremony wasted?</li>
+      <li>On IASO or OpenHEXA, which task would you try this on, and which never?</li>
+      <li>What would you put in an ADR in your own repo tomorrow?</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-part="close" data-title="take it home">
+  <div class="body">
+    <p class="eyebrow">Close</p>
+    <h2>To try it on your own projects</h2>
+    <div class="cmd"><span class="p">&gt; </span>/plugin install superpowers@claude-plugins-official</div>
+    <div class="cols">
+      <div><ul><li>An ADR folder can start small, with a few decisions that often need re-explaining</li><li>A short instruction file, with details in skills and ADRs</li></ul></div>
+      <div><ul><li>The full workflow suits work of several days or more, less so a quick spike</li><li>A skill can be written for a rule your team cares about</li></ul></div>
+    </div>
+    <p class="dim">Repository: github.com/BLSQ/wee-app. It stays open: finish your issue, or take another.</p>
+  </div>
+</section>
+
+<div class="hint"><span id="pos"></span> · ←/→ · <button id="notes-toggle" type="button">notes (N)</button></div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide')), total=slides.length;
+  function pad(n){return (n<10?'0':'')+n}
+  slides.forEach(function(s,i){
+    s.id='s'+(i+1);
+    var f=document.createElement('footer'); f.className='runner';
+    f.innerHTML='<span><span class="ok">✓</span> '+s.dataset.part+' › '+s.dataset.title+'</span><span>'+pad(i+1)+' / '+total+'</span>';
+    s.appendChild(f);
+  });
+  function current(){
+    var mid=window.scrollY+window.innerHeight/2, idx=0;
+    slides.forEach(function(s,i){ if(s.offsetTop<=mid) idx=i; });
+    return idx;
+  }
+  function go(i){ i=Math.max(0,Math.min(total-1,i)); slides[i].scrollIntoView({block:'start'}); }
+
+  /* Fit each slide to the viewport: every size is in em of the slide's font-size, so shrinking it scales the whole slide. */
+  function fit(){
+    var notesOn=document.body.classList.contains('show-notes');
+    document.body.classList.remove('show-notes');
+    slides.forEach(function(s){
+      s.style.fontSize='';
+      if(window.innerWidth<700) return;
+      var base=parseFloat(getComputedStyle(s).fontSize), size=base, min=base*0.55, h=window.innerHeight;
+      while(s.scrollHeight>h+1 && size>min){ size*=0.96; s.style.fontSize=size+'px'; }
+    });
+    if(notesOn) document.body.classList.add('show-notes');
+  }
+  var fitTimer; window.addEventListener('resize',function(){ clearTimeout(fitTimer); fitTimer=setTimeout(fit,120); });
+  fit(); if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(fit); }
+  var pos=document.getElementById('pos');
+  function tick(){ pos.textContent=pad(current()+1)+' / '+total; }
+  window.addEventListener('scroll',tick,{passive:true}); tick();
+  function toggleNotes(){ document.body.classList.toggle('show-notes'); }
+  document.getElementById('notes-toggle').addEventListener('click',toggleNotes);
+  window.addEventListener('keydown',function(e){
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'||k===' '){ e.preventDefault(); go(current()+1); }
+    else if(k==='ArrowLeft'||k==='PageUp'){ e.preventDefault(); go(current()-1); }
+    else if(k==='Home'){ e.preventDefault(); go(0); }
+    else if(k==='End'){ e.preventDefault(); go(total-1); }
+    else if(k==='n'||k==='N'){ toggleNotes(); }
+  });
+})();
+</script>
+
+</body>
+</html>
