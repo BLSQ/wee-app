@@ -28,10 +28,11 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
   (server) and `src/features/nav.ts` (client), nowhere else. `src/features/device-syncs/` is the
   pattern to copy.
 - Code that runs in the browser never imports from `src/server/`, except `import type`.
-- Database access goes in `api/queries.ts` as plain functions taking `db`. That is what you test.
-- Tests are Vitest on an in-process Postgres: `createTestDb()` from `src/server/db/test-helpers.ts`
-  gives each test file an empty, migrated database, and each test inserts the rows it needs with
-  the helpers there. No Docker, no seed, and no mock of `db`.
+- Database access goes in the feature's own `api/queries.ts`, as plain functions taking `db`.
+- Test the queries, on an in-process Postgres: copy `queries.test.ts`. Test the components that
+  take props, in jsdom: copy `SyncTable.test.tsx`. The test helpers both import explain the rest.
+- Pages and routes get no test, and neither does a tRPC procedure that only validates input and
+  calls a query. Never mock `db` or tRPC. No snapshots, and no Docker or seed in tests.
 - No linter, e2e framework, auth or CI yet. They are GitHub issues, not gaps to fill
   in passing.
 

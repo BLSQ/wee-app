@@ -31,7 +31,7 @@ Sierra Leone org units, without personal data. It is relative to today's date: r
 Other commands: `pnpm test`, `pnpm exec tsc --noEmit`, `pnpm format`.
 
 `pnpm test` needs no database: tests run on an in-process Postgres (PGlite), and each test inserts
-the rows it needs.
+the rows it needs. Component tests (`*.test.tsx`) run in jsdom with Testing Library.
 
 ## Code
 
@@ -44,7 +44,7 @@ src/
 │       ├── api/queries.ts       SQL with Kysely, plain functions taking `db`: tested
 │       ├── api/queries.test.ts
 │       ├── api/router.ts        tRPC procedures
-│       └── ui/                  Mantine components
+│       └── ui/                  Mantine components, with their `*.test.tsx`
 ├── routes/               one file per page
 ├── server/               database, migrations, seed, tRPC setup
 └── ui/                   application shell and theme
