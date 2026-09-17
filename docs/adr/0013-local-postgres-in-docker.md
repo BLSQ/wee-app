@@ -18,13 +18,24 @@ work offline.
 One `postgres:17` container, defined in `compose.yaml`, listens on port 55432 and holds both
 `wee_app` and `wee_app_test`.
 
+The Compose project has a fixed name, `wee-app`. Without it, Compose names the project after the
+directory, so each git worktree started its own empty Postgres on the same port: the second one
+failed to bind, or the first `pnpm db:reset` ran against a server that was still initialising. With
+a fixed name, every clone and worktree on the machine shares one container and one volume.
+
+`pnpm db:reset` waits for the server and creates a missing database itself, so `compose.yaml`
+mounts no file from the checkout and is identical from any directory.
+
 `pnpm install` runs `scripts/postinstall.mjs`, which copies `.env.example` to `.env` when `.env` is
 missing and does nothing under `CI` or `VERCEL`. `pnpm db:reset` migrates and seeds both databases.
 
 ## Consequences
 
-A clone reaches a seeded database in three commands, and a fresh worktree bootstraps itself,
-because a worktree has no `node_modules` and therefore runs `pnpm install`.
+A clone reaches a seeded database in three commands. A fresh worktree only needs `pnpm install`:
+the database is already running and seeded.
+
+Worktrees share the local schema. A worktree that adds a migration changes the database for the
+others until `pnpm db:reset` is run from the checkout in use.
 
 Docker becomes a prerequisite. Any Postgres 14 or later works instead, since only the connection
 string matters.

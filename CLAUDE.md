@@ -15,8 +15,10 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
 - Use the brainstorming visual companion whenever it is relevant, on every brainstorming path
   and when debugging. Offer it at the first layout, map, diagram or data-shape question, without
   waiting to be asked; once accepted, it is the default for such questions.
-- In a fresh clone or worktree: `pnpm install && docker compose up -d && pnpm db:reset`.
-  `pnpm install` writes `.env` itself; never hand-edit it to point at a deployed database.
+- In a fresh clone: `pnpm install && docker compose up -d && pnpm db:reset`. In a new worktree:
+  `pnpm install` only. The database container is shared by every checkout on the machine and is
+  already seeded; do not start or reset it again. `pnpm install` writes `.env` itself; never
+  hand-edit it to point at a deployed database.
 - A feature lives in `src/features/<name>/` and registers itself in `src/features/router.ts`
   (server) and `src/features/nav.ts` (client), nowhere else. `src/features/device-syncs/` is the
   pattern to copy.
