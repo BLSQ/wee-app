@@ -45,7 +45,7 @@ Files: `CLAUDE.md`, `README.md`, `docs/adr/0003-trpc-and-kysely-over-an-orm.md`.
 
 - [x] `CLAUDE.md`, under the test rules: what gets a component test, what does not, how to query,
       what is banned, and the map exception, as in the spec.
-- [x] `README.md`: the tree shows `SyncTable.test.tsx`; one sentence on component tests.
+- [x] `README.md`: the tree mentions the `*.test.tsx` files; one sentence on component tests.
 - [x] ADR 0003: a short part on component tests, with the two approaches set aside.
 - [x] `pnpm test`, `pnpm exec tsc --noEmit`, `pnpm format`, `pnpm build`, then
       `grep -rli "testing-library\|jsdom" dist/` prints nothing. Commit.

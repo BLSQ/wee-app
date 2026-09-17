@@ -29,7 +29,8 @@ in its own way, in `package.json`, the lockfile and `vitest.config.ts` at the sa
   test, and the three things Mantine reads that jsdom lacks (`matchMedia`, `ResizeObserver`,
   `scrollIntoView`).
 - `src/ui/test-helpers.tsx`: `renderWithProviders(ui)` renders inside `MantineProvider` with the
-  application theme. The file re-exports `screen`, `within` and `userEvent`, so a test has one import.
+  application theme and `env="test"`, which Mantine menus, selects and modals need under jsdom (found
+  in review). The file re-exports `screen`, `within` and `userEvent`, so a test has one import.
 - `src/features/device-syncs/ui/SyncTable.test.tsx` is the pattern to copy: one row per sync with
   its values; "today", "yesterday" and "N days ago" with the clock set by `vi.setSystemTime`; and an
   empty list. `SyncTable` gains a "No syncs yet" row for the empty list, written test first.

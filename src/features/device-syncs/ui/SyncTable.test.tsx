@@ -17,6 +17,13 @@ const sync = (values: Partial<RecentSync> = {}): RecentSync => ({
 })
 
 describe('SyncTable', () => {
+  // The table shows dates relative to now. Only Date is faked, so clicks and findBy still work.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-09-10T12:00:00Z'))
+  })
+  afterEach(() => vi.useRealTimers())
+
   it('shows a row for each sync, with its values', () => {
     renderWithProviders(
       <SyncTable syncs={[sync(), sync({ id: 2, deviceSerial: 'SL-0007', username: 'fatu' })]} />,
@@ -25,22 +32,21 @@ describe('SyncTable', () => {
     const cells = within(screen.getByRole('row', { name: /SL-0042/ }))
       .getAllByRole('cell')
       .map((cell) => cell.textContent)
-    expect(cells[0]).toBe('SL-0042')
-    expect(cells[1]).toBe('amara')
-    expect(cells[2]).toBe('Bo Government Hospital')
-    expect(cells[3]).toBe('Bo')
-    expect(cells.slice(5)).toEqual(['12', '3', '5'])
+    expect(cells).toEqual([
+      'SL-0042',
+      'amara',
+      'Bo Government Hospital',
+      'Bo',
+      'today',
+      '12',
+      '3',
+      '5',
+    ])
     expect(screen.getByRole('row', { name: /SL-0007/ })).toHaveTextContent('fatu')
+    expect(screen.queryByText('No syncs yet')).not.toBeInTheDocument()
   })
 
   describe('the sync date', () => {
-    // Only Date is faked, so nothing that waits on a timer is affected.
-    beforeEach(() => {
-      vi.useFakeTimers({ toFake: ['Date'] })
-      vi.setSystemTime(new Date('2026-09-10T12:00:00Z'))
-    })
-    afterEach(() => vi.useRealTimers())
-
     it.each([
       ['2026-09-10T08:00:00Z', 'today'],
       ['2026-09-09T08:00:00Z', 'yesterday'],

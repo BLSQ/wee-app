@@ -7,7 +7,14 @@ import { theme } from './theme'
 export { screen, within } from '@testing-library/react'
 export { default as userEvent } from '@testing-library/user-event'
 
-/** Renders `ui` as the application does: inside Mantine, with the application theme. */
+/**
+ * Renders `ui` inside Mantine, with the application theme. `env="test"` turns off portals and
+ * transitions, which jsdom cannot show: without it a menu, a select or a modal never appears.
+ */
 export function renderWithProviders(ui: ReactNode) {
-  return render(<MantineProvider theme={theme}>{ui}</MantineProvider>)
+  return render(
+    <MantineProvider theme={theme} env="test">
+      {ui}
+    </MantineProvider>,
+  )
 }
