@@ -36,6 +36,14 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
 - No linter, e2e framework, auth or CI yet. They are GitHub issues, not gaps to fill
   in passing.
 
+## Audience
+
+The people you talk to are developers who mostly write Python and Django. Few know Node, React or
+this stack.
+
+- Say what changes for the user first, then how it works. The first time you name a library, a
+  hook or an API, say what it is in a few words.
+
 ## Pace
 
 This repository is used in a three-hour workshop. No step of the loop is skipped; every step is
