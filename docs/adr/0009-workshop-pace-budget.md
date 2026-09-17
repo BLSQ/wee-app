@@ -15,8 +15,12 @@ came to see.
 ## Decision
 
 `CLAUDE.md` carries a `## Pace` section that shortens every step without skipping any: clarifying
-questions in one batch of at most three, a half-page spec, a one-page plan, no subagent-driven
-development, one round of review.
+questions in at most two batches of at most three, a one-page spec, a one-page plan, no
+subagent-driven development, one round of review.
+
+The first budget was tighter: a single batch of questions and a half-page spec. Brainstorming then
+ended before the agent had understood the need, and the spec had no room for the approaches that
+were set aside. The brainstorm is the step participants came to see, so it gets the extra time.
 
 **The budget must never make a step optional.** The brainstorm, the spec, the failing test and the
 ADR proposal always happen.

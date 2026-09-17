@@ -40,9 +40,11 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
 This repository is used in a three-hour workshop. No step of the loop is skipped; every step is
 short.
 
-- Ask clarifying questions in one batch of at most three, never one per message.
-- A spec is half a page: purpose, shape of the query or component, acceptance criteria, out of
-  scope.
+- Ask clarifying questions in batches of at most three, never one per message. Ask a second batch
+  when the answers open new questions, and no third. Then propose two or three approaches, with a
+  recommendation.
+- A spec is one page: purpose, approaches considered and why this one, shape of the query or
+  component, acceptance criteria, out of scope.
 - A plan is one page of steps.
 - Do not use `subagent-driven-development`. Implement directly.
 - One round of review.
