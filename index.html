@@ -543,7 +543,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <li>Your feature: a new folder next to <code>device-syncs/</code>, built the same way</li>
       <li>Two shared files (highlighted): one line per feature</li>
       <li>A new page also gets a file in <code>src/routes/</code></li>
-      <li>Adding a migration, or changing the existing feature? Say it out loud</li>
+      <li>Adding a migration, or changing an existing feature? Say it out loud</li>
     </ul>
   </div>
   <aside class="notes">device-syncs is the only feature today; the agent is told to use it as the model for new ones. Its tests are the model too: createTestDb() in beforeAll, resetDb() in beforeEach, then each test inserts the few rows it needs with the helpers in src/server/db/test-helpers.ts. For the user interface, SyncTable.test.tsx is the model: render the component with props, find elements by role and text. The page itself has no test, and tRPC is never mocked. Browser code never imports from src/server/, except types. Two pairs adding a migration numbered 002 will collide. Issues 17 and 19 both touch the existing table: if both are picked, those two pairs should review each other.</aside>
