@@ -5,15 +5,15 @@
 **Spec:** `docs/superpowers/specs/2026-09-17-tests-on-in-process-postgres-design.md`
 
 **Constraints:** one page (ADR 0009). Implemented directly, test first. `@electric-sql/pglite` is a
-dev dependency and is imported by `src/server/db/testing.ts` only. Commit after each task.
+dev dependency and is imported by `src/server/db/test-helpers.ts` only. Commit after each task.
 
 ## Task 1: `createTestDb`, `resetDb` and the factories
 
-Files: create `src/server/db/testing.ts` and `src/server/db/testing.test.ts`; modify
+Files: create `src/server/db/test-helpers.ts` and `src/server/db/test-helpers.test.ts`; modify
 `src/server/db/migrate.ts`, `scripts/migrate.ts`, `scripts/db-reset.ts`, `package.json`.
 
 - [x] `pnpm add -D @electric-sql/pglite`.
-- [x] Write `testing.test.ts`, and watch it fail because `./testing` does not exist:
+- [x] Write `test-helpers.test.ts`, and watch it fail because `./test-helpers` does not exist:
   - `createTestDb()` returns a database with the four tables and no rows;
   - `insertOrgUnit(db, { name: 'Bo', parent: country })` returns a row whose `path` is
     `${country.path}.${id}` and whose `level` is `country.level + 1`;
@@ -21,7 +21,7 @@ Files: create `src/server/db/testing.ts` and `src/server/db/testing.test.ts`; mo
   - after `resetDb(db)` every table is empty and a new sync gets id 1.
 - [x] `migrate.ts`: `migrate(db: Kysely<Database>): Promise<void>`, which no longer creates or
       destroys the connection. The two scripts pass `createDb(url)` and destroy it.
-- [x] `testing.ts`:
+- [x] `test-helpers.ts`:
   - `createTestDb(): Promise<Kysely<Database>>`: `new PGlite()`, `PGliteDialect`, `migrate(db)`;
   - `resetDb(db)`: `truncate device_sync, device, app_user, org_unit restart identity cascade`;
   - `insertOrgUnit(db, { name?, level?, parent? })`, `insertUser(db, { username? })`,

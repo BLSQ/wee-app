@@ -1,7 +1,7 @@
 import { type Kysely, sql } from 'kysely'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { Database } from '#/server/db'
-import { createTestDb } from '#/server/db/testing'
+import { createTestDb } from '#/server/db/test-helpers'
 import { seed } from './run'
 
 // The only test file that reads the seed: it checks that the seed script still works.

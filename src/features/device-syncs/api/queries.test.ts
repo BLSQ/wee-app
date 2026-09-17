@@ -8,7 +8,7 @@ import {
   insertSync,
   insertUser,
   resetDb,
-} from '#/server/db/testing'
+} from '#/server/db/test-helpers'
 import { listRecentSyncs } from './queries'
 
 let db: Kysely<Database>

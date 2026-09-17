@@ -15,13 +15,13 @@ Tests run on PGlite, a Postgres compiled to WebAssembly that runs inside the tes
 0.29 ships a `PGliteDialect`, so the only new dependency is `@electric-sql/pglite`, in
 `devDependencies`.
 
-- `src/server/db/testing.ts`, imported by tests only:
+- `src/server/db/test-helpers.ts`, imported by tests only:
   - `createTestDb()`: a new in-memory PGlite, migrated with the real migrations, returned as
     `Kysely<Database>`. One per test file, in `beforeAll`.
   - `resetDb(db)`: truncates the four tables and restarts identities. Called in `beforeEach`.
   - `insertOrgUnit`, `insertUser`, `insertDevice`, `insertSync`: each inserts one row, fills
-    defaults for the fields the test does not name, and returns the row. `insertFacility` builds the
-    four levels a facility needs; it was added after review.
+    defaults for the fields the test does not name, and returns the row. Without a facility, `insertDevice`
+    builds the four levels one needs.
 - `migrate(db)` and `seed(db)` take a `Kysely<Database>` instead of a connection string. The scripts
   pass `createDb(url)` and destroy it.
 - Each test inserts the rows it needs. No test reads the seed, except one that runs `seed(db)` on
