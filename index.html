@@ -244,7 +244,7 @@ ul.big{font-size:1.18em; gap:.7em}
   <div class="body">
     <p class="eyebrow">Part 1 · Why</p>
     <h2>Spec-driven development</h2>
-    <div class="cols"><div><ul><li>Agree on what and why before the code</li><li>A short spec is quicker to review than a diff</li><li>A file in the repo outlives the chat session</li></ul></div><div class="rule-top a"><h3>Today: half a page</h3><ul><li>Purpose</li><li>Shape of the query or component</li><li>Acceptance criteria</li><li>Out of scope</li></ul></div></div>
+    <div class="cols"><div><ul><li>Agree on what and why before the code</li><li>A short spec is quicker to review than a diff</li><li>The spec stays in the repo after the chat session ends</li></ul></div><div class="rule-top a"><h3>Today: half a page</h3><ul><li>Purpose</li><li>Shape of the query or component</li><li>Acceptance criteria</li><li>Out of scope</li></ul></div></div>
   </div>
   <aside class="notes">A misunderstanding is usually cheaper to fix in the spec than in the plan, and cheaper in the plan than in the code. The spec can also be read later by another agent or a colleague.</aside>
 </section>
@@ -303,10 +303,10 @@ ul.big{font-size:1.18em; gap:.7em}
     <div class="cols">
       <div class="rule-top r"><h3>Throwaway prototype</h3><p><strong class="red">Usually not</strong></p><p class="dim">The process slows exploration.</p></div>
       <div class="rule-top a"><h3>A day or two</h3><p><strong class="amber">Debatable</strong></p><p class="dim">A direct prompt often does it.</p></div>
-      <div class="rule-top g"><h3>Days to weeks</h3><p><strong class="green">Often yes</strong></p><p class="dim">Spec and plan keep track.</p></div>
-      <div class="rule-top g"><h3>A long-lived product</h3><p><strong class="green">Yes</strong></p><p class="dim">Specs and ADRs keep the why.</p></div>
+      <div class="rule-top g"><h3>Days to weeks</h3><p><strong class="green">Often yes</strong></p><p class="dim">The spec and the plan help you keep track.</p></div>
+      <div class="rule-top g"><h3>A long-lived product</h3><p><strong class="green">Yes</strong></p><p class="dim">Specs and ADRs record why things were done.</p></div>
     </div>
-    <p class="dim">Today's issues are small: we discover the workflow, we do not measure a gain.</p>
+    <p class="dim">Today's issues are too small to show a gain. The aim is to try the workflow.</p>
   </div>
   <aside class="notes">These thresholds are an opinion, open to discussion. Somebody may say "I would have done this faster with a plain prompt": probably true at this size. The repo has a pace budget so that the whole workflow fits in three hours.</aside>
 </section>
@@ -316,7 +316,7 @@ ul.big{font-size:1.18em; gap:.7em}
     <p class="eyebrow">Part 1 · Why</p>
     <h2>Architecture Decision Records (ADRs)</h2>
     <div class="cols">
-      <div><p>One page, one technical decision, kept in the repo.</p><ul><li><strong>Context</strong>: the situation</li><li><strong>Decision</strong>: what was chosen, what was rejected</li><li><strong>Consequences</strong>: what gets easier or harder</li></ul></div>
+      <div><p>An ADR is a short file in the repo that records one technical decision.</p><ul><li><strong>Context</strong>: the situation</li><li><strong>Decision</strong>: what was chosen, what was rejected</li><li><strong>Consequences</strong>: what gets easier or harder</li></ul></div>
       <div class="tree" style="white-space:pre-wrap"><strong>0007. GeoJSON in jsonb instead of PostGIS</strong>
 <em>Status: Accepted</em>
 
@@ -347,7 +347,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
   <div class="body">
     <p class="eyebrow">Part 2 · Wee-App</p>
     <h2>The use case: IASO device syncs</h2>
-    <div class="cols"><div><ul><li>Mobile devices sync their data to IASO</li><li>A silent device means missing data</li><li>Who has not synced recently, and where?</li><li>Today: one page, one table</li></ul></div>
+    <div class="cols"><div><ul><li>Mobile devices sync their data to IASO</li><li>A silent device means missing data</li><li>Who has not synced recently, and where?</li><li>For now the app has a single page, showing a table of syncs</li></ul></div>
       <div class="scroll"><table>
         <tr><th>In the database</th><th></th></tr>
         <tr><td>Org units</td><td class="num">1,332</td></tr>
@@ -450,7 +450,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <span class="arrow">→</span>
       <div class="node"><b>Postgres</b><span>Docker locally, Neon deployed</span></div>
     </div>
-<ul><li>One repo, all TypeScript, types shared front to back</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li></ul>
+<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li></ul>
   </div>
   <aside class="notes">If there is time, open src/features/device-syncs/ and show the four files: they are short. A new feature usually means the same four files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
 </section>
@@ -523,7 +523,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
   <div class="body">
     <p class="eyebrow">Part 3 · How we work</p>
     <h2>Pairs, issues, Kanban</h2>
-    <div class="cols"><div class="rule-top b"><h3>Backlog</h3><ul><li>GitHub issues</li><li>A need, not a solution</li></ul></div><div class="rule-top b"><h3>Kanban</h3><ul><li><span class="mono">Backlog → Ready → In progress → In review → Done</span></li><li>One card per pair</li></ul></div><div class="rule-top b"><h3>Pair</h3><ul><li>Driver talks to the agent</li><li>Navigator reads and reviews</li><li>Swap at the round table</li></ul></div></div>
+    <div class="cols"><div class="rule-top b"><h3>Backlog</h3><ul><li>GitHub issues</li><li>Each describes a need and leaves the solution open</li></ul></div><div class="rule-top b"><h3>Kanban</h3><ul><li><span class="mono">Backlog → Ready → In progress → In review → Done</span></li><li>One card per pair</li></ul></div><div class="rule-top b"><h3>Pair</h3><ul><li>Driver talks to the agent</li><li>Navigator reads and reviews</li><li>Swap at the round table</li></ul></div></div>
     <p class="links"><span><b>Board</b> <a href="https://github.com/orgs/BLSQ/projects/12" target="_blank" rel="noopener">github.com/orgs/BLSQ/projects/12</a></span></p>
   </div>
   <aside class="notes">One laptop per pair for the agent; the navigator's laptop is for GitHub, the preview URLs and the review of the other pair.</aside>
@@ -670,7 +670,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     <div class="anatomy">
       <div class="c">.claude/skills/systematic-debugging/SKILL.md</div><div class="e">Plain Markdown, one folder per skill</div>
       <div class="c">description: Use when…</div><div class="e">The trigger</div>
-      <div class="c">## The Iron Law</div><div class="e">One rule, no exceptions</div>
+      <div class="c">## The Iron Law</div><div class="e">A rule with no exceptions</div>
       <div class="c">## The Four Phases</div><div class="e">The procedure</div>
       <div class="c">## Red Flags · ## Common Rationalizations</div><div class="e">Likely shortcuts, each with an answer</div>
     </div>
@@ -742,7 +742,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
 HTTP/2 500
 FUNCTION_INVOCATION_FAILED</div>
     </div>
-    <p class="dim">"Done" needs a check that was run, with its output.</p>
+    <p class="dim">Before it says "done", the agent has to run the relevant check and show the output.</p>
   </div>
   <aside class="notes">From building this repo, with the first deployment adapter. The local test passed because node_modules happened to be there; on Vercel it was not. Since then, "verified" for a deployment change means the HTTP status of the preview. The commands on the slide are simplified.</aside>
 </section>
