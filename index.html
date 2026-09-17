@@ -744,16 +744,16 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
   <div class="body">
     <p class="eyebrow">Round table · Inside Superpowers</p>
     <h2>Verification before completion</h2>
+    <p>Before any "done", the skill asks for the output of a check run just now. The check has to match the claim.</p>
     <div class="cols">
-      <div class="term"><span class="cap"># checked: a smoke test, inside the repo</span>$ node smoke-test.mjs
-✓ GET /syncs → 200</div>
-      <div class="term"><span class="cap"># what mattered: the preview</span>$ curl -I https://…vercel.app/syncs
-HTTP/2 500
-FUNCTION_INVOCATION_FAILED</div>
+      <div class="term"><span class="cap"># the claim: "the syncs page works". The check: the tests</span>$ pnpm test
+✓ all tests pass</div>
+      <div class="term"><span class="cap"># what a user saw on /syncs</span>a spinner that never ends
+ReferenceError: Can't find variable: Buffer</div>
     </div>
-    <p class="dim">Before it says "done", the agent has to run the relevant check and show the output.</p>
+    <p class="dim">The tests run in Node and never load the page. For "the page works", the matching check is to open the page.</p>
   </div>
-  <aside class="notes">From building this repo, with the first deployment adapter. The local test passed because node_modules happened to be there; on Vercel it was not. Since then, "verified" for a deployment change means the HTTP status of the preview. The commands on the slide are simplified.</aside>
+  <aside class="notes">From ADR 0010. A browser file imported the feature registry, which also exported the server router, so the Postgres driver ended up in the code sent to the browser. The tests never build that code, so they stayed green while the page was broken. This is why the Verify step of the workflow ends with "try the feature", and why a deployment change is verified on the preview URL. Since then a test, AppShell.test.ts, fails if the application shell can reach the database driver. The terminal output on the slide is simplified.</aside>
 </section>
 
 <section class="slide" data-part="close" data-title="demos">
