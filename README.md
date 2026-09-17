@@ -67,7 +67,7 @@ nothing to install. This repository targets Claude Code only.
 ## Deployment
 
 Vercel and Neon. Every pull request gets a preview URL and its own Neon database branch, forked
-from production when the preview is first created. The build command is
+from production when the preview is first created and deleted when the pull request closes. The build command is
 `pnpm db:migrate && pnpm build`, so each deployment migrates the database it serves.
 The server is one Vercel function that re-exports the build's `fetch` handler.
 

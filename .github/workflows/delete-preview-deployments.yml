@@ -1,0 +1,34 @@
+# Neon's Free plan allows 10 database branches per project, and the Vercel integration creates one
+# per pull request. Neon drops a branch as soon as the last Vercel deployment of that git branch is
+# deleted, but Vercel keeps previews for months, so without this the eleventh pull request fails
+# with "Resource provisioning failed".
+name: Delete the preview deployments
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  delete-previews:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      TEAM_ID: team_LGEdjw58WAVHk0VFbQJSrGFQ
+      PROJECT_ID: prj_1F0rehSGxd1yq30yGOgacvayBaTe
+      BRANCH: ${{ github.head_ref }}
+    steps:
+      - name: Delete every preview deployment of the closed branch
+        run: |
+          ids=$(curl -sf -G "https://api.vercel.com/v6/deployments" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            --data-urlencode "teamId=$TEAM_ID" \
+            --data-urlencode "projectId=$PROJECT_ID" \
+            --data-urlencode "branch=$BRANCH" \
+            --data-urlencode "limit=100" |
+            jq -r --arg branch "$BRANCH" \
+              '.deployments[] | select(.target != "production" and .meta.githubCommitRef == $branch) | .uid')
+          for id in $ids; do
+            echo "Deleting $id"
+            curl -sf -X DELETE "https://api.vercel.com/v13/deployments/$id?teamId=$TEAM_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" >/dev/null
+          done
