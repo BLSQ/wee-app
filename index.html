@@ -139,6 +139,14 @@ td.num{font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace;
 .rel b::before,.rel b::after{content:""; display:block; width:1.6em; height:3px; background:var(--accent)}
 .rel b.l::after,.rel b.r::before{display:none}
 .rel small{font-size:.6em; color:var(--muted); line-height:1.25}
+
+.erd{display:block; width:100%; min-width:760px; height:auto; font-family:"IBM Plex Mono",ui-monospace,monospace}
+.erd .box{fill:var(--surface)} .erd .top.b{fill:var(--accent)} .erd .top.g{fill:var(--green)}
+.erd .sep{stroke:var(--line); stroke-width:1}
+.erd text{fill:var(--ink); font-size:15px} .erd .tn{font-size:17px; font-weight:500} .erd .ty{fill:var(--muted); font-size:13px}
+.erd .cn.pk{font-weight:500} .erd .cn.fk{fill:var(--accent)}
+.erd .link{fill:none; stroke:var(--accent); stroke-width:4; stroke-linejoin:round}
+.erd .ahp{fill:var(--accent)} .erd .card{fill:var(--accent); font-size:17px; font-weight:500; text-anchor:middle}
 .notes{display:none; background:var(--amber-soft); color:var(--ink); font-size:.78em; padding:.9em 1.1em; max-width:1240px; width:100%; margin-inline:auto; box-sizing:border-box; border-left:4px solid var(--amber)}
 .notes::before{content:"Speaker notes"; display:block; font-family:"IBM Plex Mono",monospace; font-size:.8em; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); margin-bottom:.3em}
 body.show-notes .notes{display:block}
@@ -354,38 +362,52 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
   <div class="body">
     <p class="eyebrow">Part 2 · Wee-App</p>
     <h2>The database: four tables</h2>
-    <div class="er">
-      <div class="tbl"><div class="name"><span>org_unit</span><small>1,332 rows</small></div>
-        <div class="col pk"><span>id</span><span>integer, PK</span></div>
-        <div class="col"><span>name</span><span>text</span></div>
-        <div class="col fk"><span>parent_id</span><span>→ org_unit</span></div>
-        <div class="col"><span>level</span><span>1 to 4</span></div>
-        <div class="col"><span>path</span><span>text</span></div>
-        <div class="col"><span>latitude, longitude</span><span>facilities</span></div>
-        <div class="col"><span>geometry</span><span>jsonb</span></div>
-      </div>
-      <span class="rel"><b>1 : n</b><small>an org unit<br>has many devices</small></span>
-      <div class="tbl"><div class="name"><span>device</span><small>200 rows</small></div>
-        <div class="col pk"><span>id</span><span>integer, PK</span></div>
-        <div class="col"><span>serial</span><span>text, unique</span></div>
-        <div class="col fk"><span>org_unit_id</span><span>→ org_unit</span></div>
-      </div>
-      <span class="rel"><b>1 : n</b><small>a device<br>has many syncs</small></span>
-      <div class="tbl main"><div class="name"><span>device_sync</span><small>6,066 rows</small></div>
-        <div class="col pk"><span>id</span><span>identity, PK</span></div>
-        <div class="col fk"><span>device_id</span><span>→ device</span></div>
-        <div class="col fk"><span>user_id</span><span>→ app_user</span></div>
-        <div class="col"><span>synced_at</span><span>timestamptz</span></div>
-        <div class="col"><span>submission_count</span><span>integer</span></div>
-        <div class="col"><span>org_unit_count</span><span>integer</span></div>
-        <div class="col"><span>entity_count</span><span>integer</span></div>
-      </div>
-      <span class="rel"><b>n : 1</b><small>each sync is made<br>by one user</small></span>
-      <div class="tbl"><div class="name"><span>app_user</span><small>41 rows</small></div>
-        <div class="col pk"><span>id</span><span>integer, PK</span></div>
-        <div class="col"><span>username</span><span>text, unique</span></div>
-      </div>
-    </div>
+    <div class="scroll"><svg class="erd" viewBox="-60 -8 1270 282" role="img" aria-label="Entity-relationship diagram of the four tables">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahp"/></marker></defs>
+<rect x="0" y="0" width="235" height="272" class="box"/>
+<rect x="0" y="0" width="235" height="5" class="top b"/>
+<text x="12" y="28" class="tn">org_unit</text><text x="223" y="28" class="ty" text-anchor="end">1,332 rows</text>
+<line x1="0" y1="40" x2="235" y2="40" class="sep"/>
+<text x="12" y="63" class="cn pk">id</text><text x="223" y="63" class="ty" text-anchor="end">integer</text>
+<text x="12" y="95" class="cn ">name</text><text x="223" y="95" class="ty" text-anchor="end">text</text>
+<text x="12" y="127" class="cn fk">parent_id</text><text x="223" y="127" class="ty" text-anchor="end">→ org_unit</text>
+<text x="12" y="159" class="cn ">level</text><text x="223" y="159" class="ty" text-anchor="end">1 to 4</text>
+<text x="12" y="191" class="cn ">path</text><text x="223" y="191" class="ty" text-anchor="end">text</text>
+<text x="12" y="223" class="cn ">latitude, longitude</text><text x="223" y="223" class="ty" text-anchor="end"></text>
+<text x="12" y="255" class="cn ">geometry</text><text x="223" y="255" class="ty" text-anchor="end">jsonb</text>
+<rect x="335" y="0" width="215" height="144" class="box"/>
+<rect x="335" y="0" width="215" height="5" class="top b"/>
+<text x="347" y="28" class="tn">device</text><text x="538" y="28" class="ty" text-anchor="end">200 rows</text>
+<line x1="335" y1="40" x2="550" y2="40" class="sep"/>
+<text x="347" y="63" class="cn pk">id</text><text x="538" y="63" class="ty" text-anchor="end">integer</text>
+<text x="347" y="95" class="cn ">serial</text><text x="538" y="95" class="ty" text-anchor="end">text, unique</text>
+<text x="347" y="127" class="cn fk">org_unit_id</text><text x="538" y="127" class="ty" text-anchor="end">→ org_unit</text>
+<rect x="650" y="0" width="250" height="272" class="box"/>
+<rect x="650" y="0" width="250" height="5" class="top g"/>
+<text x="662" y="28" class="tn">device_sync</text><text x="888" y="28" class="ty" text-anchor="end">6,066 rows</text>
+<line x1="650" y1="40" x2="900" y2="40" class="sep"/>
+<text x="662" y="63" class="cn pk">id</text><text x="888" y="63" class="ty" text-anchor="end">identity</text>
+<text x="662" y="95" class="cn fk">device_id</text><text x="888" y="95" class="ty" text-anchor="end">→ device</text>
+<text x="662" y="127" class="cn fk">user_id</text><text x="888" y="127" class="ty" text-anchor="end">→ app_user</text>
+<text x="662" y="159" class="cn ">synced_at</text><text x="888" y="159" class="ty" text-anchor="end">timestamptz</text>
+<text x="662" y="191" class="cn ">submission_count</text><text x="888" y="191" class="ty" text-anchor="end">integer</text>
+<text x="662" y="223" class="cn ">org_unit_count</text><text x="888" y="223" class="ty" text-anchor="end">integer</text>
+<text x="662" y="255" class="cn ">entity_count</text><text x="888" y="255" class="ty" text-anchor="end">integer</text>
+<rect x="1000" y="0" width="200" height="112" class="box"/>
+<rect x="1000" y="0" width="200" height="5" class="top b"/>
+<text x="1012" y="28" class="tn">app_user</text><text x="1188" y="28" class="ty" text-anchor="end">41 rows</text>
+<line x1="1000" y1="40" x2="1200" y2="40" class="sep"/>
+<text x="1012" y="63" class="cn pk">id</text><text x="1188" y="63" class="ty" text-anchor="end">integer</text>
+<text x="1012" y="95" class="cn ">username</text><text x="1188" y="95" class="ty" text-anchor="end">text, unique</text>
+<path d="M335,122 H285 V58 H241" class="link" marker-end="url(#ah)"/>
+<text x="312" y="114" class="card">n</text><text x="262" y="38" class="card">1</text>
+<path d="M650,90 H600 V58 H556" class="link" marker-end="url(#ah)"/>
+<text x="627" y="112" class="card">n</text><text x="577" y="38" class="card">1</text>
+<path d="M900,122 H950 V58 H994" class="link" marker-end="url(#ah)"/>
+<text x="916" y="114" class="card">n</text><text x="968" y="38" class="card">1</text>
+<path d="M0,122 H-40 V58 H-6" class="link" marker-end="url(#ah)"/>
+<text x="-22" y="144" class="card">n</text><text x="-22" y="38" class="card">1</text>
+</svg></div>
 <ul><li><code>path</code>: ancestor ids joined by dots; the district is the 2nd segment</li><li>Levels: country, district, chiefdom, facility</li><li>Never synced = no row in <code>device_sync</code></li><li><code>app_user</code>: the IASO user who synced, not a dashboard account</li></ul>
   </div>
   <aside class="notes">A simplified version of the IASO model: org units keep the IASO hierarchy, the rest is reduced to what the dashboard needs. Districts and chiefdoms have a GeoJSON geometry; facilities have coordinates. Types are in src/server/db/types.ts.</aside>
