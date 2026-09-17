@@ -427,7 +427,8 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <tr><td>Django ORM</td><td><strong>Kysely</strong></td><td>Typed SQL builder, not an ORM</td></tr>
       <tr><td>DRF views</td><td><strong>tRPC</strong></td><td>Typed functions called from the front end</td></tr>
       <tr><td>Django migrations</td><td>Kysely migrations</td><td>Numbered files</td></tr>
-      <tr><td>pytest</td><td><strong>Vitest</strong></td><td>On an in-process Postgres (PGlite); each test inserts its rows</td></tr>
+      <tr><td>pytest</td><td><strong>Vitest</strong></td><td>Queries on an in-process Postgres (PGlite); each test inserts its rows</td></tr>
+      <tr><td></td><td><strong>Testing Library</strong></td><td>Components in jsdom: render with props, find by role and text</td></tr>
       <tr><td>React + MUI</td><td>React + <strong>Mantine</strong></td><td>Components and charts; MapLibre for maps</td></tr>
       <tr><td>A server</td><td><strong>Vercel</strong> + <strong>Neon</strong></td><td>One URL and one database per pull request</td></tr>
     </table></div>
@@ -447,11 +448,11 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <span class="arrow">→</span>
       <div class="node"><b>Procedure</b><span class="mono">api/router.ts</span><span>Validates input; like a view</span></div>
       <span class="arrow">→</span>
-      <div class="node g"><b>Query</b><span class="mono">api/queries.ts</span><span>Plain Kysely function; <strong>what the tests cover</strong></span></div>
+      <div class="node g"><b>Query</b><span class="mono">api/queries.ts</span><span>Plain Kysely function; <strong>tested on PGlite</strong></span></div>
       <span class="arrow">→</span>
       <div class="node"><b>Postgres</b><span>Docker locally, Neon deployed, PGlite in tests</span></div>
     </div>
-<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li></ul>
+<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li><li>Tested: the queries, and the components that take props. Pages and tRPC are not mocked or tested</li></ul>
   </div>
   <aside class="notes">If there is time, open src/features/device-syncs/ and show the four files: they are short. A new feature usually means the same four files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
 </section>
@@ -490,16 +491,17 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
    ├─ server/db/      <em>migrations, seed, test helpers</em>
    └─ ui/             <em>app shell, theme</em></div>
       <div class="tree">src/features/
-├─ <mark>router.ts</mark>              <em>list of feature APIs</em>
-├─ <mark>nav.ts</mark>                 <em>menu entries</em>
-└─ device-syncs/          <em>the existing feature</em>
+├─ <mark>router.ts</mark>                 <em>list of feature APIs</em>
+├─ <mark>nav.ts</mark>                    <em>menu entries</em>
+└─ device-syncs/             <em>the existing feature</em>
    ├─ api/
-   │  ├─ queries.ts       <em>SQL, with Kysely</em>
-   │  ├─ queries.test.ts  <em>tests, with their own rows</em>
-   │  └─ router.ts        <em>tRPC procedures</em>
+   │  ├─ queries.ts          <em>SQL, with Kysely</em>
+   │  ├─ queries.test.ts     <em>tests, with their own rows</em>
+   │  └─ router.ts           <em>tRPC procedures</em>
    └─ ui/
-      ├─ SyncsPage.tsx    <em>the page</em>
-      └─ SyncTable.tsx    <em>the table</em></div>
+      ├─ SyncsPage.tsx       <em>the page</em>
+      ├─ SyncTable.tsx       <em>the table</em>
+      └─ SyncTable.test.tsx  <em>tests, in jsdom</em></div>
     </div>
     <ul>
       <li>Your feature: a new folder next to <code>device-syncs/</code>, built the same way</li>
@@ -508,7 +510,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <li>Adding a migration? Say it out loud</li>
     </ul>
   </div>
-  <aside class="notes">device-syncs is the only feature today; the agent is told to use it as the model for new ones. Its tests are the model too: createTestDb() in beforeAll, resetDb() in beforeEach, then each test inserts the few rows it needs with the helpers in src/server/db/test-helpers.ts. Browser code never imports from src/server/, except types. Two pairs adding a migration numbered 002 will collide. Issues 17 and 19 both touch the existing table: if both are picked, those two pairs should review each other.</aside>
+  <aside class="notes">device-syncs is the only feature today; the agent is told to use it as the model for new ones. Its tests are the model too: createTestDb() in beforeAll, resetDb() in beforeEach, then each test inserts the few rows it needs with the helpers in src/server/db/test-helpers.ts. For the user interface, SyncTable.test.tsx is the model: render the component with props, find elements by role and text. The page itself has no test, and tRPC is never mocked. Browser code never imports from src/server/, except types. Two pairs adding a migration numbered 002 will collide. Issues 17 and 19 both touch the existing table: if both are picked, those two pairs should review each other.</aside>
 </section>
 
 <section class="slide" data-part="wee-app" data-title="agent instructions">
