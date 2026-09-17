@@ -676,10 +676,11 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     <p class="eyebrow">Part 3 · How we work</p>
     <h2>Read what is already written</h2>
     <div class="cols">
-      <div class="rule-top b"><h3>The ADRs</h3><p class="mono">docs/adr/</p><ul><li>Fourteen short files</li></ul></div>
-      <div class="rule-top b"><h3>Specs and plans</h3><p class="mono">docs/superpowers/</p><ul><li>What your agent will produce</li></ul></div>
+      <div class="rule-top b"><h3>ADRs</h3><p class="mono">docs/adr/</p><ul><li>One decision each, with its reasons</li><li>Fourteen so far; the agent reads them before brainstorming</li></ul></div>
+      <div class="rule-top b"><h3>Specs</h3><p class="mono">docs/superpowers/specs/</p><ul><li>What a piece of work must do, on one page</li><li>Written after brainstorming, before any code</li></ul></div>
+      <div class="rule-top b"><h3>Plans</h3><p class="mono">docs/superpowers/plans/</p><ul><li>The steps to build it, each with a test</li><li>Written once you approve the spec</li></ul></div>
     </div>
-    <p class="dim">While <code>pnpm install</code> runs, or while the agent implements.</p>
+    <p class="dim">Your work today adds to all three. Read a few while <code>pnpm install</code> runs, or while the agent implements.</p>
   </div>
   <aside class="notes">Having read the ADRs makes it easier to follow, and to disagree with, what the agent proposes. If someone asks where to start: ADRs 0002, 0003 and 0008, and the spec and plan about tests on an in-process Postgres, which a Django developer can follow without knowing the stack and which have the size participants will get. The first specs, from 13 September, were written before today's pace rules and are much longer.</aside>
 </section>
