@@ -34,6 +34,15 @@ describe('buildVercelOutput', () => {
     expect(config.runtime).toMatch(/^nodejs22/)
   })
 
+  it('marks the function directory as ESM, so the bundle is not read as CommonJS', () => {
+    const cwd = fixture()
+    buildVercelOutput({ cwd })
+    const pkg = JSON.parse(
+      readFileSync(join(cwd, '.vercel/output/functions/index.func/package.json'), 'utf8'),
+    )
+    expect(pkg.type).toBe('module')
+  })
+
   it('writes a version 3 config that serves files first, then the function', () => {
     const cwd = fixture()
     buildVercelOutput({ cwd })

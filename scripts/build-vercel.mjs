@@ -63,6 +63,13 @@ export function buildVercelOutput({ cwd = process.cwd() } = {}) {
   mkdirSync(functionDir, { recursive: true })
   cpSync(join(cwd, 'dist/server'), functionDir, { recursive: true })
   writeFileSync(join(functionDir, 'index.mjs'), ENTRY)
+  // Without this, Node reads the bundled server.js as CommonJS and its import
+  // statements throw. The function directory is isolated on Vercel: the
+  // repository package.json does not reach it.
+  writeFileSync(
+    join(functionDir, 'package.json'),
+    JSON.stringify({ type: 'module' }, null, 2) + '\n',
+  )
   writeFileSync(
     join(functionDir, '.vc-config.json'),
     JSON.stringify(
