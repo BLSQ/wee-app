@@ -12,6 +12,11 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
 - Worktree first: run `using-git-worktrees` before the first step of `brainstorming` or
   `systematic-debugging`, without asking. Specs, plans and fixes are committed there, then go
   into a pull request. Never commit to `main`.
+- Finished work always goes into a pull request. Do not show the three-option menu of
+  `finishing-a-development-branch`: push the branch and open the pull request. Never merge into
+  `main` locally.
+- When you need the user to choose between a few options, ask with the `AskUserQuestion` tool,
+  not in prose. This includes clarifying questions and the choice between approaches.
 - Use the brainstorming visual companion whenever it is relevant, on every brainstorming path
   and when debugging. Offer it at the first layout, map, diagram or data-shape question, without
   waiting to be asked; once accepted, it is the default for such questions.
