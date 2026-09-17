@@ -9,7 +9,7 @@ with coding agents. Much of what a production application needs is deliberately 
 
 ## Setup
 
-Requirements: Node 22, pnpm 10, and Docker running.
+Requirements: Node 22.12 or newer, pnpm 10, and Docker running.
 
 ```bash
 pnpm install        # also creates .env from .env.example
