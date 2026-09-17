@@ -442,19 +442,37 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     <p class="eyebrow">Part 2 · Wee-App</p>
     <h2>Front end and back end</h2>
     <div class="flow">
-      <div class="node"><b>Page</b><span class="mono">ui/SyncsPage.tsx</span><span>Calls <code>trpc.deviceSyncs.list</code></span></div>
+      <div class="node"><b>Component</b><span class="mono">ui/SyncTable.tsx</span><span>Shows the rows it receives; like a template</span></div>
+      <span class="arrow">←</span>
+      <div class="node"><b>Page</b><span class="mono">ui/SyncsPage.tsx</span><span>Asks for the data, passes it to components</span></div>
       <span class="arrow">→</span>
-      <div class="node"><b>HTTP</b><span class="mono">/api/trpc</span><span>Nothing to write</span></div>
+      <div class="node"><b>tRPC</b><span class="mono">/api/trpc</span><span>Carries the call to the server. No URL or serializer to write</span></div>
       <span class="arrow">→</span>
-      <div class="node"><b>Procedure</b><span class="mono">api/router.ts</span><span>Validates input; like a view</span></div>
+      <div class="node"><b>Procedure</b><span class="mono">api/router.ts</span><span>Checks the input, calls the query; like a DRF view</span></div>
       <span class="arrow">→</span>
-      <div class="node g"><b>Query</b><span class="mono">api/queries.ts</span><span>Plain Kysely function; <strong>tested on PGlite</strong></span></div>
+      <div class="node"><b>Query</b><span class="mono">api/queries.ts</span><span>SQL written with Kysely; like a queryset</span></div>
       <span class="arrow">→</span>
-      <div class="node"><b>Postgres</b><span>Docker locally, Neon deployed, PGlite in tests</span></div>
+      <div class="node"><b>Postgres</b><span>Docker locally, Neon when deployed</span></div>
     </div>
-<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li><li>Tested: the queries, and the components that take props. Pages and thin tRPC procedures are not; nothing is mocked</li></ul>
+<ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li></ul>
   </div>
-  <aside class="notes">If there is time, open src/features/device-syncs/ and show the four files: they are short. A new feature usually means the same four files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
+  <aside class="notes">Read it from the page: the page asks for data, the call goes right to the database, the rows come back and the page hands them to the component on its left. If there is time, open src/features/device-syncs/ and show the files: they are short. A new feature usually means the same files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
+</section>
+
+<section class="slide" data-part="wee-app" data-title="what gets a test">
+  <div class="body">
+    <p class="eyebrow">Part 2 · Wee-App</p>
+    <h2>What gets a test</h2>
+    <div class="scroll"><table>
+      <tr><th></th><th>How</th><th>Pattern to copy</th></tr>
+      <tr><td><strong>Query</strong></td><td>Real SQL on a Postgres that runs inside the test (PGlite); each test inserts its rows</td><td class="mono">queries.test.ts</td></tr>
+      <tr><td><strong>Component</strong></td><td>Rendered with props in a simulated browser (jsdom); find by role and text, click</td><td class="mono">SyncTable.test.tsx</td></tr>
+      <tr><td>Page, procedure</td><td class="dim">No test: the type-check, then try the feature</td><td></td></tr>
+      <tr><td>Whole app</td><td class="dim">The preview of the pull request</td><td></td></tr>
+    </table></div>
+    <p class="dim">Nothing is mocked. <code>pnpm test</code> needs no Docker and runs in a few seconds.</p>
+  </div>
+  <aside class="notes">For Django people: a query test is like a TestCase, except that the test database lives inside the test process and starts empty in every file. The database is not mocked because the logic of a query is its SQL, and a mock would not run it. A page only fetches and passes data, so the type-check covers it: tRPC types run from the query to the page. A procedure with logic of its own, such as sign-in, is tested by calling it directly on the test database. jsdom computes no layout and no colours: how a page looks is checked on the preview.</aside>
 </section>
 
 <section class="slide" data-part="wee-app" data-title="environments">
