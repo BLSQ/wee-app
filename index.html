@@ -662,6 +662,7 @@ The database needs no extension. There are no spatial queries in SQL. Revisit if
       <div><ul>
         <li>Read the plan before it executes (it is one page)</li>
         <li>Review the other pair's spec</li>
+        <li>Read the ADRs, and an existing spec and plan</li>
         <li>Watch for the red step: did the test fail first?</li>
         <li>When the agent says "this should work now", check it</li>
         <li>Write down one surprise for the round table</li>
@@ -683,6 +684,19 @@ The database needs no extension. There are no spatial queries in SQL. Revisit if
     <p class="dim">Needs: Claude Code signed in, Docker running, Node 24, pnpm, write access to BLSQ/wee-app. Accept the trust prompt when Claude opens the repo.</p>
   </div>
   <aside class="notes">Ideally sent by email two days before, so this slide takes two minutes instead of twenty. The Docker image pull is the slow part on conference Wi-Fi.</aside>
+</section>
+
+<section class="slide" data-part="how we work" data-title="read what exists">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>Before and during: read what is already written</h2>
+    <div class="cols">
+      <div class="rule-top b"><h3>The ADRs</h3><p class="mono">docs/adr/</p><p>Fourteen short files, about a minute each. The agent reads them all before brainstorming; having read them too makes it easier to follow, and to disagree with, what it proposes.</p><p class="dim">A good start: 0002, 0003, 0010.</p></div>
+      <div class="rule-top b"><h3>The existing specs and plans</h3><p class="mono">docs/superpowers/specs/<br>docs/superpowers/plans/</p><p>They show what your agent is about to produce. The pair about the Vercel function is the shortest.</p><p class="dim">The first ones were written without today's pace budget, so they are longer than yours will be.</p></div>
+    </div>
+    <p class="dim">A good moment for this is while <code>pnpm install</code> runs, or later while the agent implements.</p>
+  </div>
+  <aside class="notes">This also gives the navigator something concrete to do from the first minute.</aside>
 </section>
 
 <!-- ───────── CHECKPOINT ───────── -->
