@@ -5,7 +5,7 @@ import { afterEach } from 'vitest'
 
 afterEach(cleanup)
 
-// jsdom lacks three things Mantine calls. Each was checked by removing it.
+// jsdom lacks a few things the libraries call. Each was checked by removing it.
 // MantineProvider: without matchMedia, nothing renders.
 window.matchMedia = (query: string) =>
   ({
@@ -26,3 +26,5 @@ window.ResizeObserver = class {
 }
 // Select scrolls to the highlighted option when driven with the keyboard.
 window.HTMLElement.prototype.scrollIntoView = () => {}
+// The router restores the scroll position on load; jsdom only prints "Not implemented".
+window.scrollTo = () => {}

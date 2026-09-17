@@ -31,8 +31,8 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
 - Database access goes in `api/queries.ts` as plain functions taking `db`.
 - Test the queries, on an in-process Postgres: copy `queries.test.ts`. Test the components that
   take props, in jsdom: copy `SyncTable.test.tsx`. The test helpers both import explain the rest.
-- Pages, routes and tRPC get no test. Never mock `db` or tRPC. No snapshots, and no Docker or seed
-  in tests.
+- Pages and routes get no test, and neither does a tRPC procedure that only validates input and
+  calls a query. Never mock `db` or tRPC. No snapshots, and no Docker or seed in tests.
 - No linter, e2e framework, auth or CI yet. They are GitHub issues, not gaps to fill
   in passing.
 

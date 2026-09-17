@@ -1,4 +1,12 @@
-// Imported by *.test.ts files only, so PGlite stays out of the application.
+// Helpers for query tests. Imported by *.test.ts files only, so PGlite stays out of the application.
+//
+// What to test: the functions in api/queries.ts. `createTestDb()` in beforeAll, `resetDb()` in
+// beforeEach, then each test inserts the few rows it needs with the helpers below.
+// Time: a query that depends on the current time takes `now: Date` as a parameter. With `now()`
+// in the SQL, a test cannot choose the date.
+// tRPC: a procedure that only validates input and calls a query needs no test. One with logic of
+// its own (permissions, a session) is tested with `someRouter.createCaller({ db })` on this
+// database.
 import { PGlite } from '@electric-sql/pglite'
 import { Kysely, PGliteDialect, type Selectable, sql } from 'kysely'
 import type { Migration } from 'kysely/migration'
@@ -19,6 +27,9 @@ const migrations = Object.fromEntries(
 export async function createTestDb(): Promise<Db> {
   const db = new Kysely<Database>({ dialect: new PGliteDialect({ pglite: new PGlite() }) })
   await migrate(db, { provider: { getMigrations: async () => migrations }, log: () => {} })
+  // PGlite takes the machine's time zone. Neon and the local container run in UTC, and
+  // date_trunc('day', ...) depends on it.
+  await sql`set time zone 'UTC'`.execute(db)
   return db
 }
 

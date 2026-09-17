@@ -1,4 +1,4 @@
-import type { Kysely } from 'kysely'
+import { type Kysely, sql } from 'kysely'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createTestDb, insertOrgUnit, insertSync, resetDb } from './test-helpers'
 import type { Database } from './types'
@@ -9,6 +9,22 @@ beforeAll(async () => {
   db = await createTestDb()
 })
 afterAll(() => db.destroy())
+
+describe('createTestDb', () => {
+  // PGlite would otherwise take the machine's time zone, and group days differently from Neon.
+  it('groups days in UTC, like the deployed database', async () => {
+    await insertSync(db, { syncedAt: new Date('2026-09-01T23:30:00Z') })
+    await insertSync(db, { syncedAt: new Date('2026-09-02T00:30:00Z') })
+
+    const { rows } = await sql<{ day: string }>`
+      select to_char(date_trunc('day', synced_at), 'YYYY-MM-DD') as day
+      from device_sync group by 1 order by 1
+    `.execute(db)
+
+    expect(rows.map((row) => row.day)).toEqual(['2026-09-01', '2026-09-02'])
+    await resetDb(db)
+  })
+})
 
 describe('insertOrgUnit', () => {
   it('places a child one level below its parent, on its path', async () => {

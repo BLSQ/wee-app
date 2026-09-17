@@ -24,8 +24,8 @@ describe('SyncTable', () => {
   })
   afterEach(() => vi.useRealTimers())
 
-  it('shows a row for each sync, with its values', () => {
-    renderWithProviders(
+  it('shows a row for each sync, with its values', async () => {
+    await renderWithProviders(
       <SyncTable syncs={[sync(), sync({ id: 2, deviceSerial: 'SL-0007', username: 'fatu' })]} />,
     )
 
@@ -51,15 +51,15 @@ describe('SyncTable', () => {
       ['2026-09-10T08:00:00Z', 'today'],
       ['2026-09-09T08:00:00Z', 'yesterday'],
       ['2026-09-05T08:00:00Z', '5 days ago'],
-    ])('reads a sync from %s as "%s"', (syncedAt, label) => {
-      renderWithProviders(<SyncTable syncs={[sync({ syncedAt: new Date(syncedAt) })]} />)
+    ])('reads a sync from %s as "%s"', async (syncedAt, label) => {
+      await renderWithProviders(<SyncTable syncs={[sync({ syncedAt: new Date(syncedAt) })]} />)
 
       expect(screen.getByRole('row', { name: /SL-0042/ })).toHaveTextContent(label)
     })
   })
 
-  it('says so when there is no sync', () => {
-    renderWithProviders(<SyncTable syncs={[]} />)
+  it('says so when there is no sync', async () => {
+    await renderWithProviders(<SyncTable syncs={[]} />)
 
     expect(screen.getByText('No syncs yet')).toBeVisible()
   })
