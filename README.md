@@ -94,11 +94,10 @@ TARGET_DATABASE_URL="<production connection string>" pnpm db:seed
 
 Previews need no seeding: a Neon branch is a copy of its parent's data.
 
-**Serving the application.** The build command ends with `node scripts/build-vercel.mjs`, which
-turns `dist/` into `.vercel/output` — Vercel's Build Output API format. Vercel detects that
-directory on its own, so there is no framework preset and no output directory to configure. The
-static files come from `dist/client`; everything else is served by one function wrapping the
-handler the server build exports (ADR 0014).
+**Serving the application.** `pnpm build` emits `dist/client` and a server build exporting a
+web-standard `{ fetch(request) }` handler — the signature Vercel Functions accept. `api/index.mjs`
+re-exports that handler in one line, and `vercel.json` serves `dist/client` and rewrites everything
+else to it. No framework preset, no adapter (ADR 0014).
 
 Do not deploy with real data: there is no authentication yet (ADR 0008).
 
