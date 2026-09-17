@@ -12,3 +12,4 @@ dist/
 .claude/.cc-writes/
 .claude/worktrees/
 .worktrees/
+.claude/worktrees/
