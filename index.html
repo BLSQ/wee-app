@@ -654,6 +654,28 @@ The database needs no extension. There are no spatial queries in SQL. Revisit if
   <aside class="notes">This helps with the waiting time: while one pair waits for its agent, it can review another pair.</aside>
 </section>
 
+<section class="slide" data-part="how we work" data-title="merging and conflicts">
+  <div class="body">
+    <p class="eyebrow">Part 3 · How we work</p>
+    <h2>Merging, and merge conflicts</h2>
+    <div class="cols">
+      <div><ul>
+        <li>Once the other pair has approved, you merge your own pull request</li>
+        <li>Conflicts will probably happen: several pairs add a line to <code>router.ts</code> and <code>nav.ts</code>, and some touch <code>package.json</code> or add a migration</li>
+        <li>The simplest way is to ask your agent, in the same session and worktree</li>
+      </ul></div>
+      <div class="rule-top b"><h3>Afterwards, check</h3><ul>
+        <li>Both features are still registered, yours and theirs</li>
+        <li><code>pnpm-lock.yaml</code> was regenerated with <code>pnpm install</code>, not merged by hand</li>
+        <li>Two migrations with the same number: yours takes the next one</li>
+        <li>Tests and type-check pass, and the preview still works</li>
+      </ul></div>
+    </div>
+    <div class="cmd" style="white-space:pre-wrap"><span class="p">&gt; </span>Merge origin/main into this branch and resolve the conflicts. Keep the features from both sides. Run the tests and the type-check, then push.</div>
+  </div>
+  <aside class="notes">Merging main into the branch, rather than rebasing, avoids force-pushes on a pull request that is under review. The first pairs to merge will have no conflict; the later ones will, so mention it again around 2:15.</aside>
+</section>
+
 <section class="slide" data-part="how we work" data-title="while the agent works">
   <div class="body">
     <p class="eyebrow">Part 3 · How we work</p>
@@ -816,7 +838,7 @@ FUNCTION_INVOCATION_FAILED</div>
     <p class="eyebrow">Close · 2:40</p>
     <h2>Demos: two minutes per pair</h2>
     <div class="cols">
-      <div class="rule-top b"><h3>The preview URL</h3><p>The feature, on real seeded data.</p></div>
+      <div class="rule-top b"><h3>The feature, running</h3><p>On the preview URL of your pull request, or on production if it is already merged.</p></div>
       <div class="rule-top b"><h3>The spec</h3><p>A part of it that influenced what got built.</p></div>
       <div class="rule-top b"><h3>One test</h3><p>One that describes the feature well.</p></div>
     </div>
