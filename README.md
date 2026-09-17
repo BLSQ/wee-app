@@ -80,21 +80,24 @@ loads them automatically, with nothing to install. This repository targets Claud
 
 ## Deployment
 
-Vercel, with Neon as the database.
+The database side is settled; the hosting side is not.
 
-1. Import the repository in Vercel.
-2. Install Neon's **Preview Branching** integration on the project. Each preview deployment then
-   gets its own database branch, with its `DATABASE_URL` injected into that deployment.
-3. The build command is `pnpm db:migrate && pnpm build`, so **every deployment migrates the
-   database it is about to serve** — its own branch for a preview, the production branch for
-   `main`. A failing migration fails the build (ADR 0012).
-4. Seed production once, by hand:
+**Database.** Install Neon's **Preview Branching** integration on the Vercel project: each preview
+deployment then gets its own database branch, with its `DATABASE_URL` injected into that
+deployment. The build command is `pnpm db:migrate && pnpm build`, so every deployment migrates the
+database it is about to serve, and a failing migration fails the build (ADR 0012). Seed production
+once, by hand:
 
 ```bash
 TARGET_DATABASE_URL="<production connection string>" pnpm db:seed
 ```
 
 Previews need no seeding: a Neon branch is a copy of its parent's data.
+
+**Serving the application.** This is an open question — backlog ticket 12. `pnpm build` emits
+`dist/client` and `dist/server/server.js`, and that file exports a fetch handler rather than
+starting a server, so it needs a host or a small entry point of its own. We do not use Nitro, the
+usual adapter, because its dev server is unusable (ADR 0004).
 
 Do not deploy with real data: there is no authentication yet (ADR 0008).
 

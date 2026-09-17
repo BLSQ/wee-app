@@ -30,7 +30,6 @@
     "@trpc/tanstack-react-query": "^11.18.0",
     "kysely": "^0.29.5",
     "maplibre-gl": "^6.9.1",
-    "nitro": "3.0.260610-beta",
     "pg": "^8.23.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

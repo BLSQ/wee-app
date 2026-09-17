@@ -214,3 +214,27 @@ on the code beyond that.
 - [ ] Make sure agents are pointed at it from `CLAUDE.md`.
 
 **Touches shared files:** `README.md`, `CLAUDE.md`, `docs/`.
+
+---
+
+## 12. Settle how the application is served in production
+
+**Size:** M · **Type:** cross-cutting
+
+`pnpm build` emits `dist/client` and `dist/server/server.js`, but that file exports a fetch handler
+and starts no server, so nothing serves the application yet. Nitro, the adapter both TanStack and
+Vercel document, is ruled out: its dev server never works (ADR 0004).
+
+**Acceptance criteria**
+
+- [ ] A deployed preview and a deployed production URL both serve `/syncs` with real data.
+- [ ] Whatever makes that work is one documented command or one committed file, not console
+      clicking.
+- [ ] `pnpm dev` still works, and stays the way developers run the application locally.
+- [ ] The choice is recorded in an ADR, and ADR 0004 is updated if the host changes.
+
+Directions worth weighing: a small Node entry point that serves the exported handler and runs on
+any Node host; a Vercel Build Output API adapter; or another host with per-pull-request previews,
+which is the criterion that chose Vercel in the first place.
+
+**Touches shared files:** `vercel.json`, `package.json`, `README.md`, deployment settings.

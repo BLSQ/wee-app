@@ -312,6 +312,11 @@ The repository commits configuration and a README procedure. It provisions
 nothing: creating the Neon project, connecting Vercel, and setting secrets are
 manual steps performed by the repository owner.
 
+How the server build is actually served is an open question, tracked as backlog
+ticket 12. Nitro, the adapter both TanStack and Vercel document, is ruled out:
+its dev server never works (ADR 0004). The database half is settled — every
+deployment migrates the database it serves (ADR 0012).
+
 There is no CI workflow in the starter. Setting one up is ticket 8.
 
 ## 6. Agent configuration
