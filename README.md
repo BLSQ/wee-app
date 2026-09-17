@@ -71,8 +71,3 @@ from production when the preview is first created. The build command is
 The server is one Vercel function that re-exports the build's `fetch` handler.
 
 Production was seeded once, with `TARGET_DATABASE_URL="<connection string>" pnpm db:seed`.
-
-## Not there yet
-
-Authentication, end-to-end tests, continuous integration, a linter, enforced module boundaries,
-pinned tool versions, and most documentation. Each one is an issue for the workshop.
