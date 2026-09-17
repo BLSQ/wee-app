@@ -5,7 +5,8 @@ import { afterEach } from 'vitest'
 
 afterEach(cleanup)
 
-// Mantine reads these three, and jsdom does not provide them.
+// jsdom lacks three things Mantine calls. Each was checked by removing it.
+// MantineProvider: without matchMedia, nothing renders.
 window.matchMedia = (query: string) =>
   ({
     matches: false,
@@ -17,9 +18,11 @@ window.matchMedia = (query: string) =>
     removeEventListener: () => {},
     dispatchEvent: () => false,
   }) as MediaQueryList
+// Select, MultiSelect and ScrollArea observe their size.
 window.ResizeObserver = class {
   observe() {}
   unobserve() {}
   disconnect() {}
 }
+// Select scrolls to the highlighted option when driven with the keyboard.
 window.HTMLElement.prototype.scrollIntoView = () => {}

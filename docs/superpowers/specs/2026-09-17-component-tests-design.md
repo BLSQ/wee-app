@@ -34,7 +34,7 @@ in its own way, in `package.json`, the lockfile and `vitest.config.ts` at the sa
 - `src/features/device-syncs/ui/SyncTable.test.tsx` is the pattern to copy: one row per sync with
   its values; "today", "yesterday" and "N days ago" with the clock set by `vi.setSystemTime`; and an
   empty list. `SyncTable` gains a "No syncs yet" row for the empty list, written test first.
-- Rules in `CLAUDE.md`: a component that takes props has a `*.test.tsx` next to it. A page that only
+- Rules, short in `CLAUDE.md` and detailed in the header of `src/ui/test-helpers.tsx`: a component that takes props has a `*.test.tsx` next to it. A page that only
   fetches and passes data has none, and tRPC is never mocked. Query by role and text. No snapshots,
   no assertions on CSS classes, no `renderToStaticMarkup`. A MapLibre map is not rendered in a
   component test, because jsdom has no WebGL: test the data the map receives.
