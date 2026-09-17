@@ -28,7 +28,7 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
   (server) and `src/features/nav.ts` (client), nowhere else. `src/features/device-syncs/` is the
   pattern to copy.
 - Code that runs in the browser never imports from `src/server/`, except `import type`.
-- Database access goes in `api/queries.ts` as plain functions taking `db`.
+- Database access goes in the feature's own `api/queries.ts`, as plain functions taking `db`.
 - Test the queries, on an in-process Postgres: copy `queries.test.ts`. Test the components that
   take props, in jsdom: copy `SyncTable.test.tsx`. The test helpers both import explain the rest.
 - Pages and routes get no test, and neither does a tRPC procedure that only validates input and
