@@ -72,8 +72,6 @@ The server is one Vercel function that re-exports the build's `fetch` handler.
 
 Production was seeded once, with `TARGET_DATABASE_URL="<connection string>" pnpm db:seed`.
 
-There is no authentication yet: do not deploy with real data.
-
 ## Not there yet
 
 Authentication, end-to-end tests, continuous integration, a linter, enforced module boundaries,
