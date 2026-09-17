@@ -34,6 +34,6 @@ The file name says which side of the wire it belongs to, and the boundary has a 
 A feature now touches two shared files instead of one, so concurrent features conflict in two
 places. Both conflicts stay one line and mechanical.
 
-The test guards only the shell. Enforcing the client/server boundary everywhere belongs to backlog
-ticket 9 (module boundaries), and catching a broken client bundle belongs to ticket 7 (end-to-end
-smoke test).
+The test guards only the shell. Enforcing the client/server boundary everywhere belongs to issue
+#11 (module boundaries), and catching a broken client bundle belongs to issue #9 (end-to-end smoke
+test).

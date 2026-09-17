@@ -42,5 +42,5 @@ Migrations run during the deploy build, against the database that deployment wil
 
 **How the server build is served in production is not settled.** Without an adapter, `pnpm build`
 emits `dist/client` and `dist/server/server.js`, and that file exports a fetch handler rather than
-starting a server: `node dist/server/server.js` listens on nothing. Closing this gap is backlog
-ticket 12. Revisit the whole decision when an internal platform offers preview environments.
+starting a server: `node dist/server/server.js` listens on nothing. Closing this gap is issue
+#14. Revisit the whole decision when an internal platform offers preview environments.
