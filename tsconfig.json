@@ -12,6 +12,8 @@
     "types": ["vite/client", "node"],
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    // The install bootstrap is plain .mjs; without this tsc cannot resolve it from its test.
+    "allowJs": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,

@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17
+    # 55432, not 5432, so it cannot collide with a Postgres already on the machine.
+    ports:
+      - '55432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: wee_app
+      # Local only, and it keeps the connection strings free of a password.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./docker/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d wee_app']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  db-data:

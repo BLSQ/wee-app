@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postinstall": "node scripts/postinstall.mjs"
   },
   "dependencies": {
     "@mantine/charts": "^9.6.1",
