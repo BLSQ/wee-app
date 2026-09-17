@@ -51,11 +51,22 @@ already runs. An init script creates two databases: `wee_app` and `wee_app_test`
 From a clone:
 
 ```bash
+pnpm install        # creates .env from .env.example if it is missing
 docker compose up -d
-cp .env.example .env
 pnpm db:reset
 pnpm dev
 ```
+
+### Bootstrap, on clone and in every worktree
+
+Copying `.env.example` by hand is exactly the step that produced this bug, so nothing is left to
+the reader. `scripts/postinstall.mjs` runs from `pnpm install`: plain Node, no dependency, it
+creates `.env` from `.env.example` only when `.env` is missing, and prints the two commands that
+follow. It does nothing when `CI` or `VERCEL` is set, so a build never writes an env file.
+
+A new worktree has no `node_modules`, so `pnpm install` runs there too and the bootstrap happens
+again. `CLAUDE.md` carries the same sequence, so an agent starting in a fresh worktree does not
+have to infer it.
 
 Neon Local, Neon's own recommendation for local development, was considered and set aside: it
 needs a Neon API key and project id for every participant, and it does not work offline. The code
@@ -72,7 +83,8 @@ uses no Neon-specific feature, so a plain Postgres container is faithful enough.
 | `src/server/db/seed/run.ts` | New. `seed(url)`, extracted from `scripts/seed.ts`. |
 | `scripts/migrate.ts`, `scripts/seed.ts` | Become thin callers, keeping `TARGET_DATABASE_URL`. |
 | `scripts/db-reset.ts` | New. Runs migrate then seed, for `DATABASE_URL` then `TEST_DATABASE_URL`. |
-| `package.json` | Adds `db:reset`. |
+| `scripts/postinstall.mjs` | New. Creates `.env` from `.env.example` when missing; silent under CI. |
+| `package.json` | Adds `db:reset` and a `postinstall` hook. |
 | `vercel.json` | `buildCommand: "pnpm db:migrate && pnpm build"`. |
 | `README.md` | Setup rewritten around Docker; deployment section covers the integration. |
 | `CLAUDE.md` | Commands list gains `pnpm db:reset`. |
@@ -102,6 +114,7 @@ belongs.
 | Port 55432 is already taken by the throwaway cluster created while building the starter | The container refuses to start on a taken port rather than picking another silently; the README says to stop that cluster first |
 | A build that migrates needs database credentials at build time | Already true of the Neon integration; no new secret |
 | `db:reset` seeds the test database, so a developer can wipe test data mid-run | It only ever touches the two URLs in `.env`; both are local |
+| Worktrees share the single local database, so a migration in one worktree is visible in the others | Accepted: one database is what a workshop wants. A worktree that needs isolation changes the port and database name in its own `.env` |
 
 ## Out of scope
 
