@@ -1,109 +1,81 @@
 # wee-app
 
-A dashboard showing which IASO mobile devices have synchronised recently, and which districts are
-falling behind.
+A small dashboard of IASO device synchronisations: which devices synced recently, and which have
+gone quiet. It is not connected to IASO. It runs on its own Postgres database with synthetic data,
+and it is read-only for now.
 
-It is also the starting point of a workshop on spec-driven development and test-driven development
-with coding agents. Much of what a production application needs is deliberately missing: see
-[What is deliberately missing](#what-is-deliberately-missing).
+The repository is the starting point of a workshop on spec-driven and test-driven development with
+coding agents. Much of what a production application needs is left out on purpose and tracked as
+[issues](https://github.com/BLSQ/wee-app/issues).
+
+- App: https://wee-app-one.vercel.app
+- Backlog: https://github.com/orgs/BLSQ/projects/12
+- Workshop slides: https://viz.bluesquare.org/wee-app/
 
 ## Setup
 
-Requirements: Node 22.12 or newer, pnpm 10, and Docker running.
+Requirements: Claude Code, Node 22.12 or newer, pnpm 10, a Docker runtime with Compose, and the
+GitHub CLI.
 
 ```bash
-pnpm install        # also creates .env from .env.example
+pnpm install        # also creates .env
 docker compose up -d
-pnpm db:reset
+pnpm db:reset       # migrates and seeds the application and test databases
 pnpm dev            # http://localhost:3000
 ```
 
-`pnpm db:reset` migrates **and** seeds both databases: `wee_app` for the application and
-`wee_app_test` for the tests. Both live in the container defined by `compose.yaml`, on port 55432
-so it cannot collide with a Postgres already installed on your machine (ADR 0013).
+Postgres runs in Docker on port 55432 (ADR 0013). The seed is synthetic sync activity over real
+Sierra Leone org units, without personal data (ADR 0006). It is relative to today's date: run
+`pnpm db:reset` again to refresh it.
 
-The seed is synthetic sync activity over real Sierra Leone geography, anonymised (ADR 0006). It is
-generated relative to the current date, so re-run `pnpm db:reset` to make "ten days behind" mean
-ten days again.
+Other commands: `pnpm test`, `pnpm exec tsc --noEmit`, `pnpm format`.
 
-If you would rather not use Docker, any Postgres 14 or later works: create two databases and point
-`DATABASE_URL` and `TEST_DATABASE_URL` at them in `.env`.
-
-## Running
-
-```bash
-pnpm dev                 # http://localhost:3000
-pnpm test                # Vitest, against TEST_DATABASE_URL
-pnpm db:reset            # migrate and seed both databases again
-pnpm exec tsc --noEmit   # type-check
-pnpm format              # Prettier
-```
-
-## How the code is organised
+## Code
 
 ```
 src/
 ├── features/
-│   ├── router.ts         feature registry, server side: tRPC routers
-│   ├── nav.ts            feature registry, client side: navigation items
-│   └── device-syncs/     the example feature, the pattern to copy
-│       ├── api/queries.ts       Kysely queries, plain functions taking `db`: tested
+│   ├── router.ts         list of feature APIs (server)
+│   ├── nav.ts            menu entries (client)
+│   └── device-syncs/     the existing feature
+│       ├── api/queries.ts       SQL with Kysely, plain functions taking `db`: tested
 │       ├── api/queries.test.ts
-│       ├── api/router.ts        tRPC procedures: thin
+│       ├── api/router.ts        tRPC procedures
 │       └── ui/                  Mantine components
-├── routes/               TanStack Start file routes: one thin file per page
-├── server/db/            Kysely instance, types, migrations, seed generator
-├── server/trpc/          tRPC setup
-├── ui/                   application shell and theme
-└── lib/                  tRPC client
+├── routes/               one file per page
+├── server/               database, migrations, seed, tRPC setup
+└── ui/                   application shell and theme
 ```
 
-A new feature is a folder under `src/features/`, one route file under `src/routes/`, and one line
-in each of `src/features/router.ts` and `src/features/nav.ts` (ADR 0010). Browser code never
-imports server code.
+A new feature is a folder next to `device-syncs/`, built the same way, plus a route file and one
+line in each of `router.ts` and `nav.ts` (ADR 0010). Browser code never imports server code.
 
 ## How we work
 
-Every ticket goes through the same loop:
+1. Pick an issue on the [board](https://github.com/orgs/BLSQ/projects/12).
+2. In Claude Code, run `/brainstorming <issue URL>`. The agent creates a git worktree, reads
+   `docs/adr/` and asks a few questions.
+3. It writes a half-page spec, then a one-page plan, in `docs/superpowers/`.
+4. It implements test first and opens a pull request. Nothing is committed to `main`.
+5. Someone else reviews. If there are conflicts, ask the agent to merge `main` and resolve them.
+6. The agent proposes an ADR when a decision is worth recording.
 
-1. **Brainstorm** the ticket with your agent. It reads `docs/adr/` first.
-2. **Spec**: half a page, in `docs/superpowers/specs/`.
-3. **Plan**: one page of steps, in `docs/superpowers/plans/`.
-4. **Failing test**, then the implementation that makes it pass.
-5. **Pull request** from a git worktree. Nothing is committed to `main`.
-6. **ADR**: the agent proposes adding or updating one; the reviewer decides.
-
-The agent instructions are in [`CLAUDE.md`](CLAUDE.md). The skills that drive the loop are
-[Superpowers](https://github.com/obra/superpowers), vendored in `.claude/skills/`: Claude Code
-loads them automatically, with nothing to install. This repository targets Claude Code only
-(ADR 0011).
+The agent instructions are in [`CLAUDE.md`](CLAUDE.md). The skills are
+[Superpowers](https://github.com/obra/superpowers), copied into `.claude/skills/`, so there is
+nothing to install. This repository targets Claude Code only (ADR 0011).
 
 ## Deployment
 
-The database side is settled; the hosting side is not.
+Vercel and Neon. Every pull request gets a preview URL and its own Neon database branch, forked
+from production when the preview is first created. The build command is
+`pnpm db:migrate && pnpm build`, so each deployment migrates the database it serves (ADR 0012).
+The server is one Vercel function that re-exports the build's `fetch` handler (ADR 0014).
 
-**Database.** Install Neon's **Preview Branching** integration on the Vercel project: each preview
-deployment then gets its own database branch, with its `DATABASE_URL` injected into that
-deployment. The build command is `pnpm db:migrate && pnpm build`, so every deployment migrates the
-database it is about to serve, and a failing migration fails the build (ADR 0012). Seed production
-once, by hand:
+Production was seeded once, with `TARGET_DATABASE_URL="<connection string>" pnpm db:seed`.
 
-```bash
-TARGET_DATABASE_URL="<production connection string>" pnpm db:seed
-```
+There is no authentication yet (ADR 0008): do not deploy with real data.
 
-Previews need no seeding: a Neon branch is a copy of its parent's data.
+## Not there yet
 
-**Serving the application.** `pnpm build` emits `dist/client` and a server build exporting a
-web-standard `{ fetch(request) }` handler — the signature Vercel Functions accept. `api/index.mjs`
-re-exports that handler in one line, and `vercel.json` serves `dist/client` and rewrites everything
-else to it. No framework preset, no adapter (ADR 0014).
-
-Do not deploy with real data: there is no authentication yet (ADR 0008).
-
-## What is deliberately missing
-
-No authentication, no end-to-end tests, no continuous integration, no linter, no enforced module
-boundaries, no reproducible development environment, and very little documentation.
-
-These are not oversights. They are the workshop: see the [issues](https://github.com/BLSQ/wee-app/issues).
+Authentication, end-to-end tests, continuous integration, a linter, enforced module boundaries,
+pinned tool versions, and most documentation. Each one is an issue for the workshop.
