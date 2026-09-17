@@ -33,6 +33,16 @@ Check `docs/adr/` and ask:
 
 Propose; the human decides. If nothing qualifies, say so in one sentence.
 
+Ask for that decision on its own, not at the end of another summary:
+
+1. Show the draft ADR, or the path of the file you wrote.
+2. Ask with the `AskUserQuestion` tool, not in prose, so the choice appears as a
+   selectable prompt. One question, header `ADR`, three options:
+   - **Add as written**: commit the ADR with the rest of the work.
+   - **Change it**: the human says what to change; revise, then ask again.
+   - **Leave it out**: delete the draft and say so in the pull request.
+3. Do not open the pull request before the answer.
+
 ## Format
 
 Keep an ADR under a page. If it needs more, it is a spec, not an ADR.
