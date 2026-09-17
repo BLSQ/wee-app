@@ -728,10 +728,16 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <span class="arrow">→</span>
       <div class="node r"><b>Fix failed?</b><span>Under 3: back to 1<br>3 or more: discuss the architecture</span></div>
     </div>
-    <p><strong>In this repo:</strong> <code>Vite environment "ssr" is unavailable</code></p>
-    <div class="struck"><span>orphaned process</span><span>stale cache</span><span>plugin order</span><span>Node binary</span><span>start-up race</span><span>newer version</span><span>known-good commit fails too</span><span class="stop">stop: is this layer needed?</span></div>
+    <p><strong>In this repo:</strong> the deployed app fails with <code>relation "device_sync" does not exist</code></p>
+    <div class="anatomy" style="grid-template-columns:minmax(0,.3fr) minmax(0,1fr)">
+      <div class="c">1 · Root cause</div><div class="e">The deployment is fine. <code>pnpm db:migrate</code> reads <code>.env</code>, which pointed at a local database</div>
+      <div class="c">2 · Pattern</div><div class="e">Locally the tables exist; in production they do not</div>
+      <div class="c">3 · Hypothesis</div><div class="e">Production was never migrated</div>
+      <div class="c">4 · Fix</div><div class="e">Migrate during the deploy build; a failing migration now fails the build</div>
+    </div>
+    <div class="struck"><span>redeploy</span><span>run db:migrate again</span><span class="stop">neither touches the production database</span></div>
   </div>
-  <aside class="notes">The layer was Nitro. It was not needed: it was removed, the Vercel adapter later went from 164 lines to 1, and ADR 0004 records the decision for future sessions. The skill sets a fixed threshold after which it stops trying fixes and steps back.</aside>
+  <aside class="notes">From ADR 0012 and its spec. The error pointed at the deployment, and the deployment was fine: the migration command had run against the developer's local database, because that is where .env pointed. Redeploying, or running the migration again, would have changed nothing in production. The fix is at the cause: Vercel's build command is now pnpm db:migrate &amp;&amp; pnpm build. Django people know this one: it is forgetting to run migrate on the server. The skill also sets a threshold: after three failed fixes it stops trying and questions the architecture.</aside>
 </section>
 
 <section class="slide" data-part="round table" data-title="verification before completion">
