@@ -15,8 +15,9 @@ work offline.
 
 ## Decision
 
-One `postgres:17` container, defined in `compose.yaml`, listens on port 55432 and holds both
-`wee_app` and `wee_app_test`.
+One `postgres:17` container, defined in `compose.yaml`, listens on port 55432 and holds the
+`wee_app` database, which `pnpm dev` reads. Tests do not use it: they run on an in-process Postgres
+(ADR 0003).
 
 The Compose project has a fixed name, `wee-app`. Without it, Compose names the project after the
 directory, so each git worktree started its own empty Postgres on the same port: the second one
@@ -27,7 +28,7 @@ a fixed name, every clone and worktree on the machine shares one container and o
 mounts no file from the checkout and is identical from any directory.
 
 `pnpm install` runs `scripts/postinstall.mjs`, which copies `.env.example` to `.env` when `.env` is
-missing and does nothing under `CI` or `VERCEL`. `pnpm db:reset` migrates and seeds both databases.
+missing and does nothing under `CI` or `VERCEL`. `pnpm db:reset` migrates and seeds the database.
 
 ## Consequences
 
@@ -37,8 +38,8 @@ the database is already running and seeded.
 Worktrees share the local schema. A worktree that adds a migration changes the database for the
 others until `pnpm db:reset` is run from the checkout in use.
 
-Docker becomes a prerequisite. Any Postgres 14 or later works instead, since only the connection
-string matters.
+Docker becomes a prerequisite for `pnpm dev`, and not for `pnpm test`. Any Postgres 14 or later
+works instead, since only the connection string matters.
 
 Worktrees share the one local database, which is what a workshop wants. A worktree that needs
 isolation changes the port and database name in its own `.env`.

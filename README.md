@@ -19,7 +19,7 @@ GitHub CLI.
 ```bash
 pnpm install        # also creates .env
 docker compose up -d
-pnpm db:reset       # migrates and seeds the application and test databases
+pnpm db:reset       # migrates and seeds the local database
 pnpm dev            # http://localhost:3000
 ```
 
@@ -29,6 +29,9 @@ Sierra Leone org units, without personal data. It is relative to today's date: r
 `pnpm db:reset` again to refresh it.
 
 Other commands: `pnpm test`, `pnpm exec tsc --noEmit`, `pnpm format`.
+
+`pnpm test` needs no database: tests run on an in-process Postgres (PGlite), and each test inserts
+the rows it needs.
 
 ## Code
 
