@@ -147,6 +147,10 @@ td.num{font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace;
 .erd .cn.pk{font-weight:500} .erd .cn.fk{fill:var(--accent)}
 .erd .link{fill:none; stroke:var(--accent); stroke-width:4; stroke-linejoin:round}
 .erd .ahp{fill:var(--accent)} .erd .card{fill:var(--accent); font-size:17px; font-weight:500; text-anchor:middle}
+
+.links{display:flex; flex-wrap:wrap; gap:.4em 1.6em; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.8em; color:var(--muted); margin:0; max-width:none}
+.links b{font-weight:500; color:var(--ink)}
+a{color:var(--accent); text-underline-offset:.15em} a:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 .notes{display:none; background:var(--amber-soft); color:var(--ink); font-size:.78em; padding:.9em 1.1em; max-width:1240px; width:100%; margin-inline:auto; box-sizing:border-box; border-left:4px solid var(--amber)}
 .notes::before{content:"Speaker notes"; display:block; font-family:"IBM Plex Mono",monospace; font-size:.8em; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); margin-bottom:.3em}
 body.show-notes .notes{display:block}
@@ -196,6 +200,7 @@ ul.big{font-size:1.18em; gap:.7em}
       <div class="share" style="flex-grow:8"><span class="bar"></span><span class="t">2:52</span><span class="l">Retro</span></div>
     </div>
     <div class="legend"><span><i style="background:var(--accent)"></i>I talk</span><span><i style="background:var(--green)"></i>you build</span><span><i style="background:var(--amber)"></i>we talk</span></div>
+    <p class="links"><span><b>Repo</b> <a href="https://github.com/BLSQ/wee-app" target="_blank" rel="noopener">github.com/BLSQ/wee-app</a></span><span><b>Board</b> <a href="https://github.com/orgs/BLSQ/projects/12" target="_blank" rel="noopener">github.com/orgs/BLSQ/projects/12</a></span><span><b>App</b> <a href="https://wee-app-one.vercel.app" target="_blank" rel="noopener">wee-app-one.vercel.app</a></span></p>
   </div>
   <aside class="notes">Round 1: brainstorm, spec, plan, first tests. Round 2: finish, pull request, review by another pair. The 1:45 round table also covers how Superpowers works inside, once everybody has seen it run.</aside>
 </section>
@@ -352,6 +357,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
         <tr><td>Users, anonymised</td><td class="num">41</td></tr>
       </table></div></div>
     <p class="dim">Real org units from an IASO dump, synthetic syncs, no personal data.</p>
+    <p class="links"><span><b>App</b> <a href="https://wee-app-one.vercel.app" target="_blank" rel="noopener">wee-app-one.vercel.app</a></span></p>
   </div>
   <aside class="notes">The seed is deterministic: everybody has the same rows, and tests assert against them. Devices have profiles in the seed (healthy, dropped, silent, mixed), which makes "who stopped syncing" an interesting question. 601 facilities have GPS coordinates.</aside>
 </section>
@@ -517,7 +523,8 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
   <div class="body">
     <p class="eyebrow">Part 3 · How we work</p>
     <h2>Pairs, issues, Kanban</h2>
-    <div class="cols"><div class="rule-top b"><h3>Backlog</h3><ul><li>GitHub issues</li><li>A need, not a solution</li></ul></div><div class="rule-top b"><h3>Kanban</h3><ul><li><span class="mono">Todo → In progress → In review → Done</span></li><li>One card per pair</li></ul></div><div class="rule-top b"><h3>Pair</h3><ul><li>Driver talks to the agent</li><li>Navigator reads and reviews</li><li>Swap at the round table</li></ul></div></div>
+    <div class="cols"><div class="rule-top b"><h3>Backlog</h3><ul><li>GitHub issues</li><li>A need, not a solution</li></ul></div><div class="rule-top b"><h3>Kanban</h3><ul><li><span class="mono">Backlog → Ready → In progress → In review → Done</span></li><li>One card per pair</li></ul></div><div class="rule-top b"><h3>Pair</h3><ul><li>Driver talks to the agent</li><li>Navigator reads and reviews</li><li>Swap at the round table</li></ul></div></div>
+    <p class="links"><span><b>Board</b> <a href="https://github.com/orgs/BLSQ/projects/12" target="_blank" rel="noopener">github.com/orgs/BLSQ/projects/12</a></span></p>
   </div>
   <aside class="notes">One laptop per pair for the agent; the navigator's laptop is for GitHub, the preview URLs and the review of the other pair.</aside>
 </section>
@@ -549,6 +556,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       </table></div>
     </div>
     <p class="dim">Missing something? Open an issue and take it.</p>
+    <p class="links"><span><b>Board</b> <a href="https://github.com/orgs/BLSQ/projects/12" target="_blank" rel="noopener">github.com/orgs/BLSQ/projects/12</a></span><span><b>Issues</b> <a href="https://github.com/BLSQ/wee-app/issues" target="_blank" rel="noopener">github.com/BLSQ/wee-app/issues</a></span></p>
   </div>
   <aside class="notes">Walk through them live on GitHub rather than on this slide. At least two cross-cutting issues should be taken: they lead to good ADR discussions. #8 will not finish in the time, but is a good brainstorming and spec exercise. #10 benefits everyone if merged early. #17 and #19 overlap; #20 may overlap with #5.</aside>
 </section>
@@ -618,6 +626,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
 <span class="p">$ </span>pnpm test          <span class="p"># green</span>
 <span class="p">$ </span>pnpm dev           <span class="p"># http://localhost:3000</span></div>
     <p class="dim">Needs Claude Code, Docker, Node 24, pnpm, and write access to BLSQ/wee-app.</p>
+    <p class="links"><span><b>Repo</b> <a href="https://github.com/BLSQ/wee-app" target="_blank" rel="noopener">github.com/BLSQ/wee-app</a></span><span><b>Board</b> <a href="https://github.com/orgs/BLSQ/projects/12" target="_blank" rel="noopener">github.com/orgs/BLSQ/projects/12</a></span><span><b>App</b> <a href="https://wee-app-one.vercel.app" target="_blank" rel="noopener">wee-app-one.vercel.app</a></span></p>
   </div>
   <aside class="notes">Ideally sent by email two days before. The Docker image pull is the slow part on shared Wi-Fi. Accept the trust prompt when Claude opens the repo.</aside>
 </section>
