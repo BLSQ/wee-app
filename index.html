@@ -506,7 +506,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
 └─ src/
    ├─ routes/         <em>one file per page URL</em>
    ├─ <strong>features/</strong>       <em>your work goes here</em>
-   ├─ server/db/      <em>migrations, seed, test helpers</em>
+   ├─ server/db/      <em>migrations, seed, types</em>
    └─ ui/             <em>app shell, theme</em></div>
       <div class="tree">src/features/
 ├─ <mark>router.ts</mark>                 <em>list of feature APIs</em>
@@ -827,7 +827,7 @@ ReferenceError: Can't find variable: Buffer</div>
       s.style.fontSize='';
       if(window.innerWidth<700) return;
       var base=parseFloat(getComputedStyle(s).fontSize), size=base, min=base*0.55, h=window.innerHeight;
-      while(s.scrollHeight>h+1 && size>min){ size*=0.96; s.style.fontSize=size+'px'; }
+      while(s.scrollHeight>h && size>min){ size*=0.96; s.style.fontSize=size+'px'; }
     });
     if(notesOn) document.body.classList.add('show-notes');
   }
