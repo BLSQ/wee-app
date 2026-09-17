@@ -23,8 +23,8 @@ pnpm db:reset       # migrates and seeds the application and test databases
 pnpm dev            # http://localhost:3000
 ```
 
-Postgres runs in Docker on port 55432 (ADR 0013). The seed is synthetic sync activity over real
-Sierra Leone org units, without personal data (ADR 0006). It is relative to today's date: run
+Postgres runs in Docker on port 55432. The seed is synthetic sync activity over real
+Sierra Leone org units, without personal data. It is relative to today's date: run
 `pnpm db:reset` again to refresh it.
 
 Other commands: `pnpm test`, `pnpm exec tsc --noEmit`, `pnpm format`.
@@ -47,7 +47,7 @@ src/
 ```
 
 A new feature is a folder next to `device-syncs/`, built the same way, plus a route file and one
-line in each of `router.ts` and `nav.ts` (ADR 0010). Browser code never imports server code.
+line in each of `router.ts` and `nav.ts`. Browser code never imports server code.
 
 ## How we work
 
@@ -57,22 +57,22 @@ line in each of `router.ts` and `nav.ts` (ADR 0010). Browser code never imports 
 3. It writes a half-page spec, then a one-page plan, in `docs/superpowers/`.
 4. It implements test first and opens a pull request. Nothing is committed to `main`.
 5. Someone else reviews. If there are conflicts, ask the agent to merge `main` and resolve them.
-6. The agent proposes an ADR when a decision is worth recording.
+6. The agent proposes an ADR when a decision is worth recording. Past decisions are in `docs/adr/`.
 
 The agent instructions are in [`CLAUDE.md`](CLAUDE.md). The skills are
 [Superpowers](https://github.com/obra/superpowers), copied into `.claude/skills/`, so there is
-nothing to install. This repository targets Claude Code only (ADR 0011).
+nothing to install. This repository targets Claude Code only.
 
 ## Deployment
 
 Vercel and Neon. Every pull request gets a preview URL and its own Neon database branch, forked
 from production when the preview is first created. The build command is
-`pnpm db:migrate && pnpm build`, so each deployment migrates the database it serves (ADR 0012).
-The server is one Vercel function that re-exports the build's `fetch` handler (ADR 0014).
+`pnpm db:migrate && pnpm build`, so each deployment migrates the database it serves.
+The server is one Vercel function that re-exports the build's `fetch` handler.
 
 Production was seeded once, with `TARGET_DATABASE_URL="<connection string>" pnpm db:seed`.
 
-There is no authentication yet (ADR 0008): do not deploy with real data.
+There is no authentication yet: do not deploy with real data.
 
 ## Not there yet
 
