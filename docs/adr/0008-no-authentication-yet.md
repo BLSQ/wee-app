@@ -18,6 +18,3 @@ This is a deferral, not a decision against authentication. The work is issue #8.
 ## Consequences
 
 The application must not be deployed with real data until issue #8 is done.
-
-Adding authentication introduces writes (users, sessions), which invalidates the read-only
-assumption behind the testing strategy in ADR 0006. Issue #8 must address both.

@@ -1,15 +1,15 @@
 import orgUnits from '../../../../data/org-units.json' with { type: 'json' }
 import users from '../../../../data/users.json' with { type: 'json' }
-import { createDb } from '../index.ts'
+import type { Kysely } from 'kysely'
+import type { Database } from '../types.ts'
 import { generateSeedData } from './generate.ts'
 
 const CHUNK = 1000
 
+/** Replaces the contents of `db` with the seed. The caller owns the connection. */
 export async function seed(
-  connectionString: string,
+  db: Kysely<Database>,
 ): Promise<{ orgUnits: number; devices: number; syncs: number }> {
-  const db = createDb(connectionString)
-
   // Empty the tables rather than drop them: the schema belongs to the migrations.
   await db.deleteFrom('device_sync').execute()
   await db.deleteFrom('device').execute()
@@ -56,6 +56,5 @@ export async function seed(
       .execute()
   }
 
-  await db.destroy()
   return { orgUnits: orgUnits.length, devices: devices.length, syncs: syncs.length }
 }

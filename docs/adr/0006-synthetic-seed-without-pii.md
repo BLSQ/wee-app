@@ -24,9 +24,8 @@ Sierra Leone org unit hierarchy, with district and chiefdom polygons and facilit
 
 `pnpm db:seed` needs no dump, no PostGIS and no network.
 
-**Determinism is load-bearing.** Tests read the seeded database and assert on its contents, with no
-fixtures, mocks or rollback. That only works while the application is read-only: the first ticket
-that writes to the database must revisit this.
+The seed serves `pnpm dev` and the preview deployments. Tests do not read it: each test inserts the
+rows it needs (ADR 0003). One test file runs the seed on an in-process database, to check that the
+script still works and that some districts are visibly behind the others.
 
-The seed uses the real clock, so the data ages: re-seed before a demo. Tests that depend on recency
-measure against the most recent sync, not against `now()`.
+The seed uses the real clock, so the data ages: re-seed before a demo.

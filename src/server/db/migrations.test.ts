@@ -1,9 +1,13 @@
 // Lives outside migrations/ on purpose: FileMigrationProvider loads every file there.
-import { sql } from 'kysely'
-import { afterAll, describe, expect, it } from 'vitest'
-import { testDb } from '#/server/db'
+import { type Kysely, sql } from 'kysely'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import type { Database } from '#/server/db'
+import { createTestDb } from '#/server/db/test-helpers'
 
-const db = testDb()
+let db: Kysely<Database>
+beforeAll(async () => {
+  db = await createTestDb()
+})
 afterAll(() => db.destroy())
 
 const columnsOf = async (table: string) => {
