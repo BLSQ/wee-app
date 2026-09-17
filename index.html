@@ -50,6 +50,7 @@ strong{font-weight:600}
 .red{color:var(--red)} .green{color:var(--green)} .amber{color:var(--amber)} .dim{color:var(--muted)}
 .cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr)); gap:clamp(16px,2.4vw,36px); align-items:start}
 .cols > div{display:flex; flex-direction:column; gap:.6em}
+.cols > div.tree, .cols > div.term{display:block}
 .rule-top{border-top:3px solid var(--ink); padding-top:.7em}
 .rule-top.r{border-color:var(--red)} .rule-top.g{border-color:var(--green)} .rule-top.a{border-color:var(--amber)} .rule-top.b{border-color:var(--accent)}
 .cmd{background:var(--ink); color:var(--ground); font-family:"IBM Plex Mono",monospace; font-size:.9em; padding:1em 1.2em; border-radius:6px; overflow-x:auto; white-space:pre}
@@ -175,7 +176,7 @@ body.show-notes .notes{display:block}
       </ul></div>
     </div>
   </div>
-  <aside class="notes">Worth saying early: the app and its stack are a pretext. People who mostly write Python are at no disadvantage here.</aside>
+  <aside class="notes">Worth saying early: the app and its stack are only a support for the exercise. People who mostly write Python are at no disadvantage here.</aside>
 </section>
 
 <section class="slide" data-part="opening" data-title="run sheet">
@@ -284,7 +285,6 @@ body.show-notes .notes{display:block}
       <tr><td class="dim">Written in the repo</td><td>A constitution, then a spec, a plan and tasks per feature</td><td><code>PROJECT.md</code>, <code>ROADMAP.md</code>, <code>STATE.md</code>, per-phase plans</td><td>One spec and one plan per piece of work</td></tr>
       <tr><td class="dim">Main concern</td><td>Agree on what and why before how</td><td>Context rot: each task starts from a fresh context</td><td>Keeping the agent on the method: gates, TDD, debugging rules</td></tr>
       <tr><td class="dim">Tests</td><td>Left to the project constitution</td><td>A verify phase after the build</td><td>Test first, required by a skill</td></tr>
-      <tr><td class="dim">Agents</td><td>Copilot by default, many others</td><td>Claude Code, Codex, Cursor, Copilot and others</td><td>Claude Code first; also Codex, Copilot CLI, Gemini CLI</td></tr>
     </table></div>
     <p class="dim">Others in the same family: Kiro, OpenSpec, BMAD. Today we use Superpowers: on top of a method, it tries to keep the agent disciplined about following it (next slide).</p>
   </div>
@@ -451,7 +451,7 @@ The database needs no extension. There are no spatial queries in SQL. Revisit if
     </table></div>
     <p class="lede">It is fine not to know this stack. The agent handles the syntax; you can focus on what the feature should do, and on reviewing.</p>
   </div>
-  <aside class="notes">Reassure the Python people explicitly. Not knowing the stack also makes the exercise interesting: you steer through the spec and the tests rather than through the code.</aside>
+  <aside class="notes">Reassure the Python people explicitly. Not knowing the stack also makes the exercise interesting: you guide the work through the spec and the tests rather than through the code.</aside>
 </section>
 
 <section class="slide" data-part="wee-app" data-title="front and back">
@@ -602,7 +602,7 @@ The database needs no extension. There are no spatial queries in SQL. Revisit if
       <div><h3>Then it will</h3><ul><li>create a worktree and a branch</li><li>read the issue and every ADR</li><li>ask you up to three questions, once</li><li>offer mockups in a browser tab for visual questions (worth accepting)</li></ul></div>
       <div><h3>And you will</h3><ul><li>answer its questions from the user's point of view</li><li>read the spec before approving it</li><li>disagree with its proposals when you think it is wrong</li></ul></div>
     </div>
-    <p class="dim">The skills are vendored in the repo, so it is <code>/brainstorming</code>. If you also have the plugin, <code>/superpowers:brainstorming</code> is the global copy, without today's context.</p>
+    <p class="dim">The skills are copied into the repo, so the command is <code>/brainstorming</code>. If you also have the plugin, <code>/superpowers:brainstorming</code> is the global copy, without today's context.</p>
   </div>
   <aside class="notes">Requires gh to be authenticated so the agent can read the issue. Check it during setup, not now.</aside>
 </section>
@@ -738,7 +738,7 @@ The database needs no extension. There are no spatial queries in SQL. Revisit if
     </div>
     <div class="legend"><span><i style="background:var(--green-soft)"></i>written for this repo</span><span><i style="background:var(--amber-soft)"></i>only when something breaks</span><span><span style="text-decoration:line-through">struck</span>: switched off today by the pace budget</span></div>
   </div>
-  <aside class="notes">Ask the pairs which of these they saw announced in their terminal ("Using … to …"). Fourteen skills are vendored in .claude/skills/.</aside>
+  <aside class="notes">Ask the pairs which of these they saw announced in their terminal ("Using … to …"). Fourteen skills are copied into .claude/skills/.</aside>
 </section>
 
 <section class="slide" data-part="checkpoint" data-title="excuses and answers">
@@ -816,7 +816,7 @@ FUNCTION_INVOCATION_FAILED</div>
     <h2>Retro</h2>
     <ul class="lede" style="color:var(--ink)">
       <li>Where did the spec or the tests save you?</li>
-      <li>Where was the ceremony wasted?</li>
+      <li>Which steps felt like a waste of time?</li>
       <li>On IASO or OpenHEXA, which task would you try this on, and which never?</li>
       <li>What would you put in an ADR in your own repo tomorrow?</li>
     </ul>
@@ -830,7 +830,7 @@ FUNCTION_INVOCATION_FAILED</div>
     <div class="cmd"><span class="p">&gt; </span>/plugin install superpowers@claude-plugins-official</div>
     <div class="cols">
       <div><ul><li>An ADR folder can start small, with a few decisions that often need re-explaining</li><li>A short instruction file, with details in skills and ADRs</li></ul></div>
-      <div><ul><li>The full workflow suits work of several days or more, less so a quick spike</li><li>A skill can be written for a rule your team cares about</li></ul></div>
+      <div><ul><li>The full workflow suits work of several days or more, less so a quick experiment</li><li>A skill can be written for a rule your team cares about</li></ul></div>
     </div>
     <p class="dim">Repository: github.com/BLSQ/wee-app. It stays open: finish your issue, or take another.</p>
   </div>
