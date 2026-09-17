@@ -31,7 +31,7 @@ Two consequences follow, and they constrain every decision below:
   — including its Kysely queries, its tRPC router, its Mantine UI, and its
   tests. It is the pattern every other slice copies.
 - The application shell: navigation, theme, tRPC wiring, database access.
-- Agent configuration: vendored Superpowers skills, `AGENTS.md`, initial ADRs.
+- Agent configuration: vendored Superpowers skills, `CLAUDE.md`, initial ADRs.
 - A backlog of tickets.
 
 ### Out of scope (deliberately — these are tickets)
@@ -186,13 +186,11 @@ Determinism is not a convenience — it is what makes the testing strategy in
 
 ```
 wee-app/
-├── AGENTS.md                 source of truth for agents
-├── CLAUDE.md                 @AGENTS.md
-├── GEMINI.md                 @AGENTS.md
+├── CLAUDE.md                 agent instructions, the single source of truth
 ├── README.md
 ├── BACKLOG.md
-├── .claude/settings.json     includeCoAuthoredBy: false
-├── skills/                   vendored Superpowers + project skills
+├── .claude/settings.json     commit attribution
+├── .claude/skills/           vendored Superpowers + project skills
 ├── docs/adr/
 ├── docs/superpowers/{specs,plans}/
 ├── data/                     org-units.json, users.json
@@ -318,19 +316,21 @@ There is no CI workflow in the starter. Setting one up is ticket 8.
 
 ## 6. Agent configuration
 
-### 6.1 Portability
+### 6.1 Claude Code only
 
-`AGENTS.md` is the source of truth. `CLAUDE.md` and `GEMINI.md` each contain a
-single line pointing at it. Instructions therefore apply to Claude Code, Codex,
-Cursor and Gemini alike.
+`CLAUDE.md` is the single instruction file, and the repository targets Claude
+Code alone (ADR 0011). The portability layer this replaced — `AGENTS.md` with
+`CLAUDE.md` and `GEMINI.md` pointing at it — served Claude Code worst of all:
+skills outside `.claude/skills/` are never loaded as skills, only read.
 
-Superpowers 6.3.0 is **vendored** into `skills/` — copied, version-pinned, and
-committed. A clone works offline with no plugin marketplace and no install
-step, including the brainstorming visual companion and its server scripts.
+Superpowers 6.3.0 is **vendored** into `.claude/skills/` — copied, version-pinned
+and committed. Claude Code discovers skills there, so a clone works offline with
+no plugin marketplace and no install step, including the brainstorming visual
+companion and its server scripts.
 
 ### 6.2 Project rules
 
-Three project-specific behaviours are expressed as rules in `AGENTS.md`, not as
+Three project-specific behaviours are expressed as rules in `CLAUDE.md`, not as
 patches to the vendored skills, so that Superpowers can be upgraded by
 replacing the directory:
 
@@ -341,7 +341,7 @@ replacing the directory:
 
 A fourth rule states that everything in the repository is written in English.
 
-`skills/project/writing-adrs/SKILL.md` defines the ADR format and the update
+`.claude/skills/writing-adrs/SKILL.md` defines the ADR format and the update
 procedure that rules 1 and 2 refer to.
 
 `.claude/settings.json` sets `includeCoAuthoredBy: false` so commits and pull
@@ -376,7 +376,7 @@ Backlog tickets carry their own context and acceptance criteria (§8) so that
 brainstorming starts from a real brief and converges quickly, without the
 brainstorm becoming a formality.
 
-The budget lives in its own `## Pace` section of `AGENTS.md` so it can be
+The budget lives in its own `## Pace` section of `CLAUDE.md` so it can be
 deleted in one edit once the repository outlives the workshop. ADR 0009 records
 it as a temporary, workshop-scoped concession and states what it must never
 trade away.
@@ -385,7 +385,7 @@ trade away.
 
 Work happens on a git worktree branch and lands through a pull request. Nothing
 is committed to `main` directly. Superpowers' `using-git-worktrees` and
-`finishing-a-development-branch` skills cover the mechanics; `AGENTS.md` states
+`finishing-a-development-branch` skills cover the mechanics; `CLAUDE.md` states
 the rule.
 
 Tasks are tracked as GitHub issues on a GitHub Project board, managed as a
@@ -405,6 +405,7 @@ Kanban. `BACKLOG.md` holds the ticket text until the repository is pushed.
 | 0008 | No authentication yet |
 | 0009 | A workshop pace budget for agents |
 | 0010 | Split the feature registry by runtime (supersedes 0005) |
+| 0011 | Target Claude Code only |
 
 ADR 0004 records why deployment as an OpenHEXA web app was set aside: the
 per-pull-request preview environment was the deciding criterion.
@@ -445,7 +446,7 @@ mitigation, and the contention is itself worth discussing during the session.
 | Cross-cutting tickets collide | Kanban WIP limit; the collision is surfaced as a discussion topic rather than hidden |
 | Two to three hours is short for a full brainstorm-to-merge cycle | The pace budget in §6.3 caps clarifying questions, spec writing and review rounds; tickets 1, 3, 4 and 8 are sized S specifically so at least one pair completes the loop early and can demonstrate it |
 | The pace budget is read as permission to skip the method, so participants never see what Superpowers is for | The budget shortens artefacts and round trips; it never makes a step optional. ADR 0009 states this as the constraint the budget must not trade away |
-| A pair invents its own conventions | The `device-syncs` slice is complete and tested; `AGENTS.md` names it as the pattern |
+| A pair invents its own conventions | The `device-syncs` slice is complete and tested; `CLAUDE.md` names it as the pattern |
 
 ## 10. Open questions
 

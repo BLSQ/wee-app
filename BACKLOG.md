@@ -164,7 +164,7 @@ Nothing checks a pull request before it is merged.
 
 **Size:** M · **Type:** cross-cutting
 
-Conventions exist only in `AGENTS.md`. Nothing stops a feature from reaching into another one.
+Conventions exist only in `CLAUDE.md`. Nothing stops a feature from reaching into another one.
 
 **Acceptance criteria**
 
@@ -195,9 +195,9 @@ Postgres versions.
 - [ ] A developer can get a local Postgres without a Neon account.
 - [ ] A new developer goes from clone to passing tests with a documented, short sequence of
       commands.
-- [ ] What an agent needs to run the project is documented in `AGENTS.md`.
+- [ ] What an agent needs to run the project is documented in `CLAUDE.md`.
 
-**Touches shared files:** `package.json`, root configuration, `README.md`, `AGENTS.md`.
+**Touches shared files:** `package.json`, root configuration, `README.md`, `CLAUDE.md`.
 
 ---
 
@@ -212,6 +212,6 @@ on the code beyond that.
 
 - [ ] Decide, and record, what deserves documentation beyond the README and the ADRs.
 - [ ] Write it.
-- [ ] Make sure agents are pointed at it from `AGENTS.md`.
+- [ ] Make sure agents are pointed at it from `CLAUDE.md`.
 
-**Touches shared files:** `README.md`, `AGENTS.md`, `docs/`.
+**Touches shared files:** `README.md`, `CLAUDE.md`, `docs/`.

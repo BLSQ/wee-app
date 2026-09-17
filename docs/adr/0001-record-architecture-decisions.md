@@ -14,7 +14,7 @@ will look.
 We record significant decisions as short ADRs in `docs/adr/`, using `0000-template.md`.
 
 Agents read every ADR before brainstorming and propose additions or updates after implementing a
-plan (`skills/project/writing-adrs/SKILL.md`). Humans accept or reject the proposal in review.
+plan (the `writing-adrs` skill in `.claude/skills/`). Humans accept or reject the proposal in review.
 
 ## Consequences
 

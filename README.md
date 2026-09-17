@@ -83,9 +83,10 @@ Every ticket goes through the same loop:
 5. **Pull request** from a git worktree. Nothing is committed to `main`.
 6. **ADR**: the agent proposes adding or updating one; the reviewer decides.
 
-The agent instructions are in [`AGENTS.md`](AGENTS.md); `CLAUDE.md` and `GEMINI.md` point to it.
-The skills that drive the loop are [Superpowers](https://github.com/obra/superpowers), vendored in
-`skills/` so they work with any agent and without installing anything.
+The agent instructions are in [`CLAUDE.md`](CLAUDE.md). The skills that drive the loop are
+[Superpowers](https://github.com/obra/superpowers), vendored in `.claude/skills/`: Claude Code
+loads them automatically, with nothing to install. This repository targets Claude Code only
+(ADR 0011).
 
 ## Deployment
 

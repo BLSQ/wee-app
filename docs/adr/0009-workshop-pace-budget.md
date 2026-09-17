@@ -14,7 +14,7 @@ came to see.
 
 ## Decision
 
-`AGENTS.md` carries a `## Pace` section that shortens every step without skipping any: clarifying
+`CLAUDE.md` carries a `## Pace` section that shortens every step without skipping any: clarifying
 questions in one batch of at most three, a half-page spec, a one-page plan, no subagent-driven
 development, one round of review.
 

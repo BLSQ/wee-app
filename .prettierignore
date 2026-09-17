@@ -2,6 +2,6 @@
 dist
 pnpm-lock.yaml
 data/*.json
-skills
+.claude/skills
 docs/superpowers
 src/routeTree.gen.ts
