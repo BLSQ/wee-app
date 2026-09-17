@@ -9,42 +9,32 @@ with coding agents. Much of what a production application needs is deliberately 
 
 ## Setup
 
-Requirements: Node 22 and pnpm 10.
+Requirements: Node 22, pnpm 10, and Docker running.
 
 ```bash
-pnpm install
-cp .env.example .env
+pnpm install        # also creates .env from .env.example
+docker compose up -d
+pnpm db:reset
+pnpm dev            # http://localhost:3000
 ```
 
-## Database
-
-The application needs two Postgres databases: one for the app, one that the tests read from.
-[Neon](https://neon.tech) is what we deploy on (ADR 0004), but any Postgres 14 or later works
-locally.
-
-1. Create a Neon project. Copy its connection string into `DATABASE_URL` in `.env`.
-2. Create a second branch, for example `test`. Copy its connection string into `TEST_DATABASE_URL`.
-3. Migrate and seed both:
-
-```bash
-pnpm db:migrate
-pnpm db:seed
-
-TARGET_DATABASE_URL="$TEST_DATABASE_URL" pnpm db:migrate
-TARGET_DATABASE_URL="$TEST_DATABASE_URL" pnpm db:seed
-```
-
-(`$TEST_DATABASE_URL` must be set in your shell for that form; otherwise paste the URL.)
+`pnpm db:reset` migrates **and** seeds both databases: `wee_app` for the application and
+`wee_app_test` for the tests. Both live in the container defined by `compose.yaml`, on port 55432
+so it cannot collide with a Postgres already installed on your machine (ADR 0013).
 
 The seed is synthetic sync activity over real Sierra Leone geography, anonymised (ADR 0006). It is
-generated relative to the current date, so **re-seed before a demo** to keep "ten days behind"
-meaning ten days.
+generated relative to the current date, so re-run `pnpm db:reset` to make "ten days behind" mean
+ten days again.
+
+If you would rather not use Docker, any Postgres 14 or later works: create two databases and point
+`DATABASE_URL` and `TEST_DATABASE_URL` at them in `.env`.
 
 ## Running
 
 ```bash
 pnpm dev                 # http://localhost:3000
 pnpm test                # Vitest, against TEST_DATABASE_URL
+pnpm db:reset            # migrate and seed both databases again
 pnpm exec tsc --noEmit   # type-check
 pnpm format              # Prettier
 ```
@@ -90,11 +80,21 @@ loads them automatically, with nothing to install. This repository targets Claud
 
 ## Deployment
 
-1. Import the repository in Vercel. The build command is `pnpm build`; Nitro produces Vercel's
-   output format automatically.
-2. Set `DATABASE_URL` in the Vercel project to the Neon connection string.
-3. Run migrations yourself (`pnpm db:migrate`) before deploying a change that needs them. The build
-   never migrates.
+Vercel, with Neon as the database.
+
+1. Import the repository in Vercel.
+2. Install Neon's **Preview Branching** integration on the project. Each preview deployment then
+   gets its own database branch, with its `DATABASE_URL` injected into that deployment.
+3. The build command is `pnpm db:migrate && pnpm build`, so **every deployment migrates the
+   database it is about to serve** — its own branch for a preview, the production branch for
+   `main`. A failing migration fails the build (ADR 0012).
+4. Seed production once, by hand:
+
+```bash
+TARGET_DATABASE_URL="<production connection string>" pnpm db:seed
+```
+
+Previews need no seeding: a Neon branch is a copy of its parent's data.
 
 Do not deploy with real data: there is no authentication yet (ADR 0008).
 

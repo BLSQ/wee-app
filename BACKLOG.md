@@ -182,20 +182,19 @@ Conventions exist only in `CLAUDE.md`. Nothing stops a feature from reaching int
 
 ---
 
-## 10. Reproducible development environment
+## 10. Pin the toolchain
 
-**Size:** M · **Type:** cross-cutting
+**Size:** S · **Type:** cross-cutting
 
-There is no guarantee that two developers, or a developer and an agent, run the same Node, pnpm and
-Postgres versions.
+Nothing stops two developers, or a developer and an agent, from running different Node or pnpm
+versions. The database is no longer a variable (ADR 0013); the toolchain still is.
 
 **Acceptance criteria**
 
-- [ ] Node and pnpm versions are pinned and enforced, not only documented.
-- [ ] A developer can get a local Postgres without a Neon account.
-- [ ] A new developer goes from clone to passing tests with a documented, short sequence of
-      commands.
-- [ ] What an agent needs to run the project is documented in `CLAUDE.md`.
+- [ ] The Node and pnpm versions are declared and enforced, so a wrong version fails loudly rather
+      than producing a confusing error later.
+- [ ] A failed database connection explains that `docker compose up -d` may not be running.
+- [ ] `CLAUDE.md` states what an agent needs to run the project.
 
 **Touches shared files:** `package.json`, root configuration, `README.md`, `CLAUDE.md`.
 
