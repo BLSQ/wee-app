@@ -34,7 +34,7 @@
 | `scripts/migrate.ts`, `scripts/seed.ts` | Thin CLI callers, keeping `TARGET_DATABASE_URL` |
 | `scripts/db-reset.ts` | Migrates then seeds `DATABASE_URL`, then `TEST_DATABASE_URL` |
 | `vercel.json` | Build command that migrates before building |
-| `.env.example`, `README.md`, `CLAUDE.md`, `BACKLOG.md` | Documentation and defaults |
+| `.env.example`, `README.md`, `CLAUDE.md`, issue #12 | Documentation and defaults |
 | `docs/adr/0012`, `docs/adr/0013` | The two decisions |
 
 ---
@@ -433,7 +433,7 @@ git commit -m "Add pnpm db:reset, migrating and seeding both databases"
 
 **Files:**
 
-- Modify: `vercel.json`, `README.md`, `CLAUDE.md`, `BACKLOG.md`
+- Modify: `vercel.json`, `README.md`, `CLAUDE.md`, and issue #12 on GitHub
 - Create: `docs/adr/0012-migrate-during-the-deploy-build.md`, `docs/adr/0013-local-postgres-in-docker.md`
 
 **Interfaces:**
@@ -522,12 +522,12 @@ Add `pnpm db:reset` to the Commands line, and add one rule under `## Rules`:
   `pnpm install` writes `.env` itself; never hand-edit it to point at a deployed database.
 ```
 
-- [ ] **Step 7: Rewrite backlog ticket 10**
+- [ ] **Step 7: Rewrite issue #12**
 
-Replace ticket 10 with a version that no longer covers the database, sized **S**:
+Replace the issue with a version that no longer covers the database, sized **S**:
 
 ```md
-## 10. Pin the toolchain
+## Pin the toolchain
 
 **Size:** S · **Type:** cross-cutting
 
@@ -557,7 +557,7 @@ Expected: `db:reset` appears in all three, no manual copy instruction survives, 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add vercel.json README.md CLAUDE.md BACKLOG.md docs/adr
+git add vercel.json README.md CLAUDE.md docs/adr
 git commit -m "Migrate during the deploy build and document both environments"
 ```
 

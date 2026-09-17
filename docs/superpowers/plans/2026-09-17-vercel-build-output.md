@@ -15,7 +15,7 @@
 - Everything in this repository is in English.
 - The script takes no dependency: it runs after the build, on Vercel, with nothing installed beyond what `pnpm install` already gave us.
 - `pnpm dev` must not change.
-- No linter, no e2e framework, no CI. Still backlog tickets.
+- No linter, no e2e framework, no CI. Still open issues.
 - The existing suite must stay green: 33 tests across 8 files.
 
 ---
@@ -234,7 +234,7 @@ loop is at fault: buffer with `Buffer.from(await response.arrayBuffer())` and wr
 
 **Files:**
 - Create: `docs/adr/0014-vercel-build-output-adapter.md`
-- Modify: `README.md`, `BACKLOG.md`
+- Modify: `README.md`
 
 - [ ] **Step 1: Write ADR 0014**
 
@@ -258,9 +258,9 @@ Replace the "Serving the application" paragraph: the build command now ends with
 configuration. Keep the Neon integration, the migrate-on-build sentence and the one-off production
 seed.
 
-- [ ] **Step 3: Remove ticket 12 from `BACKLOG.md`**
+- [ ] **Step 3: Close issue #14**
 
-It is done. Leave tickets 1 to 11 untouched.
+The pull request body closes it on merge.
 
 - [ ] **Step 4: Verify the whole repository**
 
@@ -275,7 +275,7 @@ Expected: 37 tests across 9 files, no type errors, formatting clean.
 - [ ] **Step 5: Commit, push, open the pull request**
 
 ```bash
-git add docs README.md BACKLOG.md
+git add docs README.md
 git commit -m "Record the Vercel build output adapter"
 git push -u origin feat/vercel-build-output
 gh pr create --fill

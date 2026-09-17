@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-17
 **Status:** Approved
-**Closes:** backlog ticket 12
+**Closes:** issue #14
 
 ## Purpose
 
@@ -52,7 +52,7 @@ export default async function (req, res) {
 - [ ] The emitted function, run under plain Node, serves `/syncs` and `/api/trpc` locally.
 - [ ] A deployed production URL serves `/syncs` with real data.
 - [ ] `pnpm dev` is untouched.
-- [ ] ADR 0014 records the decision; ticket 12 is removed from `BACKLOG.md`.
+- [ ] ADR 0014 records the decision, and issue #14 is closed.
 
 ## Testing
 

@@ -107,4 +107,4 @@ Do not deploy with real data: there is no authentication yet (ADR 0008).
 No authentication, no end-to-end tests, no continuous integration, no linter, no enforced module
 boundaries, no reproducible development environment, and very little documentation.
 
-These are not oversights. They are the workshop: see [`BACKLOG.md`](BACKLOG.md).
+These are not oversights. They are the workshop: see the [issues](https://github.com/BLSQ/wee-app/issues).

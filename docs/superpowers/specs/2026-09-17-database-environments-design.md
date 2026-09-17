@@ -88,7 +88,7 @@ uses no Neon-specific feature, so a plain Postgres container is faithful enough.
 | `vercel.json` | `buildCommand: "pnpm db:migrate && pnpm build"`. |
 | `README.md` | Setup rewritten around Docker; deployment section covers the integration. |
 | `CLAUDE.md` | Commands list gains `pnpm db:reset`. |
-| `BACKLOG.md` | Ticket 10 rewritten (below). |
+| Issue #12 | Rewritten (below). |
 | `docs/adr/0012`, `docs/adr/0013` | Migrations at deploy; local Postgres in Docker. |
 
 The extraction of `migrate(url)` and `seed(url)` exists so that `db:reset` can run both against two
@@ -102,7 +102,7 @@ rather than at whatever each developer had running.
 `pnpm db:reset` is verified by running it against the container and then running the suite, which
 already asserts the seeded contents (1332 org units, 200 devices, districts behind).
 
-No test covers the Vercel build command; ticket 8 (CI) and ticket 7 (smoke test) are where that
+No test covers the Vercel build command; issue #10 (CI) and issue #9 (smoke test) are where that
 belongs.
 
 ## Risks
@@ -118,11 +118,11 @@ belongs.
 
 ## Out of scope
 
-Continuous integration (ticket 8), end-to-end tests (ticket 7), and Neon Local as a documented
+Continuous integration (issue #10), end-to-end tests (issue #9), and Neon Local as a documented
 alternative. Backfilling a rollback story for migrations: `down` exists, nothing calls it.
 
 ## Backlog impact
 
-Ticket 10, "Reproducible development environment", loses its database half. It is rewritten around
+Issue #12, "Reproducible development environment", loses its database half. It is rewritten around
 what remains: pinning and enforcing Node and pnpm versions, and documenting what an agent needs.
 It drops from M to S.

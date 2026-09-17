@@ -77,7 +77,7 @@ Stop it with `pg_ctl -D "$PGDATA" stop`. This cluster is a local convenience onl
 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.claude/settings.json` | Agent configuration |
 | `skills/` | Vendored Superpowers 6.3.0 + project skills |
 | `docs/adr/0001…0009` | Initial ADRs |
-| `README.md`, `BACKLOG.md`, `.env.example`, `vercel.json` | Docs and deployment |
+| `README.md`, `.env.example`, `vercel.json` | Docs and deployment |
 
 ---
 
@@ -1952,7 +1952,7 @@ Each is under a page, dated `2026-09-13`, status `Accepted`, with Context / Deci
 | `0005-explicit-feature-registry.md` | `src/features/index.ts` lists slices explicitly. Globbing would remove the merge conflict, but composing a tRPC router from an array erases end-to-end inference. The conflict is one line and is worth discussing. |
 | `0006-synthetic-seed-without-pii.md` | Real Sierra Leone geography from an IASO dump; device and sync data generated with a fixed-seed PRNG. Users keep their id and nothing else. Consequence: determinism is load-bearing — the tests depend on it. |
 | `0007-geojson-in-jsonb.md` | Geometry is GeoJSON in `jsonb`, not PostGIS. MapLibre consumes it directly and Neon needs no extension. Consequence: no spatial queries. Revisit if a ticket needs `ST_Contains`. |
-| `0008-no-authentication-yet.md` | Deliberately deferred, dated, and pointing at backlog ticket 6 (better-auth for Bluesquare accounts). Consequence: the app must not be deployed with real data until this is closed. |
+| `0008-no-authentication-yet.md` | Deliberately deferred, dated, and pointing at issue #8 (better-auth for Bluesquare accounts). Consequence: the app must not be deployed with real data until this is closed. |
 | `0009-workshop-pace-budget.md` | `AGENTS.md` carries a `## Pace` section capping questions, artefact length and review rounds. **It must never make a step optional** — the brainstorm, the failing test and the ADR proposal always happen. Temporary: delete the section when the repository outlives the workshop. |
 
 Worked example — `docs/adr/0005-explicit-feature-registry.md`, written in full so
@@ -2019,7 +2019,7 @@ git commit -m "Record the initial architecture decisions"
 ### Task 11: README, backlog and deployment configuration
 
 **Files:**
-- Create: `README.md`, `BACKLOG.md`, `vercel.json`
+- Create: `README.md`, `vercel.json`, and the backlog as GitHub issues
 - Modify: `.gitignore`
 
 **Interfaces:**
@@ -2037,11 +2037,11 @@ Sections, in this order:
 5. **How the code is organised** — the feature slice anatomy, and the rule that `src/features/index.ts` is the only shared file. Point at `src/features/device-syncs/` as the pattern to copy.
 6. **How we work** — brainstorm, spec, plan, failing test, implementation, worktree, pull request, ADR. Point at `AGENTS.md` and `skills/`.
 7. **Deployment** — connect the repository to Vercel, set `DATABASE_URL`, and note that migrations are run by hand, never in the build.
-8. **What is deliberately missing** — link to `BACKLOG.md` and say plainly that the gaps are the workshop.
+8. **What is deliberately missing** — link to the GitHub issues and say plainly that the gaps are the workshop.
 
-- [ ] **Step 2: Write `BACKLOG.md`**
+- [ ] **Step 2: Write the backlog as GitHub issues**
 
-Eleven tickets. Each has: a title, two or three sentences of context, acceptance criteria as a checklist, a size (S/M/L), and a "touches shared files" note where true, so a pair can see a collision coming.
+Eleven issues. Each has: a clear title, two or three sentences of context, a plain list of what is expected, a size label (S/M/L), and a note on the shared files it touches where true, so a pair can see a collision coming.
 
 | # | Title | Size | Notes it must carry |
 | --- | --- | --- | --- |
@@ -2051,13 +2051,13 @@ Eleven tickets. Each has: a title, two or three sentences of context, acceptance
 | 4 | Device detail page with sync history | S | Vertical slice. Route `/devices/$deviceId`, needs a link from the syncs table. |
 | 5 | Per-user activity view | M | Vertical slice. Submissions and syncs per user over a period, sortable. |
 | 6 | Authentication for Bluesquare accounts | L | Cross-cutting. better-auth with OAuth. **Revisits ADR 0008 and the read-only assumption in the spec's testing strategy** — auth introduces writes. |
-| 7 | End-to-end smoke test, locally and in CI | M | Cross-cutting. Touches `package.json` and adds a workflow. Depends on ticket 8 existing or creating it. |
+| 7 | End-to-end smoke test, locally and in CI | M | Cross-cutting. Touches `package.json` and adds a workflow. Depends on the CI issue (row 8) existing or creating it. |
 | 8 | Continuous integration: typecheck and vitest on pull requests | S | Cross-cutting. Needs a `TEST_DATABASE_URL` secret pointing at a Neon branch. |
 | 9 | Linting, dead code detection and module boundary rules | M | Cross-cutting. The boundary rule to enforce: nothing outside `src/features/<name>/` may import from inside another feature. |
 | 10 | Reproducible development environment for humans and agents | M | Cross-cutting. Node and pnpm versions pinned and enforced; document what an agent needs. |
 | 11 | There is no documentation | M | Cross-cutting. Decide what deserves documenting and what the ADRs already cover. |
 
-Add a short header explaining that tickets 1 to 5 are conflict-free vertical slices, that 6 to 11 contend for root configuration, and that the Kanban WIP limit is how that is managed.
+Label rows 1 to 5 `feature` (conflict-free vertical slices) and rows 6 to 11 `cross-cutting` (they contend for root configuration); the Kanban WIP limit is how that is managed.
 
 - [ ] **Step 3: Write `vercel.json`**
 
