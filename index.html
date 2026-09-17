@@ -503,7 +503,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
       <div class="row">Pull request</div><div>Your branch</div><div>Vercel preview URL</div><div>Neon branch, forked from production</div>
       <div class="row">main</div><div>Merged pull requests</div><div>Vercel production</div><div>Neon production</div>
     </div></div>
-<ul><li>Migrations run in the Vercel build</li><li><code>pnpm install</code> writes your <code>.env</code></li><li><code>pnpm test</code> uses none of these: each test file gets its own empty Postgres, in memory</li></ul>
+<ul><li>Migrations run in the Vercel build</li><li><code>pnpm test</code> uses none of these: each test file gets its own empty Postgres, in memory</li></ul>
   </div>
   <aside class="notes">Local Postgres listens on port 55432; pnpm db:reset migrates and seeds it. Tests never touch it, so a test can insert, update and delete without affecting the app or another pair. The Neon branch is forked once, when the preview for that git branch is first created. Never point .env at a deployed database.</aside>
 </section>
@@ -766,7 +766,7 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
     </div>
     <p><strong>In this repo:</strong> the deployed app fails with <code>relation "device_sync" does not exist</code></p>
     <div class="anatomy" style="grid-template-columns:minmax(0,.3fr) minmax(0,1fr)">
-      <div class="c">1 · Root cause</div><div class="e">The deployment is fine. <code>pnpm db:migrate</code> reads <code>.env</code>, which pointed at a local database</div>
+      <div class="c">1 · Root cause</div><div class="e">The deployment is fine. The migration command had run against a developer's local database</div>
       <div class="c">2 · Pattern</div><div class="e">Locally the tables exist; in production they do not</div>
       <div class="c">3 · Hypothesis</div><div class="e">Production was never migrated</div>
       <div class="c">4 · Fix</div><div class="e">Migrate during the deploy build; a failing migration now fails the build</div>
