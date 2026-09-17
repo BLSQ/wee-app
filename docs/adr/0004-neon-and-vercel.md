@@ -26,6 +26,12 @@ months apart behave identically, with the plugin order Vercel documents, with em
 single dev server, and under two Node versions. A local dev server that cannot serve a page is
 disqualifying for a repository whose purpose is test-driven development.
 
+Neon's Free plan allows ten branches per project. Neon drops a preview branch when the last Vercel
+deployment of its git branch is deleted, and Vercel keeps previews for months. A GitHub workflow
+therefore deletes the preview deployments of a pull request when it closes. It goes through Vercel
+rather than Neon because it then needs a single secret, `VERCEL_TOKEN`, and no access to the Neon
+console.
+
 `@tanstack/react-start` does not depend on Nitro — it is a hosting adapter, nothing more — so
 leaving it out costs nothing at development time.
 
