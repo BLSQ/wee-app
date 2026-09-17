@@ -188,7 +188,6 @@ Determinism is not a convenience — it is what makes the testing strategy in
 wee-app/
 ├── CLAUDE.md                 agent instructions, the single source of truth
 ├── README.md
-├── BACKLOG.md
 ├── .claude/settings.json     commit attribution
 ├── .claude/skills/           vendored Superpowers + project skills
 ├── docs/adr/
@@ -312,12 +311,12 @@ The repository commits configuration and a README procedure. It provisions
 nothing: creating the Neon project, connecting Vercel, and setting secrets are
 manual steps performed by the repository owner.
 
-How the server build is actually served is an open question, tracked as backlog
-ticket 12. Nitro, the adapter both TanStack and Vercel document, is ruled out:
+How the server build is actually served is an open question, tracked as issue
+#14. Nitro, the adapter both TanStack and Vercel document, is ruled out:
 its dev server never works (ADR 0004). The database half is settled — every
 deployment migrates the database it serves (ADR 0012).
 
-There is no CI workflow in the starter. Setting one up is ticket 8.
+There is no CI workflow in the starter. Setting one up is issue #10.
 
 ## 6. Agent configuration
 
@@ -377,7 +376,7 @@ implementation, pull request, ADR proposal — under this budget:
 - Reach for the visual companion instead of describing a layout or a map in
   prose. It is faster, not slower, for anything spatial.
 
-Backlog tickets carry their own context and acceptance criteria (§8) so that
+Backlog issues carry their own context and expectations (§8) so that
 brainstorming starts from a real brief and converges quickly, without the
 brainstorm becoming a formality.
 
@@ -394,7 +393,7 @@ is committed to `main` directly. Superpowers' `using-git-worktrees` and
 the rule.
 
 Tasks are tracked as GitHub issues on a GitHub Project board, managed as a
-Kanban. `BACKLOG.md` holds the ticket text until the repository is pushed.
+Kanban.
 
 ## 7. Initial ADRs
 
@@ -416,29 +415,30 @@ ADR 0004 records why deployment as an OpenHEXA web app was set aside: the
 per-pull-request preview environment was the deciding criterion.
 
 ADR 0008 exists so that the deferral is visible and dated rather than looking
-like neglect — it is ticket 6.
+like neglect — it is issue #8.
 
 ## 8. Backlog
 
-`BACKLOG.md` holds eleven tickets, each with context and acceptance criteria,
-written to be pasted into a GitHub issue unchanged.
+The backlog is a set of GitHub issues, each with context and what is expected,
+labelled by type (`feature` or `cross-cutting`) and size.
 
-| # | Ticket | Size |
+| Issue | Title | Size |
 | --- | --- | --- |
-| 1 | Stale devices view with an adjustable threshold | S |
-| 2 | District coverage map (MapLibre) | M |
-| 3 | Thirty-day sync trend chart (Mantine Charts) | S |
-| 4 | Device detail page with sync history | S |
-| 5 | Per-user activity view | M |
-| 6 | Authentication with better-auth for Bluesquare accounts | L |
-| 7 | End-to-end smoke test, locally and in CI | M |
-| 8 | Continuous integration: typecheck and vitest on pull requests | S |
-| 9 | Linting, dead code detection, module boundary rules | M |
-| 10 | Reproducible development environment for humans and agents | M |
-| 11 | There is no documentation | M |
+| #2 | List devices that have stopped syncing | S |
+| #3 | Show sync health per district on a map (MapLibre) | M |
+| #5 | Chart syncs per day over the last 30 days (Mantine Charts) | S |
+| #6 | Add a device detail page with its sync history | S |
+| #7 | Show sync activity per user | M |
+| #8 | Require sign-in with a Bluesquare account (better-auth) | L |
+| #9 | Add an end-to-end smoke test, locally and in CI | M |
+| #10 | Run type-check and tests on every pull request | S |
+| #11 | Add linting, dead-code detection and module boundary rules | M |
+| #12 | Pin the Node and pnpm versions | S |
+| #13 | Decide what documentation we need, and write it | M |
+| #14 | Settle how the application is served in production | M |
 
-Tickets 1 to 5 are vertical slices and are conflict-free by construction.
-Tickets 6 to 11 are cross-cutting and will contend for root configuration,
+The `feature` issues are vertical slices and are conflict-free by construction.
+The `cross-cutting` issues will contend for root configuration,
 `package.json` and CI files. The Kanban work-in-progress limit is the intended
 mitigation, and the contention is itself worth discussing during the session.
 
@@ -449,12 +449,12 @@ mitigation, and the contention is itself worth discussing during the session.
 | Committed GeoJSON is larger than expected | Measure during implementation; simplify polygons further, or drop facility-level geometry, if `data/org-units.json` exceeds a few megabytes |
 | Neon setup consumes workshop time | README gives an exact procedure; the seed is a single command; the repository owner validates the path end to end beforehand |
 | Cross-cutting tickets collide | Kanban WIP limit; the collision is surfaced as a discussion topic rather than hidden |
-| Two to three hours is short for a full brainstorm-to-merge cycle | The pace budget in §6.3 caps clarifying questions, spec writing and review rounds; tickets 1, 3, 4 and 8 are sized S specifically so at least one pair completes the loop early and can demonstrate it |
+| Two to three hours is short for a full brainstorm-to-merge cycle | The pace budget in §6.3 caps clarifying questions, spec writing and review rounds; issues #2, #5, #6 and #10 are sized S specifically so at least one pair completes the loop early and can demonstrate it |
 | The pace budget is read as permission to skip the method, so participants never see what Superpowers is for | The budget shortens artefacts and round trips; it never makes a step optional. ADR 0009 states this as the constraint the budget must not trade away |
 | A pair invents its own conventions | The `device-syncs` slice is complete and tested; `CLAUDE.md` names it as the pattern |
 
 ## 10. Open questions
 
 None. Items previously undecided — repository name (`wee-app`), CI in the
-starter (no), backlog format (a single `BACKLOG.md`), and pagination in the
+starter (no), backlog format (GitHub issues), and pagination in the
 example slice (none) — are settled above.

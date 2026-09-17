@@ -23,7 +23,7 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
 - Code that runs in the browser never imports from `src/server/`, except `import type`.
 - Database access goes in `api/queries.ts` as plain functions taking `db`. That is what you test.
 - Tests are Vitest against a migrated and seeded database (`TEST_DATABASE_URL`). No mocks.
-- No linter, e2e framework, auth or CI yet. They are tickets in `BACKLOG.md`, not gaps to fill
+- No linter, e2e framework, auth or CI yet. They are GitHub issues, not gaps to fill
   in passing.
 
 ## Pace

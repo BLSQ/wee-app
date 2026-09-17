@@ -94,10 +94,11 @@ TARGET_DATABASE_URL="<production connection string>" pnpm db:seed
 
 Previews need no seeding: a Neon branch is a copy of its parent's data.
 
-**Serving the application.** This is an open question — backlog ticket 12. `pnpm build` emits
-`dist/client` and `dist/server/server.js`, and that file exports a fetch handler rather than
-starting a server, so it needs a host or a small entry point of its own. We do not use Nitro, the
-usual adapter, because its dev server is unusable (ADR 0004).
+**Serving the application.** The build command ends with `node scripts/build-vercel.mjs`, which
+turns `dist/` into `.vercel/output` — Vercel's Build Output API format. Vercel detects that
+directory on its own, so there is no framework preset and no output directory to configure. The
+static files come from `dist/client`; everything else is served by one function wrapping the
+handler the server build exports (ADR 0014).
 
 Do not deploy with real data: there is no authentication yet (ADR 0008).
 
@@ -106,4 +107,4 @@ Do not deploy with real data: there is no authentication yet (ADR 0008).
 No authentication, no end-to-end tests, no continuous integration, no linter, no enforced module
 boundaries, no reproducible development environment, and very little documentation.
 
-These are not oversights. They are the workshop: see [`BACKLOG.md`](BACKLOG.md).
+These are not oversights. They are the workshop: see the [issues](https://github.com/BLSQ/wee-app/issues).
