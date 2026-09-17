@@ -95,6 +95,16 @@ td.num{font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace;
 .node{flex:1 1 170px; background:var(--surface); padding:.8em .9em; border-top:3px solid var(--accent); display:flex; flex-direction:column; gap:.35em; font-size:.82em}
 .node b{font-family:"Bricolage Grotesque",sans-serif; font-size:1.2em}
 .node.g{border-color:var(--green)} .node.r{border-color:var(--red)} .node.a{border-color:var(--amber)}
+.zones{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.34fr) minmax(0,1fr) minmax(0,.16fr) minmax(0,.8fr); gap:10px; align-items:stretch}
+.zone{display:flex; flex-direction:column; gap:6px; padding:.7em; border-radius:6px; background:var(--accent-soft)}
+.zone.g{background:var(--green-soft)} .zone.a{background:var(--amber-soft)}
+.zone .zl{font-family:"IBM Plex Mono",monospace; font-size:.68em; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+.zone.g .zl{color:var(--green)} .zone.a .zl{color:var(--amber)}
+.zone .node{flex:0 0 auto}
+.zone .down{align-self:center; font-family:"IBM Plex Mono",monospace; font-size:.72em; color:var(--muted)}
+.wire{display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:.25em; font-size:.74em; color:var(--muted)}
+.wire b{font-family:"IBM Plex Mono",monospace; font-weight:500; color:var(--ink)} .wire i{font-style:normal; font-size:1.7em; line-height:1}
+@media (max-width:640px){.zones{grid-template-columns:1fr} .wire i{transform:rotate(90deg)}}
 .arrow{align-self:center; color:var(--muted); font-family:"IBM Plex Mono",monospace}
 .anatomy{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:3px; font-size:.78em}
 .anatomy > div{padding:.55em .8em; background:var(--surface)}
@@ -441,22 +451,29 @@ No extension needed. No spatial queries in SQL. Revisit if a ticket needs one.</
   <div class="body">
     <p class="eyebrow">Part 2 · Wee-App</p>
     <h2>Front end and back end</h2>
-    <div class="flow">
-      <div class="node"><b>Component</b><span class="mono">ui/SyncTable.tsx</span><span>Shows the rows it receives; like a template</span></div>
-      <span class="arrow">←</span>
-      <div class="node"><b>Page</b><span class="mono">ui/SyncsPage.tsx</span><span>Asks for the data, passes it to components</span></div>
-      <span class="arrow">→</span>
-      <div class="node"><b>tRPC</b><span class="mono">/api/trpc</span><span>Carries the call to the server. No URL or serializer to write</span></div>
-      <span class="arrow">→</span>
-      <div class="node"><b>Procedure</b><span class="mono">api/router.ts</span><span>Checks the input, calls the query; like a DRF view</span></div>
-      <span class="arrow">→</span>
-      <div class="node"><b>Query</b><span class="mono">api/queries.ts</span><span>SQL written with Kysely; like a queryset</span></div>
-      <span class="arrow">→</span>
-      <div class="node"><b>Postgres</b><span>Docker locally, Neon when deployed</span></div>
+    <div class="zones" aria-label="A request, from the browser to the database">
+      <div class="zone">
+        <span class="zl">Browser</span>
+        <div class="node"><b>Page</b><span class="mono">ui/SyncsPage.tsx</span><span>Asks for the data, passes it to components</span></div>
+        <span class="down">↓ rows, as props</span>
+        <div class="node"><b>Component</b><span class="mono">ui/SyncTable.tsx</span><span>Shows the rows it receives; like a template</span></div>
+      </div>
+      <div class="wire"><b>tRPC</b><i>→</i><span>A typed call over HTTP. No URL or serializer to write</span></div>
+      <div class="zone g">
+        <span class="zl">Server · Node.js</span>
+        <div class="node g"><b>Procedure</b><span class="mono">api/router.ts</span><span>Checks the input, calls the query; like a DRF view</span></div>
+        <span class="down">↓</span>
+        <div class="node g"><b>Query</b><span class="mono">api/queries.ts</span><span>SQL written with Kysely; like a queryset</span></div>
+      </div>
+      <div class="wire"><b>SQL</b><i>→</i></div>
+      <div class="zone a">
+        <span class="zl">Database</span>
+        <div class="node a"><b>Postgres</b><span>Docker locally, Neon when deployed</span></div>
+      </div>
     </div>
 <ul><li>A single TypeScript repo, so the front end reuses the back end's types</li><li>A feature = <code>ui/</code> + <code>api/</code> in one folder</li></ul>
   </div>
-  <aside class="notes">Read it from the page: the page asks for data, the call goes right to the database, the rows come back and the page hands them to the component on its left. If there is time, open src/features/device-syncs/ and show the files: they are short. A new feature usually means the same files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
+  <aside class="notes">Three places where code runs: the browser, the Node.js server, and the database. The page asks for data; tRPC carries the call to the server, where a procedure checks the input and calls a query; the query sends SQL to Postgres. The rows come back the same way, and the page hands them to the component. If there is time, open src/features/device-syncs/ and show the files: they are short. A new feature usually means the same files in a new folder, plus one line in each registry. ui/ only imports types from the server side.</aside>
 </section>
 
 <section class="slide" data-part="wee-app" data-title="what gets a test">
