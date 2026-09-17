@@ -13,11 +13,11 @@ feature being built in parallel during the workshop.
 
 The starter has no authentication. Every tRPC procedure is public.
 
-This is a deferral, not a decision against authentication. The work is backlog ticket 6.
+This is a deferral, not a decision against authentication. The work is issue #8.
 
 ## Consequences
 
-The application must not be deployed with real data until ticket 6 is done.
+The application must not be deployed with real data until issue #8 is done.
 
 Adding authentication introduces writes (users, sessions), which invalidates the read-only
-assumption behind the testing strategy in ADR 0006. Ticket 6 must address both.
+assumption behind the testing strategy in ADR 0006. Issue #8 must address both.
