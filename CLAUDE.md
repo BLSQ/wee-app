@@ -28,10 +28,17 @@ IASO device-sync dashboard. TanStack Start, Mantine, tRPC and Kysely on Postgres
   (server) and `src/features/nav.ts` (client), nowhere else. `src/features/device-syncs/` is the
   pattern to copy.
 - Code that runs in the browser never imports from `src/server/`, except `import type`.
-- Database access goes in `api/queries.ts` as plain functions taking `db`. That is what you test.
+- Database access goes in `api/queries.ts` as plain functions taking `db`. Test these first.
 - Tests are Vitest on an in-process Postgres: `createTestDb()` from `src/server/db/test-helpers.ts`
   gives each test file an empty, migrated database, and each test inserts the rows it needs with
   the helpers there. No Docker, no seed, and no mock of `db`.
+- A component that takes props has a `*.test.tsx` next to it, which runs in jsdom. Render it with
+  `renderWithProviders` from `src/ui/test-helpers.tsx`, find elements by role and text, and click
+  with `userEvent`. `SyncTable.test.tsx` is the pattern to copy. No snapshots, no assertions on CSS
+  classes, no `renderToStaticMarkup`.
+- A page fetches with tRPC and passes the data to components as props. It has no component test,
+  and tRPC is never mocked. A MapLibre map needs WebGL, which jsdom lacks: test the data the map
+  receives, not the map.
 - No linter, e2e framework, auth or CI yet. They are GitHub issues, not gaps to fill
   in passing.
 

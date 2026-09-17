@@ -29,6 +29,14 @@ may write. Mocking `db` was set aside: the logic of a query is its SQL, and a mo
 PGlite is not the Postgres 17 that Neon runs, and it holds a single connection. A feature PGlite
 lacks would show in the preview deployment and not in the tests.
 
+Components are tested from the other side of the wire. A page fetches with tRPC and passes the data
+to components as props, so a component test needs neither the network nor a mock of tRPC: it renders
+the component with props in jsdom, through Testing Library, and reads the document by role and text.
+`vitest.config.ts` picks the environment from the file extension: `*.test.ts` runs in Node and
+`*.test.tsx` in jsdom. A per-file environment comment was set aside because it is easy to forget,
+and Vitest's browser mode because it downloads browsers and overlaps issue #9. jsdom computes no
+layout and no CSS: how a page looks is checked in the preview deployment.
+
 There are no models, relations or lazy loading. Writing a join is the developer's job.
 
 Hand-written types can drift from the migrations. We accept that: codegen would need a reachable
