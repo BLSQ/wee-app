@@ -54,8 +54,8 @@ line in each of `router.ts` and `nav.ts`. Browser code never imports server code
 
 1. Pick an issue on the [board](https://github.com/orgs/BLSQ/projects/12).
 2. In Claude Code, run `/brainstorming <issue URL>`. The agent creates a git worktree, reads
-   `docs/adr/` and asks a few questions.
-3. It writes a half-page spec, then a one-page plan, in `docs/superpowers/`.
+   `docs/adr/`, asks one or two rounds of questions and proposes approaches.
+3. It writes a one-page spec, then a one-page plan, in `docs/superpowers/`.
 4. It implements test first and opens a pull request. Nothing is committed to `main`.
 5. Someone else reviews. If there are conflicts, ask the agent to merge `main` and resolve them.
 6. The agent proposes an ADR when a decision is worth recording. Past decisions are in `docs/adr/`.
