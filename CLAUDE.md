@@ -60,5 +60,5 @@ short.
 
 ## Commands
 
-`pnpm dev` · `pnpm test` · `pnpm exec tsc --noEmit` · `pnpm db:reset` · `pnpm db:migrate` ·
-`pnpm db:seed` · `pnpm format`
+`pnpm dev` · `pnpm test` · `pnpm lint` · `pnpm knip` · `pnpm exec tsc --noEmit` · `pnpm db:reset` ·
+`pnpm db:migrate` · `pnpm db:seed` · `pnpm format`
