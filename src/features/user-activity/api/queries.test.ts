@@ -95,8 +95,8 @@ describe('listUserActivity', () => {
   })
 
   it('returns the counts as numbers', async () => {
-    // pg hands bigint back as a string, so count() needs a cast. Without it the
-    // table would sort "9" above "10".
+    // States the contract; it does not guard it. pg returns an uncast count() as a
+    // string, PGlite as a number, so this passes here either way. See docs/adr/0015.
     await insertSync(db, { user: await insertUser(db), syncedAt: since })
 
     const [row] = await listUserActivity(db, { since })
