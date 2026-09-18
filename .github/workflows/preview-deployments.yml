@@ -1,0 +1,69 @@
+# Neon's Free plan allows 10 database branches per project, and the Vercel integration creates one
+# per pull request. Neon drops a branch as soon as the last Vercel deployment of that git branch is
+# deleted, but Vercel keeps previews for months, so without this the eleventh pull request fails
+# with "Resource provisioning failed".
+#
+# Vercel deploys on push, not when a pull request opens. So a branch whose pull request was closed
+# and then opened again (pull requests #34 and #35) had no preview left. The second job puts one
+# back.
+name: Preview deployments
+
+on:
+  pull_request:
+    types: [closed, opened, reopened]
+
+env:
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  TEAM_ID: team_LGEdjw58WAVHk0VFbQJSrGFQ
+  PROJECT_ID: prj_1F0rehSGxd1yq30yGOgacvayBaTe
+  BRANCH: ${{ github.head_ref }}
+
+jobs:
+  delete-previews:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete every preview deployment of the closed branch
+        run: |
+          ids=$(curl -sf -G "https://api.vercel.com/v6/deployments" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            --data-urlencode "teamId=$TEAM_ID" \
+            --data-urlencode "projectId=$PROJECT_ID" \
+            --data-urlencode "branch=$BRANCH" \
+            --data-urlencode "limit=100" |
+            jq -r --arg branch "$BRANCH" \
+              '.deployments[] | select(.target != "production" and .meta.githubCommitRef == $branch) | .uid')
+          for id in $ids; do
+            echo "Deleting $id"
+            curl -sf -X DELETE "https://api.vercel.com/v13/deployments/$id?teamId=$TEAM_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" >/dev/null
+          done
+
+  ensure-preview:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    env:
+      SHA: ${{ github.event.pull_request.head.sha }}
+      REPO_ID: ${{ github.event.repository.id }}
+    steps:
+      - name: Deploy the head commit if it has no preview deployment
+        run: |
+          existing=$(curl -sf -G "https://api.vercel.com/v6/deployments" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            --data-urlencode "teamId=$TEAM_ID" \
+            --data-urlencode "projectId=$PROJECT_ID" \
+            --data-urlencode "branch=$BRANCH" \
+            --data-urlencode "limit=100" |
+            jq -r --arg sha "$SHA" \
+              '[.deployments[] | select(.meta.githubCommitSha == $sha and .state != "ERROR" and .state != "CANCELED")] | length')
+          if [ "$existing" != "0" ]; then
+            echo "A preview of $SHA exists: nothing to do"
+            exit 0
+          fi
+          echo "No preview of $SHA: deploying $BRANCH"
+          curl -sf -X POST "https://api.vercel.com/v13/deployments?teamId=$TEAM_ID" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg project "$PROJECT_ID" --arg ref "$BRANCH" --arg sha "$SHA" --argjson repoId "$REPO_ID" \
+              '{name: "wee-app", project: $project, gitSource: {type: "github", repoId: $repoId, ref: $ref, sha: $sha}}')" |
+            jq -r '"Deployment " + .id + " " + .url'
