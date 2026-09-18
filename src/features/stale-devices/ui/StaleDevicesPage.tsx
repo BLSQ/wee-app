@@ -14,7 +14,12 @@ const route = getRouteApi('/stale-devices')
 export function StaleDevicesPage() {
   const { days } = route.useSearch()
   const navigate = route.useNavigate()
-  const { data, isPending, error } = useQuery(trpc.staleDevices.list.queryOptions({ days }))
+  // placeholderData keeps the rows of the previous threshold on screen while the
+  // next ones load. Without it every keystroke swaps in an empty cache entry, the
+  // block below unmounts, and the never-synced section springs back folded.
+  const { data, isPending, error } = useQuery(
+    trpc.staleDevices.list.queryOptions({ days }, { placeholderData: (previous) => previous }),
+  )
   const silent = data?.filter((device) => device.lastSyncedAt !== null) ?? []
   const neverSynced = data?.filter((device) => device.lastSyncedAt === null) ?? []
 
@@ -32,17 +37,20 @@ export function StaleDevicesPage() {
           }
           min={1}
           max={365}
+          // An integer, because validateSearch rejects anything else and would snap
+          // the box back to 7 as soon as a "." was typed.
+          allowDecimal={false}
           clampBehavior="strict"
           w={90}
         />
-        <Text size="sm">days</Text>
+        <Text size="sm">{days === 1 ? 'day' : 'days'}</Text>
       </Group>
       {isPending && <Loader />}
       {error && <Alert color="red">{error.message}</Alert>}
       {data && (
         <>
           <Title order={4}>
-            Silent for more than {days} days ({silent.length})
+            Silent for more than {days} {days === 1 ? 'day' : 'days'} ({silent.length})
           </Title>
           <StaleDeviceTable devices={silent} emptyMessage="No device has been silent that long" />
           <NeverSyncedSection devices={neverSynced} />

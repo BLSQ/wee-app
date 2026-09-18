@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { renderWithProviders, screen, userEvent } from '#/ui/test-helpers'
+import { renderWithProviders, screen, userEvent, waitFor } from '#/ui/test-helpers'
 import type { StaleDevice } from '../api/queries'
 import { NeverSyncedSection } from './NeverSyncedSection'
 
@@ -40,8 +40,7 @@ describe('NeverSyncedSection', () => {
     await userEvent.click(toggle)
     await userEvent.click(toggle)
 
-    // The rows leave with the fold animation, which jsdom does not run; the
-    // button's own state is what says the section is closed.
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    await waitFor(() => expect(screen.queryByText('SL-0201')).not.toBeInTheDocument())
   })
 })

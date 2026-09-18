@@ -12,6 +12,7 @@ import { StaleDeviceTable } from './StaleDeviceTable'
  */
 export function NeverSyncedSection({ devices }: { devices: StaleDevice[] }) {
   const [opened, { toggle }] = useDisclosure(false)
+  const regionId = 'never-synced-devices'
 
   return (
     <Stack gap="xs">
@@ -21,10 +22,13 @@ export function NeverSyncedSection({ devices }: { devices: StaleDevice[] }) {
         w="fit-content"
         onClick={toggle}
         aria-expanded={opened}
+        aria-controls={regionId}
       >
-        {opened ? '▾' : '▸'} Never synced ({devices.length})
+        {/* The triangle is decoration: aria-expanded already says which way the
+            section is folded, and a screen reader would read the glyph out. */}
+        <span aria-hidden>{opened ? '▾' : '▸'}</span> Never synced ({devices.length})
       </Button>
-      <Collapse expanded={opened} keepMounted={false}>
+      <Collapse id={regionId} expanded={opened} keepMounted={false}>
         <StaleDeviceTable devices={devices} emptyMessage="Every device has synced at least once" />
       </Collapse>
     </Stack>

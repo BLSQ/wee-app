@@ -21,7 +21,7 @@ import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { theme } from './theme'
 
-export { screen, within } from '@testing-library/react'
+export { screen, waitFor, within } from '@testing-library/react'
 export { default as userEvent } from '@testing-library/user-event'
 
 /**
