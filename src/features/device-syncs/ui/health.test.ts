@@ -85,8 +85,9 @@ describe('toFeatureCollection', () => {
   })
 
   it('gives a district with no devices the grey colour and no percentage', () => {
-    const [feature] = toFeatureCollection([district({ deviceCount: 0, syncedDeviceCount: 0 })])
-      .features
+    const [feature] = toFeatureCollection([
+      district({ deviceCount: 0, syncedDeviceCount: 0 }),
+    ]).features
 
     expect(feature.properties.percent).toBeNull()
     expect(feature.properties.color).toBe(

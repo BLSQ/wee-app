@@ -40,9 +40,7 @@ export async function listRecentSyncs(
     .innerJoin('device', 'device.id', 'sync.device_id')
     .innerJoin('app_user as user', 'user.id', 'sync.user_id')
     .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
-    .innerJoin('org_unit as district', (join) =>
-      join.on('district.id', '=', districtIdOfFacility),
-    )
+    .innerJoin('org_unit as district', (join) => join.on('district.id', '=', districtIdOfFacility))
     .select([
       'sync.id as id',
       'device.serial as deviceSerial',
@@ -92,9 +90,7 @@ export async function districtSyncHealth(
   return db
     .selectFrom('org_unit as district')
     .leftJoin('org_unit as facility', (join) =>
-      join
-        .on('facility.level', '=', 4)
-        .on(districtIdOfFacility, '=', sql`district.id`),
+      join.on('facility.level', '=', 4).on(districtIdOfFacility, '=', sql`district.id`),
     )
     .leftJoin('device', 'device.org_unit_id', 'facility.id')
     .select([
