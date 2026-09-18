@@ -1,6 +1,17 @@
 import { type Kysely, sql } from 'kysely'
 import type { Database } from '#/server/db'
 
+/**
+ * The district id of the org unit aliased `facility`, from its `path`.
+ *
+ * `org_unit.path` is the dot-joined ancestor ids, so the second segment is the
+ * district: no recursive query needed. The `nullif` is not decoration. A level 1
+ * path has a single segment, so `split_part` returns an empty string there, and
+ * `''::int` raises. Postgres is free to evaluate this before it knows which
+ * rows are facilities, and a `where` on the district makes it do exactly that.
+ */
+const districtIdOfFacility = sql<number>`nullif(split_part(facility.path, '.', 2), '')::int`
+
 export type RecentSync = {
   id: number
   deviceSerial: string
@@ -14,7 +25,7 @@ export type RecentSync = {
 }
 
 /**
- * The most recent syncs, newest first.
+ * The most recent syncs, newest first, optionally narrowed to one district.
  *
  * A device is attached to a facility. The facility's district is its level 2
  * ancestor, and `org_unit.path` holds the dot-joined ancestor ids, so the
@@ -22,16 +33,14 @@ export type RecentSync = {
  */
 export async function listRecentSyncs(
   db: Kysely<Database>,
-  params: { limit: number },
+  params: { limit: number; districtId?: number },
 ): Promise<RecentSync[]> {
   return db
     .selectFrom('device_sync as sync')
     .innerJoin('device', 'device.id', 'sync.device_id')
     .innerJoin('app_user as user', 'user.id', 'sync.user_id')
     .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
-    .innerJoin('org_unit as district', (join) =>
-      join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
-    )
+    .innerJoin('org_unit as district', (join) => join.on('district.id', '=', districtIdOfFacility))
     .select([
       'sync.id as id',
       'device.serial as deviceSerial',
@@ -43,8 +52,67 @@ export async function listRecentSyncs(
       'sync.org_unit_count as orgUnitCount',
       'sync.entity_count as entityCount',
     ])
+    .$if(params.districtId !== undefined, (query) =>
+      query.where('district.id', '=', params.districtId!),
+    )
     .orderBy('sync.synced_at', 'desc')
     .orderBy('sync.id', 'desc')
     .limit(params.limit)
     .execute()
+}
+
+const DAY_MS = 86_400_000
+
+export type DistrictSyncHealth = {
+  id: number
+  name: string
+  deviceCount: number
+  syncedDeviceCount: number
+  geometry: GeoJSON.MultiPolygon | null
+}
+
+/**
+ * One row per district, with how many of its devices synced inside the window.
+ *
+ * It starts from the districts and joins outwards, so a district with no
+ * devices comes back with zeroes instead of disappearing. `geometry` is plain
+ * jsonb (ADR 0007) and travels as it is, for MapLibre to draw.
+ *
+ * The counts are cast to int on purpose: `count()` is a bigint, which the `pg`
+ * driver hands back as a string.
+ */
+export async function districtSyncHealth(
+  db: Kysely<Database>,
+  params: { now: Date; days: number },
+): Promise<DistrictSyncHealth[]> {
+  const since = new Date(params.now.getTime() - params.days * DAY_MS)
+
+  return (
+    db
+      .selectFrom('org_unit as district')
+      // A device hangs on a facility, which is level 4. The schema does not
+      // enforce that; the seed does, and `seed/generate.test.ts` asserts it.
+      .leftJoin('org_unit as facility', (join) =>
+        join.on('facility.level', '=', 4).on(districtIdOfFacility, '=', sql`district.id`),
+      )
+      .leftJoin('device', 'device.org_unit_id', 'facility.id')
+      .select([
+        'district.id as id',
+        'district.name as name',
+        'district.geometry as geometry',
+        sql<number>`cast(count(device.id) as int)`.as('deviceCount'),
+        sql<number>`cast(count(device.id) filter (
+        where exists (
+          select 1 from device_sync as s
+          where s.device_id = device.id and s.synced_at >= ${since}
+        )
+      ) as int)`.as('syncedDeviceCount'),
+      ])
+      .where('district.level', '=', 2)
+      // By the primary key alone: Postgres knows the other columns follow from
+      // it, so the group does not carry six kilobytes of jsonb per district.
+      .groupBy('district.id')
+      .orderBy('district.name')
+      .execute()
+  )
 }

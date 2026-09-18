@@ -45,7 +45,11 @@ const nextId = () => ++lastId
 /** Without a parent, a level 1 unit. With one, a unit one level below it, on its path. */
 export async function insertOrgUnit(
   db: Db,
-  { name, parent }: { name?: string; parent?: Row<'org_unit'> } = {},
+  {
+    name,
+    parent,
+    geometry,
+  }: { name?: string; parent?: Row<'org_unit'>; geometry?: GeoJSON.MultiPolygon } = {},
 ): Promise<Row<'org_unit'>> {
   const id = nextId()
   return db
@@ -56,6 +60,7 @@ export async function insertOrgUnit(
       parent_id: parent?.id ?? null,
       level: parent ? parent.level + 1 : 1,
       path: parent ? `${parent.path}.${id}` : `${id}`,
+      geometry: geometry ? JSON.stringify(geometry) : null,
     })
     .returningAll()
     .executeTakeFirstOrThrow()
