@@ -1,6 +1,17 @@
 import { type Kysely, sql } from 'kysely'
 import type { Database } from '#/server/db'
 
+/**
+ * The district id of the org unit aliased `facility`, from its `path`.
+ *
+ * `org_unit.path` is the dot-joined ancestor ids, so the second segment is the
+ * district: no recursive query needed. The `nullif` is not decoration. A level 1
+ * path has a single segment, so `split_part` returns an empty string there, and
+ * `''::int` raises. Postgres is free to evaluate this before it knows which
+ * rows are facilities, and a `where` on the district makes it do exactly that.
+ */
+const districtIdOfFacility = sql<number>`nullif(split_part(facility.path, '.', 2), '')::int`
+
 export type RecentSync = {
   id: number
   deviceSerial: string
@@ -14,7 +25,7 @@ export type RecentSync = {
 }
 
 /**
- * The most recent syncs, newest first.
+ * The most recent syncs, newest first, optionally narrowed to one district.
  *
  * A device is attached to a facility. The facility's district is its level 2
  * ancestor, and `org_unit.path` holds the dot-joined ancestor ids, so the
@@ -22,7 +33,7 @@ export type RecentSync = {
  */
 export async function listRecentSyncs(
   db: Kysely<Database>,
-  params: { limit: number },
+  params: { limit: number; districtId?: number },
 ): Promise<RecentSync[]> {
   return db
     .selectFrom('device_sync as sync')
@@ -30,7 +41,7 @@ export async function listRecentSyncs(
     .innerJoin('app_user as user', 'user.id', 'sync.user_id')
     .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
     .innerJoin('org_unit as district', (join) =>
-      join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
+      join.on('district.id', '=', districtIdOfFacility),
     )
     .select([
       'sync.id as id',
@@ -43,6 +54,9 @@ export async function listRecentSyncs(
       'sync.org_unit_count as orgUnitCount',
       'sync.entity_count as entityCount',
     ])
+    .$if(params.districtId !== undefined, (query) =>
+      query.where('district.id', '=', params.districtId!),
+    )
     .orderBy('sync.synced_at', 'desc')
     .orderBy('sync.id', 'desc')
     .limit(params.limit)
@@ -80,7 +94,7 @@ export async function districtSyncHealth(
     .leftJoin('org_unit as facility', (join) =>
       join
         .on('facility.level', '=', 4)
-        .on(sql<number>`split_part(facility.path, '.', 2)::int`, '=', sql`district.id`),
+        .on(districtIdOfFacility, '=', sql`district.id`),
     )
     .leftJoin('device', 'device.org_unit_id', 'facility.id')
     .select([

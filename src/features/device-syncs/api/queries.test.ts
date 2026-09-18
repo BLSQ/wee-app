@@ -85,6 +85,44 @@ describe('listRecentSyncs', () => {
     const rows = await listRecentSyncs(db, { limit: 10 })
     expect(rows.map((row) => row.id)).toEqual([first.id, late.id])
   })
+
+  describe('filtered by district', () => {
+    /** One sync in Bo and one in Pujehun, with the district ids to ask for. */
+    async function insertTwoDistricts() {
+      const country = await insertOrgUnit(db, { name: 'Sierra Leone' })
+      const districts = []
+      for (const name of ['Bo', 'Pujehun']) {
+        const district = await insertOrgUnit(db, { name, parent: country })
+        const chiefdom = await insertOrgUnit(db, { parent: district })
+        const facility = await insertOrgUnit(db, { parent: chiefdom })
+        await insertSync(db, { device: await insertDevice(db, { facility }) })
+        districts.push(district)
+      }
+      return districts
+    }
+
+    it('returns only the syncs of the district asked for', async () => {
+      const [bo] = await insertTwoDistricts()
+
+      const rows = await listRecentSyncs(db, { limit: 10, districtId: bo.id })
+
+      expect(rows.map((row) => row.districtName)).toEqual(['Bo'])
+    })
+
+    it('returns every district when none is asked for', async () => {
+      await insertTwoDistricts()
+
+      const rows = await listRecentSyncs(db, { limit: 10 })
+
+      expect(rows.map((row) => row.districtName).sort()).toEqual(['Bo', 'Pujehun'])
+    })
+
+    it('returns nothing for a district with no syncs', async () => {
+      await insertTwoDistricts()
+
+      expect(await listRecentSyncs(db, { limit: 10, districtId: 999 })).toEqual([])
+    })
+  })
 })
 
 describe('districtSyncHealth', () => {
