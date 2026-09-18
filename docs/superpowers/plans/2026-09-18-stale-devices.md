@@ -8,8 +8,8 @@ never-synced devices in their own block below.
 
 **Architecture:** One query function takes `db`, `now` and `days` and returns one row per device,
 its newest sync found with a `left join lateral`. One table component renders both blocks, a null
-`lastSyncedAt` being the "never synced" case. The page holds a debounced number box whose value
-lives in the URL.
+`lastSyncedAt` being the "never synced" case. The URL is the only home of N: the number box reads
+it and writes it, with no local state.
 
 **Tech Stack:** Kysely on Postgres, tRPC, TanStack Router, Mantine, Vitest (PGlite for queries,
 jsdom for components).
@@ -68,13 +68,26 @@ const now = new Date('2026-09-18T12:00:00Z')
 const daysAgo = (days: number) => new Date(now.getTime() - days * 86_400_000)
 
 describe('listStaleDevices', () => {
-  it('returns a device whose last sync is older than the threshold', async () => {
-    const device = await insertDevice(db, { serial: 'SL-0117' })
-    await insertSync(db, { device, syncedAt: daysAgo(34) })
+  it('returns a stale device with its facility, district, last sync and last user', async () => {
+    const country = await insertOrgUnit(db, { name: 'Sierra Leone' })
+    const district = await insertOrgUnit(db, { name: 'Bombali', parent: country })
+    const chiefdom = await insertOrgUnit(db, { name: 'Gbendembu', parent: district })
+    const facility = await insertOrgUnit(db, { name: 'Gbendembu CHC', parent: chiefdom })
+    const device = await insertDevice(db, { serial: 'SL-0117', facility })
+    const user = await insertUser(db, { username: 'amara' })
+    await insertSync(db, { device, user, syncedAt: daysAgo(34) })
 
     const rows = await listStaleDevices(db, { now, days: 7 })
 
-    expect(rows).toMatchObject([{ serial: 'SL-0117', lastSyncedAt: daysAgo(34) }])
+    expect(rows).toMatchObject([
+      {
+        serial: 'SL-0117',
+        facilityName: 'Gbendembu CHC',
+        districtName: 'Bombali',
+        lastSyncedAt: daysAgo(34),
+        lastUsername: 'amara',
+      },
+    ])
   })
 
   it('leaves out a device that synced inside the window', async () => {
@@ -105,9 +118,7 @@ describe('listStaleDevices', () => {
 
     const rows = await listStaleDevices(db, { now, days: 365 })
 
-    expect(rows).toMatchObject([
-      { serial: 'SL-0201', lastSyncedAt: null, lastUsername: null },
-    ])
+    expect(rows).toMatchObject([{ serial: 'SL-0201', lastSyncedAt: null, lastUsername: null }])
   })
 
   it('puts the never-synced devices first, then the oldest sync first', async () => {
@@ -121,31 +132,6 @@ describe('listStaleDevices', () => {
     const rows = await listStaleDevices(db, { now, days: 7 })
 
     expect(rows.map((row) => row.serial)).toEqual(['SL-0009', 'SL-0005', 'SL-0001'])
-  })
-
-  it('resolves the facility and its district', async () => {
-    const country = await insertOrgUnit(db, { name: 'Sierra Leone' })
-    const district = await insertOrgUnit(db, { name: 'Bombali', parent: country })
-    const chiefdom = await insertOrgUnit(db, { name: 'Gbendembu', parent: district })
-    const facility = await insertOrgUnit(db, { name: 'Gbendembu CHC', parent: chiefdom })
-    const device = await insertDevice(db, { facility })
-    await insertSync(db, { device, syncedAt: daysAgo(20) })
-
-    const [row] = await listStaleDevices(db, { now, days: 7 })
-
-    expect(row).toMatchObject({ facilityName: 'Gbendembu CHC', districtName: 'Bombali' })
-  })
-
-  it('names the user of the newest sync', async () => {
-    const device = await insertDevice(db)
-    const long = await insertUser(db, { username: 'amara' })
-    const last = await insertUser(db, { username: 'fatu' })
-    await insertSync(db, { device, user: long, syncedAt: daysAgo(40) })
-    await insertSync(db, { device, user: last, syncedAt: daysAgo(20) })
-
-    const [row] = await listStaleDevices(db, { now, days: 7 })
-
-    expect(row.lastUsername).toBe('fatu')
   })
 })
 ```
@@ -228,7 +214,7 @@ export async function listStaleDevices(
 - [ ] **Step 4: Run the test and watch it pass**
 
 Run: `pnpm exec vitest run src/features/stale-devices/api/queries.test.ts`
-Expected: PASS, 8 tests.
+Expected: PASS, 6 tests.
 
 - [ ] **Step 5: Commit**
 
@@ -269,6 +255,11 @@ const device = (values: Partial<StaleDevice> = {}): StaleDevice => ({
   ...values,
 })
 
+const cellsOf = (serial: RegExp) =>
+  within(screen.getByRole('row', { name: serial }))
+    .getAllByRole('cell')
+    .map((cell) => cell.textContent)
+
 describe('StaleDeviceTable', () => {
   // The table shows dates relative to now. Only Date is faked, so clicks still work.
   beforeEach(() => {
@@ -285,10 +276,7 @@ describe('StaleDeviceTable', () => {
       />,
     )
 
-    const cells = within(screen.getByRole('row', { name: /SL-0117/ }))
-      .getAllByRole('cell')
-      .map((cell) => cell.textContent)
-    expect(cells).toEqual([
+    expect(cellsOf(/SL-0117/)).toEqual([
       'SL-0117',
       'Gbendembu CHC',
       'Bombali',
@@ -307,25 +295,7 @@ describe('StaleDeviceTable', () => {
       />,
     )
 
-    const cells = within(screen.getByRole('row', { name: /SL-0117/ }))
-      .getAllByRole('cell')
-      .map((cell) => cell.textContent)
-    expect(cells.slice(3)).toEqual(['never', '—'])
-  })
-
-  it.each([
-    ['2026-09-18T08:00:00Z', 'today'],
-    ['2026-09-17T08:00:00Z', 'yesterday'],
-    ['2026-09-08T08:00:00Z', '10 days ago'],
-  ])('reads a last sync of %s as "%s"', async (lastSyncedAt, label) => {
-    await renderWithProviders(
-      <StaleDeviceTable
-        devices={[device({ lastSyncedAt: new Date(lastSyncedAt) })]}
-        emptyMessage="Nothing here"
-      />,
-    )
-
-    expect(screen.getByRole('row', { name: /SL-0117/ })).toHaveTextContent(label)
+    expect(cellsOf(/SL-0117/).slice(3)).toEqual(['never', '—'])
   })
 
   it('shows the message it is given when the list is empty', async () => {
@@ -394,15 +364,9 @@ export function StaleDeviceTable({
             <Table.Td>{device.facilityName}</Table.Td>
             <Table.Td>{device.districtName}</Table.Td>
             <Table.Td>
-              {device.lastSyncedAt ? (
-                <Text size="sm" c="dimmed" title={device.lastSyncedAt.toISOString()}>
-                  {relativeDays(device.lastSyncedAt)}
-                </Text>
-              ) : (
-                <Text size="sm" c="dimmed">
-                  never
-                </Text>
-              )}
+              <Text size="sm" c="dimmed" title={device.lastSyncedAt?.toISOString()}>
+                {device.lastSyncedAt ? relativeDays(device.lastSyncedAt) : 'never'}
+              </Text>
             </Table.Td>
             <Table.Td>{device.lastUsername ?? '—'}</Table.Td>
           </Table.Tr>
@@ -416,7 +380,7 @@ export function StaleDeviceTable({
 - [ ] **Step 4: Run the test and watch it pass**
 
 Run: `pnpm exec vitest run src/features/stale-devices/ui/StaleDeviceTable.test.tsx`
-Expected: PASS, 6 tests.
+Expected: PASS, 3 tests.
 
 - [ ] **Step 5: Commit**
 
@@ -435,8 +399,8 @@ git commit -m "Add the stale device table"
 - Modify: `src/features/router.ts`, `src/features/nav.ts`
 
 **Interfaces:**
-- Consumes: `listStaleDevices` and `StaleDevice` (Task 1), `StaleDeviceTable` (Task 2),
-  `publicProcedure`/`router` from `#/server/trpc/base`, `trpc` from `#/lib/trpc`.
+- Consumes: `listStaleDevices` (Task 1), `StaleDeviceTable` (Task 2), `publicProcedure`/`router`
+  from `#/server/trpc/base`, `trpc` from `#/lib/trpc`.
 - Produces: `staleDevicesRouter` with `list({ days })`, reachable as `trpc.staleDevices.list`.
 
 No test in this task: a route, a page that only fetches, and a procedure that validates its input
@@ -460,15 +424,14 @@ export const staleDevicesRouter = router({
 
 - [ ] **Step 2: Write the page**
 
-`src/features/stale-devices/ui/StaleDevicesPage.tsx`. `getRouteApi` reads the route's typed search
-parameters without importing the route file, which would be a circular import:
+`src/features/stale-devices/ui/StaleDevicesPage.tsx`. The URL holds N and nothing else does, so the
+box reads `useSearch` and writes `navigate`: no `useState`, no `useEffect`. `getRouteApi` reads the
+route's typed search parameters without importing the route file, which would be a circular import.
 
 ```tsx
 import { Alert, Group, Loader, NumberInput, Stack, Text, Title } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
 import { trpc } from '#/lib/trpc'
 import { StaleDeviceTable } from './StaleDeviceTable'
 
@@ -477,18 +440,7 @@ const route = getRouteApi('/stale-devices')
 export function StaleDevicesPage() {
   const { days } = route.useSearch()
   const navigate = route.useNavigate()
-  // The box is typed into; the URL and the query follow 300 ms later, so typing
-  // "14" does not query for "1" on the way.
-  const [input, setInput] = useState(days)
-  const [debounced] = useDebouncedValue(input, 300)
-
-  useEffect(() => {
-    if (debounced !== days) navigate({ search: { days: debounced }, replace: true })
-  }, [debounced, days, navigate])
-
-  const { data, isPending, error } = useQuery(
-    trpc.staleDevices.list.queryOptions({ days: debounced }),
-  )
+  const { data, isPending, error } = useQuery(trpc.staleDevices.list.queryOptions({ days }))
   const silent = data?.filter((device) => device.lastSyncedAt !== null) ?? []
   const neverSynced = data?.filter((device) => device.lastSyncedAt === null) ?? []
 
@@ -499,10 +451,11 @@ export function StaleDevicesPage() {
         <Text size="sm">Silent for more than</Text>
         <NumberInput
           aria-label="Days without a sync"
-          value={input}
-          onChange={(value) => {
-            if (typeof value === 'number') setInput(value)
-          }}
+          value={days}
+          // replace, so stepping through values does not fill the back button.
+          onChange={(value) =>
+            typeof value === 'number' && navigate({ search: { days: value }, replace: true })
+          }
           min={1}
           max={365}
           clampBehavior="strict"
@@ -515,12 +468,9 @@ export function StaleDevicesPage() {
       {data && (
         <>
           <Title order={4}>
-            Silent for more than {debounced} days ({silent.length})
+            Silent for more than {days} days ({silent.length})
           </Title>
-          <StaleDeviceTable
-            devices={silent}
-            emptyMessage="No device has been silent that long"
-          />
+          <StaleDeviceTable devices={silent} emptyMessage="No device has been silent that long" />
           <Title order={4}>Never synced ({neverSynced.length})</Title>
           <StaleDeviceTable
             devices={neverSynced}

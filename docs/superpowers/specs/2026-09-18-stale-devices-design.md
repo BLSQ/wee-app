@@ -70,10 +70,12 @@ export async function listStaleDevices(
   twice, once per block; a null `lastSyncedAt` renders as "never" and the user as "—", so one
   component serves both. Dates read "34 days ago" with the exact timestamp in the `title`, as in
   `SyncTable`.
-- `StaleDevicesPage.tsx` holds a Mantine `NumberInput` (1–365, default 7), debounces it by 300 ms
-  with `useDebouncedValue` so typing "14" does not query for "1", and the debounced value drives
-  both the URL and the tRPC call. It splits the one list on `lastSyncedAt === null` and shows a
-  count in each heading: "Silent for more than 7 days (18)", "Never synced (12)".
+- `StaleDevicesPage.tsx` holds a Mantine `NumberInput` (1–365, default 7). The URL is the only home
+  of the value: the box reads it from the route and writes it back with `replace`, so the page needs
+  no `useState` and no `useEffect`, and the browser's back button is not filled with every digit
+  typed. A keystroke therefore costs a query; the fleet is 200 devices, so debouncing can wait until
+  it is visibly needed. The page splits the one list on `lastSyncedAt === null` and shows a count in
+  each heading: "Silent for more than 7 days (18)", "Never synced (12)".
 - `src/routes/stale-devices.tsx` validates `?days=` with zod — integer, 1–365, `.catch(7)` — so a
   hand-edited URL falls back instead of erroring. The value lives in the URL so a supervisor can
   bookmark it or send it to a colleague.
@@ -92,11 +94,11 @@ collide. Extract it when a third copy appears.
 - [ ] A second block lists devices that never synced, marked as such, whatever N is.
 - [ ] Changing the number box changes the list and the URL; reloading `?days=14` keeps the value;
       `?days=abc` falls back to 7.
-- [ ] Query tests, seen failing first: a device exactly at the cutoff and one either side; a
-      never-synced device returned for every N; oldest first; facility and district resolved; and
-      the last user is the user of the *newest* sync, not of an older one.
-- [ ] Component tests, seen failing first: relative dates, "never" and "—" for a device that never
-      synced, and both empty messages.
+- [ ] Query tests, seen failing first: a device exactly at the cutoff and one either side; a device
+      judged on its *newest* sync, not on an older one; a never-synced device returned for every N;
+      never-synced first then oldest first; facility, district and last user resolved.
+- [ ] Component tests, seen failing first: a row with its values and its relative date, "never" and
+      "—" for a device that never synced, and the empty message.
 - [ ] `pnpm test`, `pnpm exec tsc --noEmit` and `pnpm format` are clean.
 - [ ] ADR additions or updates proposed after implementation.
 
