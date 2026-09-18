@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SyncsRouteImport } from './routes/syncs'
+import { Route as DevicesIndexRouteImport } from './routes/devices.index'
+import { Route as DevicesDeviceIdRouteImport } from './routes/devices.$deviceId'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api/trpc/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +25,16 @@ const SyncsRoute = SyncsRouteImport.update({
   path: '/syncs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DevicesIndexRoute = DevicesIndexRouteImport.update({
+  id: '/devices/',
+  path: '/devices/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevicesDeviceIdRoute = DevicesDeviceIdRouteImport.update({
+  id: '/devices/$deviceId',
+  path: '/devices/$deviceId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
   id: '/api/trpc/$',
   path: '/api/trpc/$',
@@ -32,30 +44,44 @@ const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/syncs': typeof SyncsRoute
+  '/devices/$deviceId': typeof DevicesDeviceIdRoute
+  '/devices/': typeof DevicesIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/syncs': typeof SyncsRoute
+  '/devices/$deviceId': typeof DevicesDeviceIdRoute
+  '/devices': typeof DevicesIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/syncs': typeof SyncsRoute
+  '/devices/$deviceId': typeof DevicesDeviceIdRoute
+  '/devices/': typeof DevicesIndexRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/syncs' | '/api/trpc/$'
+  fullPaths: '/' | '/syncs' | '/devices/$deviceId' | '/devices/' | '/api/trpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/syncs' | '/api/trpc/$'
-  id: '__root__' | '/' | '/syncs' | '/api/trpc/$'
+  to: '/' | '/syncs' | '/devices/$deviceId' | '/devices' | '/api/trpc/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/syncs'
+    | '/devices/$deviceId'
+    | '/devices/'
+    | '/api/trpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SyncsRoute: typeof SyncsRoute
+  DevicesDeviceIdRoute: typeof DevicesDeviceIdRoute
+  DevicesIndexRoute: typeof DevicesIndexRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
 }
 
@@ -75,6 +101,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SyncsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/devices/': {
+      id: '/devices/'
+      path: '/devices'
+      fullPath: '/devices/'
+      preLoaderRoute: typeof DevicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/devices/$deviceId': {
+      id: '/devices/$deviceId'
+      path: '/devices/$deviceId'
+      fullPath: '/devices/$deviceId'
+      preLoaderRoute: typeof DevicesDeviceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/trpc/$': {
       id: '/api/trpc/$'
       path: '/api/trpc/$'
@@ -88,6 +128,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SyncsRoute: SyncsRoute,
+  DevicesDeviceIdRoute: DevicesDeviceIdRoute,
+  DevicesIndexRoute: DevicesIndexRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
 }
 export const routeTree = rootRouteImport
