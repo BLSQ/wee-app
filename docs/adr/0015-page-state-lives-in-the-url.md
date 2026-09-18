@@ -28,8 +28,12 @@ folded in its own `useDisclosure`, because a folded section is not worth a URL.
 
 ## Consequences
 
-A view can be bookmarked, reloaded and pasted into a chat. The back button works. A junk URL cannot
-break the page, and the fallback is written where the parameter is declared.
+A view can be bookmarked, reloaded and pasted into a chat. A junk URL cannot break the page, and the
+fallback is written where the parameter is declared.
+
+`replace: true` means a change of the control does not stack up in history: the back button leaves
+the page rather than stepping back through every threshold typed. That is the intent — a half-typed
+"1" on the way to "14" is not a view anyone wants to return to.
 
 There is one source of truth, so the class of bug where a control and the data disagree cannot
 happen.

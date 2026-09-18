@@ -551,3 +551,21 @@ git commit -m "Add the stale devices page"
   home of page state, and `left join lateral` as the shape for "latest row per parent".
 - One round of review, then push the branch and open the pull request. Never merge into `main`
   locally.
+
+---
+
+## Changed during implementation
+
+The plan above is the plan as written. Two things changed while it was carried out, and the spec
+was amended to match:
+
+- **The never-synced block is folded by default**, behind a button reading "Never synced (12)".
+  It moved out of `StaleDevicesPage` into `src/features/stale-devices/ui/NeverSyncedSection.tsx`,
+  a component of its own holding the open/closed state in `useDisclosure`. That keeps the page
+  free of state and puts the behaviour on a component that takes props, which is where this
+  repository tests behaviour. Three tests came with it.
+- **Review fixes**, after the one round of review: the lateral gained a `sync.id desc` tie-break,
+  so the user named on the page cannot change between two loads when two syncs share a timestamp;
+  the page passes `placeholderData` to `useQuery`, so changing the threshold no longer unmounts
+  the results and refolds the never-synced section; three query tests, the plural of "1 day", and
+  `allowDecimal={false}` on the number box.
