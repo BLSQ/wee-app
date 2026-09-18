@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/routes/**/*.{ts,tsx}",
+    "src/server/db/migrations/*.ts",
+    "scripts/*.{ts,mjs}",
+    "api/index.mjs"
+  ],
+  "project": ["src/**/*.{ts,tsx}", "scripts/**/*.{ts,mjs}", "eslint-rules/**/*.mjs", "api/*.mjs"],
+  "ignoreDependencies": ["@mantine/charts", "maplibre-gl", "recharts", "@types/geojson"]
+}

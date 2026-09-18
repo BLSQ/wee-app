@@ -3,7 +3,7 @@ import type { Generated, JSONColumnType } from 'kysely'
 // Hand-written on purpose: codegen would need a reachable database at build time.
 // Keep this file in step with src/server/db/migrations/.
 
-export interface OrgUnitTable {
+interface OrgUnitTable {
   id: number
   name: string
   parent_id: number | null
@@ -17,19 +17,19 @@ export interface OrgUnitTable {
   geometry: JSONColumnType<GeoJSON.MultiPolygon | null, string | null, string | null>
 }
 
-export interface AppUserTable {
+interface AppUserTable {
   id: number
   username: string
 }
 
-export interface DeviceTable {
+interface DeviceTable {
   id: number
   serial: string
   /** Always a facility. */
   org_unit_id: number
 }
 
-export interface DeviceSyncTable {
+interface DeviceSyncTable {
   id: Generated<number>
   device_id: number
   user_id: number
