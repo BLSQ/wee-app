@@ -1,5 +1,5 @@
 import { Alert, Group, Loader, Stack, Title } from '@mantine/core'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { trpc } from '#/lib/trpc'
 import type { Period } from '../periods'
@@ -8,7 +8,12 @@ import { UserActivityTable } from './UserActivityTable'
 
 export function UserActivityPage() {
   const [period, setPeriod] = useState<Period>('7d')
-  const { data, isPending, error } = useQuery(trpc.userActivity.list.queryOptions({ period }))
+  // keepPreviousData holds the old rows on screen while the new window loads. Without it the
+  // table unmounts on every switch, which throws away the column the user was sorting by.
+  const { data, isPending, error } = useQuery({
+    ...trpc.userActivity.list.queryOptions({ period }),
+    placeholderData: keepPreviousData,
+  })
 
   return (
     <Stack>

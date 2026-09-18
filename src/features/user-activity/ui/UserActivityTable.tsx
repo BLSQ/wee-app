@@ -33,10 +33,10 @@ function sortRows(rows: UserActivity[], key: SortKey, direction: 'asc' | 'desc')
     const right = value(b, key)
     // A user with nothing in the window stays at the bottom, whichever way the column points.
     if (left === null || right === null) return left === right ? 0 : left === null ? 1 : -1
+    // Keyed off the column, not off typeof: a count that ever arrived as a string would
+    // otherwise compare as text and sort "10" before "9". See docs/adr/0015.
     const order =
-      typeof left === 'string' && typeof right === 'string'
-        ? left.localeCompare(right)
-        : Number(left) - Number(right)
+      key === 'username' ? String(left).localeCompare(String(right)) : Number(left) - Number(right)
     return direction === 'asc' ? order : -order
   })
 }
@@ -59,7 +59,16 @@ export function UserActivityTable({ rows }: { rows: UserActivity[] }) {
       <Table.Thead>
         <Table.Tr>
           {columns.map((column) => (
-            <Table.Th key={column.key}>
+            <Table.Th
+              key={column.key}
+              aria-sort={
+                sort.key === column.key
+                  ? sort.direction === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : 'none'
+              }
+            >
               <UnstyledButton fz="sm" fw={700} onClick={() => toggle(column.key)}>
                 {column.label}
                 {sort.key === column.key && (sort.direction === 'asc' ? ' ▲' : ' ▼')}

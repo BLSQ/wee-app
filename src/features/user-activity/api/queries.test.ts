@@ -90,6 +90,7 @@ describe('listUserActivity', () => {
       username: 'quiet',
       syncCount: 0,
       submissionCount: 0,
+      deviceCount: 0,
       lastSyncAt: null,
     })
   })
