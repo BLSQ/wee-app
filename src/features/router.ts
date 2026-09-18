@@ -1,5 +1,6 @@
 import { router } from '#/server/trpc/base'
 import { deviceSyncsRouter } from './device-syncs/api/router'
+import { staleDevicesRouter } from './stale-devices/api/router'
 import { userActivityRouter } from './user-activity/api/router'
 
 /**
@@ -11,6 +12,7 @@ import { userActivityRouter } from './user-activity/api/router'
  */
 export const appRouter = router({
   deviceSyncs: deviceSyncsRouter,
+  staleDevices: staleDevicesRouter,
   userActivity: userActivityRouter,
 })
 

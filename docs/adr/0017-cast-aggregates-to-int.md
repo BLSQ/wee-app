@@ -1,4 +1,4 @@
-# 0015. Cast aggregates to int in the SQL
+# 0017. Cast aggregates to int in the SQL
 
 **Status:** Accepted
 **Date:** 2026-09-18

@@ -97,7 +97,7 @@ describe('listUserActivity', () => {
 
   it('returns the counts as numbers', async () => {
     // States the contract; it does not guard it. pg returns an uncast count() as a
-    // string, PGlite as a number, so this passes here either way. See docs/adr/0015.
+    // string, PGlite as a number, so this passes here either way. See docs/adr/0017.
     await insertSync(db, { user: await insertUser(db), syncedAt: since })
 
     const [row] = await listUserActivity(db, { since })

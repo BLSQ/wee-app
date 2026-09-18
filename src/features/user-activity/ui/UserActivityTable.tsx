@@ -34,7 +34,7 @@ function sortRows(rows: UserActivity[], key: SortKey, direction: 'asc' | 'desc')
     // A user with nothing in the window stays at the bottom, whichever way the column points.
     if (left === null || right === null) return left === right ? 0 : left === null ? 1 : -1
     // Keyed off the column, not off typeof: a count that ever arrived as a string would
-    // otherwise compare as text and sort "10" before "9". See docs/adr/0015.
+    // otherwise compare as text and sort "10" before "9". See docs/adr/0017.
     const order =
       key === 'username' ? String(left).localeCompare(String(right)) : Number(left) - Number(right)
     return direction === 'asc' ? order : -order
