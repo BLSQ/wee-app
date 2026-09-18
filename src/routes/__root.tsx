@@ -1,5 +1,6 @@
 import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core'
 import mantineCss from '@mantine/core/styles.css?url'
+import maplibreCss from 'maplibre-gl/dist/maplibre-gl.css?url'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
@@ -14,7 +15,11 @@ export const Route = createRootRoute({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'wee-app' },
     ],
-    links: [{ rel: 'stylesheet', href: mantineCss }],
+    links: [
+      { rel: 'stylesheet', href: mantineCss },
+      // MapLibre's own styles, for the popup and the zoom control.
+      { rel: 'stylesheet', href: maplibreCss },
+    ],
   }),
   shellComponent: RootDocument,
 })
