@@ -87,26 +87,32 @@ export async function districtSyncHealth(
 ): Promise<DistrictSyncHealth[]> {
   const since = new Date(params.now.getTime() - params.days * DAY_MS)
 
-  return db
-    .selectFrom('org_unit as district')
-    .leftJoin('org_unit as facility', (join) =>
-      join.on('facility.level', '=', 4).on(districtIdOfFacility, '=', sql`district.id`),
-    )
-    .leftJoin('device', 'device.org_unit_id', 'facility.id')
-    .select([
-      'district.id as id',
-      'district.name as name',
-      'district.geometry as geometry',
-      sql<number>`cast(count(device.id) as int)`.as('deviceCount'),
-      sql<number>`cast(count(device.id) filter (
+  return (
+    db
+      .selectFrom('org_unit as district')
+      // A device hangs on a facility, which is level 4. The schema does not
+      // enforce that; the seed does, and `seed/generate.test.ts` asserts it.
+      .leftJoin('org_unit as facility', (join) =>
+        join.on('facility.level', '=', 4).on(districtIdOfFacility, '=', sql`district.id`),
+      )
+      .leftJoin('device', 'device.org_unit_id', 'facility.id')
+      .select([
+        'district.id as id',
+        'district.name as name',
+        'district.geometry as geometry',
+        sql<number>`cast(count(device.id) as int)`.as('deviceCount'),
+        sql<number>`cast(count(device.id) filter (
         where exists (
           select 1 from device_sync as s
           where s.device_id = device.id and s.synced_at >= ${since}
         )
       ) as int)`.as('syncedDeviceCount'),
-    ])
-    .where('district.level', '=', 2)
-    .groupBy(['district.id', 'district.name', 'district.geometry'])
-    .orderBy('district.name')
-    .execute()
+      ])
+      .where('district.level', '=', 2)
+      // By the primary key alone: Postgres knows the other columns follow from
+      // it, so the group does not carry six kilobytes of jsonb per district.
+      .groupBy('district.id')
+      .orderBy('district.name')
+      .execute()
+  )
 }

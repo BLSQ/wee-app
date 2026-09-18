@@ -7,7 +7,13 @@ import type {
 } from 'maplibre-gl'
 import { useEffect, useRef, useState } from 'react'
 import type { DistrictSyncHealth } from '../api/queries'
-import { toFeatureCollection } from './health'
+import {
+  type DistrictProperties,
+  boundsOf,
+  deviceCountLabel,
+  syncRateLabel,
+  toFeatureCollection,
+} from './health'
 
 const SOURCE = 'districts'
 const FILL_LAYER = 'district-fill'
@@ -39,12 +45,18 @@ export function DistrictMap({ districts, selectedDistrictId, onSelect }: Props) 
   const container = useRef<HTMLDivElement>(null)
   const map = useRef<MapLibreMap | null>(null)
   const popup = useRef<Popup | null>(null)
+  const framed = useRef<string | null>(null)
   const [ready, setReady] = useState(false)
 
-  // The map is built once. Without this the effect would tear it down and
-  // rebuild it on every render that changes a handler.
+  // The map is built once, so its handlers would close over the first render's
+  // props forever. They read these refs instead. Written in an effect rather
+  // than during the render, because a render React discards must not be seen.
   const select = useRef(onSelect)
-  select.current = onSelect
+  const selected = useRef(selectedDistrictId)
+  useEffect(() => {
+    select.current = onSelect
+    selected.current = selectedDistrictId
+  })
 
   useEffect(() => {
     let cancelled = false
@@ -62,6 +74,9 @@ export function DistrictMap({ districts, selectedDistrictId, onSelect }: Props) 
             { id: 'background', type: 'background', paint: { 'background-color': '#f1f3f5' } },
           ],
         },
+        // Only the view before the data arrives; `boundsOf` then frames the
+        // districts. Without it the map opens on [0, 0] at world zoom and
+        // visibly jumps.
         center: [-11.8, 8.5],
         zoom: 6,
         attributionControl: false,
@@ -106,9 +121,11 @@ export function DistrictMap({ districts, selectedDistrictId, onSelect }: Props) 
         if (typeof id === 'number') highlight(id)
       })
 
+      // Back to the selected district, not to nothing: leaving a district the
+      // pointer wandered over must not erase the outline of the chosen one.
       instance.on('mouseleave', FILL_LAYER, () => {
         instance.getCanvas().style.cursor = ''
-        highlight(NO_DISTRICT)
+        highlight(selected.current ?? NO_DISTRICT)
       })
 
       instance.on('click', FILL_LAYER, (event: MapLayerMouseEvent) => {
@@ -120,7 +137,7 @@ export function DistrictMap({ districts, selectedDistrictId, onSelect }: Props) 
         popup.current = new Popup({ closeButton: true })
           .setLngLat(event.lngLat)
           // setDOMContent, not setHTML: a district name is data, not markup.
-          .setDOMContent(popupContent(properties as PopupProperties))
+          .setDOMContent(popupContent(properties as DistrictProperties))
           .addTo(instance)
 
         select.current(Number(properties.id))
@@ -147,13 +164,19 @@ export function DistrictMap({ districts, selectedDistrictId, onSelect }: Props) 
     // in by the two effects below rather than by rebuilding the map.
   }, [])
 
-  // New data: replace what the source holds and frame it, rather than rebuild the map.
+  // New data: replace what the source holds, rather than rebuild the map.
   useEffect(() => {
     const instance = map.current
     if (!ready || !instance) return
 
     const collection = toFeatureCollection(districts)
     ;(instance.getSource(SOURCE) as GeoJSONSource | undefined)?.setData(collection)
+
+    // Frame the data only when the districts themselves change. Refetching the
+    // counts every few minutes must not throw away the user's pan and zoom.
+    const shape = collection.features.map((feature) => feature.properties.id).join()
+    if (shape === framed.current) return
+    framed.current = shape
 
     const bounds = boundsOf(collection)
     if (bounds) instance.fitBounds(bounds, { padding: 24, animate: false })
@@ -180,49 +203,19 @@ export function DistrictMap({ districts, selectedDistrictId, onSelect }: Props) 
   )
 }
 
-type PopupProperties = { id: number; name: string; percent: number | null; deviceCount: number }
-
 /** Built as DOM rather than a string, so a district name can never be markup. */
-function popupContent({ name, percent, deviceCount }: PopupProperties): HTMLElement {
+function popupContent({ name, percent, deviceCount }: DistrictProperties): HTMLElement {
   const root = document.createElement('div')
 
   const title = document.createElement('strong')
   title.textContent = name
   root.append(title)
 
-  const devices = document.createElement('div')
-  devices.textContent = deviceCount === 1 ? '1 device' : `${deviceCount} devices`
-  root.append(devices)
-
-  const rate = document.createElement('div')
-  rate.textContent =
-    percent === null ? 'no devices to report on' : `${percent}% synced in the last 7 days`
-  root.append(rate)
-
-  return root
-}
-
-/** The extent of every coordinate, as MapLibre's [west, south, east, north]. */
-function boundsOf(
-  collection: ReturnType<typeof toFeatureCollection>,
-): [number, number, number, number] | null {
-  let west = Infinity
-  let south = Infinity
-  let east = -Infinity
-  let north = -Infinity
-
-  for (const feature of collection.features) {
-    for (const polygon of feature.geometry.coordinates) {
-      for (const ring of polygon) {
-        for (const [longitude, latitude] of ring) {
-          west = Math.min(west, longitude)
-          east = Math.max(east, longitude)
-          south = Math.min(south, latitude)
-          north = Math.max(north, latitude)
-        }
-      }
-    }
+  for (const line of [deviceCountLabel(deviceCount), syncRateLabel(percent)]) {
+    const element = document.createElement('div')
+    element.textContent = line
+    root.append(element)
   }
 
-  return west === Infinity ? null : [west, south, east, north]
+  return root
 }

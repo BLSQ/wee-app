@@ -41,10 +41,13 @@ export type DistrictProperties = {
   color: string
 }
 
+export type DistrictFeatureCollection = GeoJSON.FeatureCollection<
+  GeoJSON.MultiPolygon,
+  DistrictProperties
+>
+
 /** What MapLibre draws. A district without geometry is left out rather than faked. */
-export function toFeatureCollection(
-  districts: DistrictSyncHealth[],
-): GeoJSON.FeatureCollection<GeoJSON.MultiPolygon, DistrictProperties> {
+export function toFeatureCollection(districts: DistrictSyncHealth[]): DistrictFeatureCollection {
   return {
     type: 'FeatureCollection',
     features: districts
@@ -62,4 +65,43 @@ export function toFeatureCollection(
         },
       })),
   }
+}
+
+/**
+ * The extent of every coordinate, as MapLibre's [west, south, east, north], so
+ * the map frames the data instead of hard-coding where Sierra Leone is.
+ * Null when there is nothing to frame: the map then keeps the view it has.
+ */
+export function boundsOf(
+  collection: DistrictFeatureCollection,
+): [number, number, number, number] | null {
+  let west = Infinity
+  let south = Infinity
+  let east = -Infinity
+  let north = -Infinity
+
+  for (const feature of collection.features) {
+    for (const polygon of feature.geometry.coordinates) {
+      for (const ring of polygon) {
+        for (const [longitude, latitude] of ring) {
+          west = Math.min(west, longitude)
+          east = Math.max(east, longitude)
+          south = Math.min(south, latitude)
+          north = Math.max(north, latitude)
+        }
+      }
+    }
+  }
+
+  const bounds = [west, south, east, north]
+  return bounds.every(Number.isFinite) ? (bounds as [number, number, number, number]) : null
+}
+
+export function deviceCountLabel(deviceCount: number): string {
+  if (deviceCount === 0) return 'no devices'
+  return deviceCount === 1 ? '1 device' : `${deviceCount} devices`
+}
+
+export function syncRateLabel(percent: number | null): string {
+  return percent === null ? 'nothing to report on' : `${percent}% synced in the last 7 days`
 }

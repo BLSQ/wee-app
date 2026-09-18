@@ -14,12 +14,17 @@ export function SyncsPage() {
   const { district } = route.useSearch()
   const navigate = route.useNavigate()
 
-  const health = useQuery(trpc.deviceSyncs.districtHealth.queryOptions())
+  // The geometry is most of the payload and never changes, and a seven-day
+  // window does not move by the minute: no refetch on every window focus.
+  const health = useQuery({
+    ...trpc.deviceSyncs.districtHealth.queryOptions(),
+    staleTime: 5 * 60_000,
+  })
   const syncs = useQuery(trpc.deviceSyncs.list.queryOptions({ limit: 50, districtId: district }))
 
   // The selection lives in the URL, so selecting is a navigation.
   const select = (districtId: number | null) =>
-    navigate({ search: { district: districtId ?? undefined } })
+    navigate({ search: (previous) => ({ ...previous, district: districtId ?? undefined }) })
 
   const selectedName = health.data?.find((candidate) => candidate.id === district)?.name
 

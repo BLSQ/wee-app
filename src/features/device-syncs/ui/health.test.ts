@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import type { DistrictSyncHealth } from '../api/queries'
-import { BUCKETS, bucketOf, percentOf, toFeatureCollection } from './health'
+import {
+  BUCKETS,
+  boundsOf,
+  bucketOf,
+  deviceCountLabel,
+  percentOf,
+  syncRateLabel,
+  toFeatureCollection,
+} from './health'
 
 const square: GeoJSON.MultiPolygon = {
   type: 'MultiPolygon',
@@ -93,5 +101,72 @@ describe('toFeatureCollection', () => {
     expect(feature.properties.color).toBe(
       BUCKETS.find((bucket) => bucket.key === 'no-devices')!.color,
     )
+  })
+})
+
+describe('boundsOf', () => {
+  const at = (...rings: GeoJSON.Position[]) =>
+    toFeatureCollection([district({ geometry: { type: 'MultiPolygon', coordinates: [[rings]] } })])
+
+  it('is the extent of every coordinate', () => {
+    expect(boundsOf(at([-13, 7], [-11, 9], [-12, 8], [-13, 7]))).toEqual([-13, 7, -11, 9])
+  })
+
+  it('spans every district, not just the first', () => {
+    const collection = toFeatureCollection([
+      district({
+        id: 1,
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [
+              [
+                [-13, 8],
+                [-13, 8],
+              ],
+            ],
+          ],
+        },
+      }),
+      district({
+        id: 2,
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [
+              [
+                [-10, 5],
+                [-10, 5],
+              ],
+            ],
+          ],
+        },
+      }),
+    ])
+
+    expect(boundsOf(collection)).toEqual([-13, 5, -10, 8])
+  })
+
+  it('is null when there is nothing to frame, so the map keeps its view', () => {
+    expect(boundsOf(toFeatureCollection([]))).toBeNull()
+    expect(boundsOf(toFeatureCollection([district({ geometry: null })]))).toBeNull()
+  })
+})
+
+describe('the popup wording', () => {
+  it.each([
+    [0, 'no devices'],
+    [1, '1 device'],
+    [12, '12 devices'],
+  ])('reads %i devices as "%s"', (deviceCount, label) => {
+    expect(deviceCountLabel(deviceCount)).toBe(label)
+  })
+
+  it('gives the rate when there is one', () => {
+    expect(syncRateLabel(47)).toBe('47% synced in the last 7 days')
+  })
+
+  it('says there is nothing to report when the district has no devices', () => {
+    expect(syncRateLabel(null)).toBe('nothing to report on')
   })
 })
