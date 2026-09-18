@@ -58,11 +58,21 @@ describe('listRecentSyncs', () => {
     const [row] = await listRecentSyncs(db, { limit: 1 })
 
     expect(row).toMatchObject({
+      deviceId: device.id,
       deviceSerial: 'SL-0042',
       username: 'amara',
       facilityName: 'Bo Government Hospital',
       districtName: 'Bo',
     })
+  })
+
+  it('drops a sync whose device has no district, instead of failing', async () => {
+    const country = await insertOrgUnit(db, { name: 'Sierra Leone' })
+    const device = await insertDevice(db, { facility: country })
+    await insertSync(db, { device })
+    await insertSync(db)
+
+    expect(await listRecentSyncs(db, { limit: 10 })).toHaveLength(1)
   })
 
   it('carries the time and the three sync counters', async () => {

@@ -3,6 +3,7 @@ import type { Database } from '#/server/db'
 
 export type RecentSync = {
   id: number
+  deviceId: number
   deviceSerial: string
   username: string
   facilityName: string
@@ -18,7 +19,8 @@ export type RecentSync = {
  *
  * A device is attached to a facility. The facility's district is its level 2
  * ancestor, and `org_unit.path` holds the dot-joined ancestor ids, so the
- * district id is the second path segment: no recursive query needed.
+ * district id is the second path segment: no recursive query needed. `nullif` is what keeps a
+ * path with no second segment from failing the whole query — that row drops out instead.
  */
 export async function listRecentSyncs(
   db: Kysely<Database>,
@@ -30,10 +32,11 @@ export async function listRecentSyncs(
     .innerJoin('app_user as user', 'user.id', 'sync.user_id')
     .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
     .innerJoin('org_unit as district', (join) =>
-      join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
+      join.on('district.id', '=', sql<number>`nullif(split_part(facility.path, '.', 2), '')::int`),
     )
     .select([
       'sync.id as id',
+      'device.id as deviceId',
       'device.serial as deviceSerial',
       'user.username as username',
       'facility.name as facilityName',
