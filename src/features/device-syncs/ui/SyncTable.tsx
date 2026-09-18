@@ -10,24 +10,22 @@ function relativeDays(date: Date) {
   return `${days} days ago`
 }
 
-interface SortConfig {
-  sortBy?: 'device' | 'user' | 'facility' | 'district'
+export type SortColumn = 'device' | 'user' | 'facility' | 'district'
+
+export type SortConfig = {
+  sortBy?: SortColumn
   sortOrder?: 'asc' | 'desc'
 }
+
+type OnSort = (sortBy: SortColumn, sortOrder: 'asc' | 'desc') => void
 
 interface SyncTableProps {
   syncs: RecentSync[]
   sortConfig?: SortConfig
-  onSort?: (sortBy: string, sortOrder: 'asc' | 'desc') => void
+  onSort?: OnSort
 }
 
-function SortIndicator({
-  column,
-  sortConfig,
-}: {
-  column: 'device' | 'user' | 'facility' | 'district'
-  sortConfig?: SortConfig
-}) {
+function SortIndicator({ column, sortConfig }: { column: SortColumn; sortConfig?: SortConfig }) {
   if (sortConfig?.sortBy !== column) return null
   return <span style={{ marginLeft: 6 }}>{sortConfig.sortOrder === 'asc' ? '↑' : '↓'}</span>
 }
@@ -38,10 +36,10 @@ function SortableHeader({
   sortConfig,
   onSort,
 }: {
-  column: 'device' | 'user' | 'facility' | 'district'
+  column: SortColumn
   label: string
   sortConfig?: SortConfig
-  onSort?: (sortBy: string, sortOrder: 'asc' | 'desc') => void
+  onSort?: OnSort
 }) {
   const handleClick = () => {
     if (!onSort) return

@@ -40,24 +40,28 @@ export async function listRecentSyncs(
     )
 
   if (params.search) {
-    const searchTerm = `%${params.search.toLowerCase()}%`
-    query = query.where(() =>
-      sql`LOWER(device.serial) LIKE ${searchTerm} OR LOWER(app_user.username) LIKE ${searchTerm} OR LOWER(facility.name) LIKE ${searchTerm} OR LOWER(district.name) LIKE ${searchTerm}`,
+    const term = `%${params.search}%`
+    query = query.where((eb) =>
+      eb.or([
+        eb('device.serial', 'ilike', term),
+        eb('user.username', 'ilike', term),
+        eb('facility.name', 'ilike', term),
+        eb('district.name', 'ilike', term),
+      ]),
     )
   }
 
-  let sortQuery = query
-    .select([
-      'sync.id as id',
-      'device.serial as deviceSerial',
-      'user.username as username',
-      'facility.name as facilityName',
-      'district.name as districtName',
-      'sync.synced_at as syncedAt',
-      'sync.submission_count as submissionCount',
-      'sync.org_unit_count as orgUnitCount',
-      'sync.entity_count as entityCount',
-    ])
+  let sortQuery = query.select([
+    'sync.id as id',
+    'device.serial as deviceSerial',
+    'user.username as username',
+    'facility.name as facilityName',
+    'district.name as districtName',
+    'sync.synced_at as syncedAt',
+    'sync.submission_count as submissionCount',
+    'sync.org_unit_count as orgUnitCount',
+    'sync.entity_count as entityCount',
+  ])
 
   const sortOrder = params.sortOrder ?? 'asc'
   if (params.sortBy) {
