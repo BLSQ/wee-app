@@ -17,15 +17,17 @@ export type DeviceListItem = {
  * Every device, ordered by serial, with how much it has synced.
  *
  * The district is the facility's level 2 ancestor, and `org_unit.path` holds the dot-joined
- * ancestor ids, so it is the second path segment: no recursive query needed. The join on
- * `device_sync` is a left join, so the devices that never synced stay in the list.
+ * ancestor ids, so it is the second path segment: no recursive query needed. `nullif` is what
+ * keeps a path with no second segment from failing the whole query — that row drops out instead.
+ *
+ * The join on `device_sync` is a left join, so the devices that never synced stay in the list.
  */
 export async function listDevices(db: Kysely<Database>): Promise<DeviceListItem[]> {
   return db
     .selectFrom('device')
     .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
     .innerJoin('org_unit as district', (join) =>
-      join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
+      join.on('district.id', '=', sql<number>`nullif(split_part(facility.path, '.', 2), '')::int`),
     )
     .leftJoin('device_sync as sync', 'sync.device_id', 'device.id')
     .select([
@@ -87,7 +89,7 @@ export async function getDeviceDetail(
     .selectFrom('device')
     .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
     .innerJoin('org_unit as district', (join) =>
-      join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
+      join.on('district.id', '=', sql<number>`nullif(split_part(facility.path, '.', 2), '')::int`),
     )
     .select([
       'device.id as id',

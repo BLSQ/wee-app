@@ -56,6 +56,16 @@ describe('listDevices', () => {
     ])
   })
 
+  it('drops a device whose org unit has no district, instead of failing', async () => {
+    // A device is always attached to a facility, so this should not happen. If it ever does,
+    // one bad row must not take the whole page down with it.
+    const country = await insertOrgUnit(db, { name: 'Sierra Leone' })
+    await insertDevice(db, { serial: 'SL-0001', facility: country })
+    await insertDevice(db, { serial: 'SL-0002' })
+
+    expect((await listDevices(db)).map((row) => row.serial)).toEqual(['SL-0002'])
+  })
+
   it('orders devices by serial', async () => {
     await insertDevice(db, { serial: 'SL-0009' })
     await insertDevice(db, { serial: 'SL-0002' })
@@ -156,6 +166,13 @@ describe('getDeviceDetail', () => {
         lastSyncedAt: new Date('2026-09-01T08:00:00Z'),
       },
     ])
+  })
+
+  it('returns null for a device whose org unit has no district, instead of failing', async () => {
+    const country = await insertOrgUnit(db, { name: 'Sierra Leone' })
+    const device = await insertDevice(db, { facility: country })
+
+    expect(await getDeviceDetail(db, { deviceId: device.id, syncLimit: 10 })).toBeNull()
   })
 
   it('returns a device that never synced, with nothing to show', async () => {

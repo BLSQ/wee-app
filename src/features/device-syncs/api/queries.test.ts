@@ -66,6 +66,15 @@ describe('listRecentSyncs', () => {
     })
   })
 
+  it('drops a sync whose device has no district, instead of failing', async () => {
+    const country = await insertOrgUnit(db, { name: 'Sierra Leone' })
+    const device = await insertDevice(db, { facility: country })
+    await insertSync(db, { device })
+    await insertSync(db)
+
+    expect(await listRecentSyncs(db, { limit: 10 })).toHaveLength(1)
+  })
+
   it('carries the time and the three sync counters', async () => {
     const syncedAt = new Date('2026-09-01T08:00:00Z')
     await insertSync(db, { syncedAt, submissionCount: 12, orgUnitCount: 3, entityCount: 5 })
