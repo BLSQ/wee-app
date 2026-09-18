@@ -1,14 +1,14 @@
 import { Alert, Card, Grid, Group, Loader, Stack, Text, Title } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
 import { trpc } from '#/lib/trpc'
-import { DEVICE_SYNC_LIMIT } from '../api/queries'
 import { DeviceSyncTable } from './DeviceSyncTable'
 import { DeviceUserTable } from './DeviceUserTable'
 
 export function DevicePage({ deviceId }: { deviceId: string }) {
+  // Digits only: Number() would also accept '0x1A' and '1e3', which no device id looks like.
+  const isValidId = /^\d+$/.test(deviceId)
   const id = Number(deviceId)
-  const isValidId = Number.isInteger(id)
-  // A non-numeric id can never match a device, so do not ask the server about it.
+  // An id that is not a device id can never match, so do not ask the server about it.
   const { data, isPending, error } = useQuery(
     trpc.devices.detail.queryOptions({ deviceId: id }, { enabled: isValidId }),
   )
@@ -36,7 +36,7 @@ export function DevicePage({ deviceId }: { deviceId: string }) {
                 <DeviceSyncTable syncs={data.syncs} />
                 {data.syncCount > data.syncs.length && (
                   <Text size="sm" c="dimmed">
-                    Showing the latest {DEVICE_SYNC_LIMIT} of {data.syncCount} syncs
+                    Showing the latest {data.syncs.length} of {data.syncCount} syncs
                   </Text>
                 )}
               </Stack>
