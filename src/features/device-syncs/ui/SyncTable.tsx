@@ -10,15 +10,81 @@ function relativeDays(date: Date) {
   return `${days} days ago`
 }
 
-export function SyncTable({ syncs }: { syncs: RecentSync[] }) {
+interface SortConfig {
+  sortBy?: 'device' | 'user' | 'facility' | 'district'
+  sortOrder?: 'asc' | 'desc'
+}
+
+interface SyncTableProps {
+  syncs: RecentSync[]
+  sortConfig?: SortConfig
+  onSort?: (sortBy: string, sortOrder: 'asc' | 'desc') => void
+}
+
+function SortIndicator({
+  column,
+  sortConfig,
+}: {
+  column: 'device' | 'user' | 'facility' | 'district'
+  sortConfig?: SortConfig
+}) {
+  if (sortConfig?.sortBy !== column) return null
+  return <span style={{ marginLeft: 6 }}>{sortConfig.sortOrder === 'asc' ? '↑' : '↓'}</span>
+}
+
+function SortableHeader({
+  column,
+  label,
+  sortConfig,
+  onSort,
+}: {
+  column: 'device' | 'user' | 'facility' | 'district'
+  label: string
+  sortConfig?: SortConfig
+  onSort?: (sortBy: string, sortOrder: 'asc' | 'desc') => void
+}) {
+  const handleClick = () => {
+    if (!onSort) return
+    const newOrder =
+      sortConfig?.sortBy === column && sortConfig?.sortOrder === 'asc' ? 'desc' : 'asc'
+    onSort(column, newOrder)
+  }
+
+  return (
+    <Table.Th
+      style={{
+        cursor: onSort ? 'pointer' : 'default',
+        userSelect: 'none',
+      }}
+      onClick={handleClick}
+    >
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        {label}
+        <SortIndicator column={column} sortConfig={sortConfig} />
+      </div>
+    </Table.Th>
+  )
+}
+
+export function SyncTable({ syncs, sortConfig, onSort }: SyncTableProps) {
   return (
     <Table striped highlightOnHover>
       <Table.Thead>
         <Table.Tr>
-          <Table.Th>Device</Table.Th>
-          <Table.Th>User</Table.Th>
-          <Table.Th>Facility</Table.Th>
-          <Table.Th>District</Table.Th>
+          <SortableHeader column="device" label="Device" sortConfig={sortConfig} onSort={onSort} />
+          <SortableHeader column="user" label="User" sortConfig={sortConfig} onSort={onSort} />
+          <SortableHeader
+            column="facility"
+            label="Facility"
+            sortConfig={sortConfig}
+            onSort={onSort}
+          />
+          <SortableHeader
+            column="district"
+            label="District"
+            sortConfig={sortConfig}
+            onSort={onSort}
+          />
           <Table.Th>Synced</Table.Th>
           <Table.Th>Submissions</Table.Th>
           <Table.Th>Org units</Table.Th>

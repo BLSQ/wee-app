@@ -22,9 +22,15 @@ export type RecentSync = {
  */
 export async function listRecentSyncs(
   db: Kysely<Database>,
-  params: { limit: number },
-): Promise<RecentSync[]> {
-  return db
+  params: {
+    limit: number
+    offset: number
+    search?: string
+    sortBy?: 'device' | 'user' | 'facility' | 'district'
+    sortOrder?: 'asc' | 'desc'
+  },
+): Promise<{ rows: RecentSync[]; total: number }> {
+  let query = db
     .selectFrom('device_sync as sync')
     .innerJoin('device', 'device.id', 'sync.device_id')
     .innerJoin('app_user as user', 'user.id', 'sync.user_id')
@@ -32,6 +38,15 @@ export async function listRecentSyncs(
     .innerJoin('org_unit as district', (join) =>
       join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
     )
+
+  if (params.search) {
+    const searchTerm = `%${params.search.toLowerCase()}%`
+    query = query.where(() =>
+      sql`LOWER(device.serial) LIKE ${searchTerm} OR LOWER(app_user.username) LIKE ${searchTerm} OR LOWER(facility.name) LIKE ${searchTerm} OR LOWER(district.name) LIKE ${searchTerm}`,
+    )
+  }
+
+  let sortQuery = query
     .select([
       'sync.id as id',
       'device.serial as deviceSerial',
@@ -43,8 +58,33 @@ export async function listRecentSyncs(
       'sync.org_unit_count as orgUnitCount',
       'sync.entity_count as entityCount',
     ])
-    .orderBy('sync.synced_at', 'desc')
-    .orderBy('sync.id', 'desc')
-    .limit(params.limit)
-    .execute()
+
+  const sortOrder = params.sortOrder ?? 'asc'
+  if (params.sortBy) {
+    switch (params.sortBy) {
+      case 'device':
+        sortQuery = sortQuery.orderBy('device.serial', sortOrder)
+        break
+      case 'user':
+        sortQuery = sortQuery.orderBy('user.username', sortOrder)
+        break
+      case 'facility':
+        sortQuery = sortQuery.orderBy('facility.name', sortOrder)
+        break
+      case 'district':
+        sortQuery = sortQuery.orderBy('district.name', sortOrder)
+        break
+    }
+  } else {
+    sortQuery = sortQuery.orderBy('sync.synced_at', 'desc')
+    sortQuery = sortQuery.orderBy('sync.id', 'desc')
+  }
+
+  const rows = await sortQuery.limit(params.limit).offset(params.offset).execute()
+
+  const countQuery = query.select(({ fn }) => [fn.countAll().as('count')])
+  const [result] = await countQuery.execute()
+  const total = Number(result?.count ?? 0)
+
+  return { rows, total }
 }
