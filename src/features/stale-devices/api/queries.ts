@@ -46,6 +46,9 @@ export async function listStaleDevices(
             .select(['sync.synced_at', 'user.username'])
             .whereRef('sync.device_id', '=', 'device.id')
             .orderBy('sync.synced_at', 'desc')
+            // Two syncs can share a timestamp, and then the planner would pick
+            // the row, so the name on the page could change between two loads.
+            .orderBy('sync.id', 'desc')
             .limit(1)
             .as('last'),
         (join) => join.onTrue(),

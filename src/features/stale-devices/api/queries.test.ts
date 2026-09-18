@@ -67,6 +67,32 @@ describe('listStaleDevices', () => {
     expect(await listStaleDevices(db, { now, days: 7 })).toEqual([])
   })
 
+  it('names the user of the newest sync, not of an older one', async () => {
+    const device = await insertDevice(db)
+    const before = await insertUser(db, { username: 'amara' })
+    const after = await insertUser(db, { username: 'fatu' })
+    await insertSync(db, { device, user: before, syncedAt: daysAgo(40) })
+    await insertSync(db, { device, user: after, syncedAt: daysAgo(30) })
+
+    const rows = await listStaleDevices(db, { now, days: 7 })
+
+    expect(rows).toMatchObject([{ lastSyncedAt: daysAgo(30), lastUsername: 'fatu' }])
+  })
+
+  it('picks one sync, deterministically, when two share a timestamp', async () => {
+    // Without a tie-break the planner chooses, so the name on the page could
+    // change between two loads of the same data. The later row wins.
+    const device = await insertDevice(db)
+    const first = await insertUser(db, { username: 'amara' })
+    const second = await insertUser(db, { username: 'fatu' })
+    await insertSync(db, { device, user: first, syncedAt: daysAgo(30) })
+    await insertSync(db, { device, user: second, syncedAt: daysAgo(30) })
+
+    const rows = await listStaleDevices(db, { now, days: 7 })
+
+    expect(rows).toMatchObject([{ lastUsername: 'fatu' }])
+  })
+
   it('returns a device that never synced, whatever the threshold', async () => {
     await insertDevice(db, { serial: 'SL-0201' })
 
@@ -86,5 +112,17 @@ describe('listStaleDevices', () => {
     const rows = await listStaleDevices(db, { now, days: 7 })
 
     expect(rows.map((row) => row.serial)).toEqual(['SL-0009', 'SL-0005', 'SL-0001'])
+  })
+
+  it('orders the never-synced devices by serial', async () => {
+    // They all tie on a null last sync, so the serial is the only thing left to
+    // order them by, and the never-synced block is the list it orders.
+    await insertDevice(db, { serial: 'SL-0009' })
+    await insertDevice(db, { serial: 'SL-0003' })
+    await insertDevice(db, { serial: 'SL-0006' })
+
+    const rows = await listStaleDevices(db, { now, days: 7 })
+
+    expect(rows.map((row) => row.serial)).toEqual(['SL-0003', 'SL-0006', 'SL-0009'])
   })
 })
