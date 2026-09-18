@@ -10,6 +10,7 @@ coding agents. Much of what a production application needs is left out on purpos
 
 - App: https://wee-app-one.vercel.app
 - Backlog: https://github.com/orgs/BLSQ/projects/12
+- Workshop slides: https://viz.bluesquare.org/wee-app/ (the `gh-pages` branch)
 
 ## Setup
 
