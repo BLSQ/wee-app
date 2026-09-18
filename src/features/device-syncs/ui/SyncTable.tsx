@@ -1,14 +1,7 @@
 import { Table, Text } from '@mantine/core'
+import { Link } from '@tanstack/react-router'
+import { relativeDays } from '#/lib/relative-days'
 import type { RecentSync } from '../api/queries'
-
-const DAY_MS = 86_400_000
-
-function relativeDays(date: Date) {
-  const days = Math.floor((Date.now() - date.getTime()) / DAY_MS)
-  if (days === 0) return 'today'
-  if (days === 1) return 'yesterday'
-  return `${days} days ago`
-}
 
 export function SyncTable({ syncs }: { syncs: RecentSync[] }) {
   return (
@@ -37,7 +30,12 @@ export function SyncTable({ syncs }: { syncs: RecentSync[] }) {
         )}
         {syncs.map((sync) => (
           <Table.Tr key={sync.id}>
-            <Table.Td>{sync.deviceSerial}</Table.Td>
+            <Table.Td>
+              {/* A feature may name another feature's route. It may not import its code. */}
+              <Link to="/devices/$deviceId" params={{ deviceId: String(sync.deviceId) }}>
+                {sync.deviceSerial}
+              </Link>
+            </Table.Td>
             <Table.Td>{sync.username}</Table.Td>
             <Table.Td>{sync.facilityName}</Table.Td>
             <Table.Td>{sync.districtName}</Table.Td>

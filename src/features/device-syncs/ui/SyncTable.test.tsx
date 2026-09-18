@@ -5,6 +5,7 @@ import { SyncTable } from './SyncTable'
 
 const sync = (values: Partial<RecentSync> = {}): RecentSync => ({
   id: 1,
+  deviceId: 1,
   deviceSerial: 'SL-0042',
   username: 'amara',
   facilityName: 'Bo Government Hospital',
@@ -44,6 +45,12 @@ describe('SyncTable', () => {
     ])
     expect(screen.getByRole('row', { name: /SL-0007/ })).toHaveTextContent('fatu')
     expect(screen.queryByText('No syncs yet')).not.toBeInTheDocument()
+  })
+
+  it('links a serial to that device', async () => {
+    await renderWithProviders(<SyncTable syncs={[sync({ deviceId: 7 })]} />)
+
+    expect(screen.getByRole('link', { name: 'SL-0042' })).toHaveAttribute('href', '/devices/7')
   })
 
   describe('the sync date', () => {

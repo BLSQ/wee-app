@@ -58,6 +58,7 @@ describe('listRecentSyncs', () => {
     const [row] = await listRecentSyncs(db, { limit: 1 })
 
     expect(row).toMatchObject({
+      deviceId: device.id,
       deviceSerial: 'SL-0042',
       username: 'amara',
       facilityName: 'Bo Government Hospital',

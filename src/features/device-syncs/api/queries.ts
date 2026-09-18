@@ -3,6 +3,7 @@ import type { Database } from '#/server/db'
 
 export type RecentSync = {
   id: number
+  deviceId: number
   deviceSerial: string
   username: string
   facilityName: string
@@ -34,6 +35,7 @@ export async function listRecentSyncs(
     )
     .select([
       'sync.id as id',
+      'device.id as deviceId',
       'device.serial as deviceSerial',
       'user.username as username',
       'facility.name as facilityName',
