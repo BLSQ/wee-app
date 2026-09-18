@@ -2,6 +2,7 @@ import { Alert, Group, Loader, NumberInput, Stack, Text, Title } from '@mantine/
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
 import { trpc } from '#/lib/trpc'
+import { NeverSyncedSection } from './NeverSyncedSection'
 import { StaleDeviceTable } from './StaleDeviceTable'
 
 // The URL holds the threshold and nothing else does, so the box reads the route
@@ -44,11 +45,7 @@ export function StaleDevicesPage() {
             Silent for more than {days} days ({silent.length})
           </Title>
           <StaleDeviceTable devices={silent} emptyMessage="No device has been silent that long" />
-          <Title order={4}>Never synced ({neverSynced.length})</Title>
-          <StaleDeviceTable
-            devices={neverSynced}
-            emptyMessage="Every device has synced at least once"
-          />
+          <NeverSyncedSection devices={neverSynced} />
         </>
       )}
     </Stack>

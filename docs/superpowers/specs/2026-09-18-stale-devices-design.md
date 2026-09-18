@@ -30,8 +30,10 @@ Picking each device's most recent sync:
    a timestamp.
 
 Devices that never synced are shown in **their own block below the stale table**, not mixed into it
-and not folded away: the issue asks that they be clearly marked, and a collapsed section or a second
-tab hides the worst case behind a click.
+and not behind a tab. The block is **folded by default**, showing its count: the list is a standing
+inventory problem rather than today's call list, so it belongs on the page without competing with
+the devices that did stop syncing. The count stays visible, which is what keeps it from being
+forgotten; unfolding it is one click.
 
 ## Decision
 
@@ -70,6 +72,11 @@ export async function listStaleDevices(
   twice, once per block; a null `lastSyncedAt` renders as "never" and the user as "—", so one
   component serves both. Dates read "34 days ago" with the exact timestamp in the `title`, as in
   `SyncTable`.
+- `NeverSyncedSection.tsx` wraps the second table in a Mantine `Collapse`, closed at first, behind a
+  button reading "Never synced (12)". `keepMounted={false}`, so the rows leave the document while it
+  is closed rather than staying there for a screen reader to read out. It owns its open/closed state,
+  which is why it is a component of its own: the page stays free of state and untested, and the
+  fold is tested where the repository says to test it — on a component that takes props.
 - `StaleDevicesPage.tsx` holds a Mantine `NumberInput` (1–365, default 7). The URL is the only home
   of the value: the box reads it from the route and writes it back with `replace`, so the page needs
   no `useState` and no `useEffect`, and the browser's back button is not filled with every digit
@@ -91,14 +98,16 @@ collide. Extract it when a third copy appears.
 
 - [ ] `/stale-devices` lists devices whose last sync is older than N days, oldest first, with
       serial, facility, district, last sync and last user.
-- [ ] A second block lists devices that never synced, marked as such, whatever N is.
+- [ ] A second block, folded by default and showing its count, lists devices that never synced,
+      marked as such, whatever N is.
 - [ ] Changing the number box changes the list and the URL; reloading `?days=14` keeps the value;
       `?days=abc` falls back to 7.
 - [ ] Query tests, seen failing first: a device exactly at the cutoff and one either side; a device
       judged on its *newest* sync, not on an older one; a never-synced device returned for every N;
       never-synced first then oldest first; facility, district and last user resolved.
 - [ ] Component tests, seen failing first: a row with its values and its relative date, "never" and
-      "—" for a device that never synced, and the empty message.
+      "—" for a device that never synced, the empty message, and a never-synced section that starts
+      folded and opens on a click.
 - [ ] `pnpm test`, `pnpm exec tsc --noEmit` and `pnpm format` are clean.
 - [ ] ADR additions or updates proposed after implementation.
 
