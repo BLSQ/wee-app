@@ -37,3 +37,38 @@ export async function listDailyActivity(
   `.execute(db)
   return rows
 }
+
+export type ActivityTotals = {
+  syncCount: number
+  resourceCount: number
+  previousSyncCount: number
+  previousResourceCount: number
+}
+
+/**
+ * Totals for the window, and for the `days` before it, so the page can show a change.
+ *
+ * Both windows come from one pass: the `where` clause bounds the two of them together
+ * and `filter` splits them at the first instant of the current one.
+ */
+export async function getActivityTotals(
+  db: Kysely<Database>,
+  params: { now: Date; days: number },
+): Promise<ActivityTotals> {
+  const today = sql`date_trunc('day', ${params.now}::timestamptz)`
+  const start = sql`${today} - make_interval(days => ${params.days - 1})`
+  const resources = sql`submission_count + org_unit_count + entity_count`
+  const { rows } = await sql<ActivityTotals>`
+    select
+      count(*) filter (where synced_at >= ${start})::int as "syncCount",
+      coalesce(sum(${resources}) filter (where synced_at >= ${start}), 0)::int
+        as "resourceCount",
+      count(*) filter (where synced_at < ${start})::int as "previousSyncCount",
+      coalesce(sum(${resources}) filter (where synced_at < ${start}), 0)::int
+        as "previousResourceCount"
+    from device_sync
+    where synced_at >= ${start} - make_interval(days => ${params.days})
+      and synced_at < ${today} + interval '1 day'
+  `.execute(db)
+  return rows[0]
+}
