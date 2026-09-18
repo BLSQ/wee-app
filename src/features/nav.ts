@@ -5,4 +5,5 @@
 export const navItems: { label: string; to: string }[] = [
   { label: 'Syncs', to: '/syncs' },
   { label: 'Devices', to: '/devices' },
+  { label: 'Stale devices', to: '/stale-devices' },
 ]

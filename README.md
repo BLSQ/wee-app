@@ -40,7 +40,7 @@ src/
 ├── features/
 │   ├── router.ts         list of feature APIs (server)
 │   ├── nav.ts            menu entries (client)
-│   └── device-syncs/     the existing feature
+│   └── device-syncs/     a feature, the one to copy
 │       ├── api/queries.ts       SQL with Kysely, plain functions taking `db`: tested
 │       ├── api/queries.test.ts
 │       ├── api/router.ts        tRPC procedures
