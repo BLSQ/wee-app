@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { renderWithProviders, screen, within } from '#/ui/test-helpers'
+import { renderWithProviders, screen, userEvent, within } from '#/ui/test-helpers'
 import type { RecentSync } from '../api/queries'
 import { SyncTable } from './SyncTable'
 
@@ -62,5 +62,64 @@ describe('SyncTable', () => {
     await renderWithProviders(<SyncTable syncs={[]} />)
 
     expect(screen.getByText('No syncs yet')).toBeVisible()
+  })
+
+  describe('sorting', () => {
+    it('asks for an ascending sort on a column that is not sorted', async () => {
+      const onSort = vi.fn()
+      await renderWithProviders(<SyncTable syncs={[sync()]} onSort={onSort} />)
+
+      await userEvent.click(screen.getByRole('columnheader', { name: /Device/ }))
+
+      expect(onSort).toHaveBeenCalledWith('device', 'asc')
+    })
+
+    it('flips the column already sorted ascending to descending', async () => {
+      const onSort = vi.fn()
+      await renderWithProviders(
+        <SyncTable
+          syncs={[sync()]}
+          sortConfig={{ sortBy: 'device', sortOrder: 'asc' }}
+          onSort={onSort}
+        />,
+      )
+
+      await userEvent.click(screen.getByRole('columnheader', { name: /Device/ }))
+
+      expect(onSort).toHaveBeenCalledWith('device', 'desc')
+    })
+
+    it('goes back to ascending when another column is picked', async () => {
+      const onSort = vi.fn()
+      await renderWithProviders(
+        <SyncTable
+          syncs={[sync()]}
+          sortConfig={{ sortBy: 'device', sortOrder: 'asc' }}
+          onSort={onSort}
+        />,
+      )
+
+      await userEvent.click(screen.getByRole('columnheader', { name: /Facility/ }))
+
+      expect(onSort).toHaveBeenCalledWith('facility', 'asc')
+    })
+
+    it('marks only the sorted column, with its direction', async () => {
+      await renderWithProviders(
+        <SyncTable syncs={[sync()]} sortConfig={{ sortBy: 'user', sortOrder: 'desc' }} />,
+      )
+
+      expect(screen.getByRole('columnheader', { name: /User/ })).toHaveTextContent('↓')
+      expect(screen.getByRole('columnheader', { name: /Device/ })).not.toHaveTextContent('↓')
+    })
+
+    it('does not sort the counter columns', async () => {
+      const onSort = vi.fn()
+      await renderWithProviders(<SyncTable syncs={[sync()]} onSort={onSort} />)
+
+      await userEvent.click(screen.getByRole('columnheader', { name: /Submissions/ }))
+
+      expect(onSort).not.toHaveBeenCalled()
+    })
   })
 })
