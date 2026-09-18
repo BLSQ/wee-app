@@ -16,6 +16,7 @@ export default tseslint.config(
     plugins: { local: localRules },
     rules: {
       'local/no-cross-feature-import': 'error',
+      'local/no-browser-server-import': 'error',
     },
   },
 )
