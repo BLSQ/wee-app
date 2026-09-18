@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StaleDevicesRouteImport } from './routes/stale-devices'
 import { Route as SyncsRouteImport } from './routes/syncs'
+import { Route as TrendRouteImport } from './routes/trend'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api/trpc/$'
 
@@ -30,6 +31,11 @@ const SyncsRoute = SyncsRouteImport.update({
   path: '/syncs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrendRoute = TrendRouteImport.update({
+  id: '/trend',
+  path: '/trend',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/stale-devices': typeof StaleDevicesRoute
   '/syncs': typeof SyncsRoute
+  '/trend': typeof TrendRoute
   '/users': typeof UsersRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/stale-devices': typeof StaleDevicesRoute
   '/syncs': typeof SyncsRoute
+  '/trend': typeof TrendRoute
   '/users': typeof UsersRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
@@ -60,21 +68,31 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/stale-devices': typeof StaleDevicesRoute
   '/syncs': typeof SyncsRoute
+  '/trend': typeof TrendRoute
   '/users': typeof UsersRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/stale-devices' | '/syncs' | '/users' | '/api/trpc/$'
+  fullPaths:
+    '/' | '/stale-devices' | '/syncs' | '/trend' | '/users' | '/api/trpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/stale-devices' | '/syncs' | '/users' | '/api/trpc/$'
-  id: '__root__' | '/' | '/stale-devices' | '/syncs' | '/users' | '/api/trpc/$'
+  to: '/' | '/stale-devices' | '/syncs' | '/trend' | '/users' | '/api/trpc/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/stale-devices'
+    | '/syncs'
+    | '/trend'
+    | '/users'
+    | '/api/trpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   StaleDevicesRoute: typeof StaleDevicesRoute
   SyncsRoute: typeof SyncsRoute
+  TrendRoute: typeof TrendRoute
   UsersRoute: typeof UsersRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
 }
@@ -102,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SyncsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trend': {
+      id: '/trend'
+      path: '/trend'
+      fullPath: '/trend'
+      preLoaderRoute: typeof TrendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/users': {
       id: '/users'
       path: '/users'
@@ -123,6 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   StaleDevicesRoute: StaleDevicesRoute,
   SyncsRoute: SyncsRoute,
+  TrendRoute: TrendRoute,
   UsersRoute: UsersRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
 }
