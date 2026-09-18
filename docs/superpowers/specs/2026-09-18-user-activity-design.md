@@ -108,6 +108,17 @@ the em-dash.
 
 No test for the route, the page or the procedure (`CLAUDE.md`).
 
+## Changed after the spec
+
+The spec put the window in React state. While this branch was open, the stale devices feature
+landed ADR 0015, *page state lives in the URL*, and the window now lives in `?period=` — declared on
+the route with `validateSearch` and a zod `.catch('7d')`, read with `getRouteApi('/users')`. A
+window is now bookmarkable, and `/users?period=bogus` redirects to `?period=7d` instead of
+throwing. The table keeps its sort in the component: ADR 0015 leaves state nobody would share where
+it is, and a sort survives a change of window either way.
+
+The ADR proposed by this work is 0017, not 0015: stale devices took 0015 and 0016 first.
+
 ## Out of scope
 
 Per-user drill-down, a district or team column (`app_user` holds only an id and a username — there
