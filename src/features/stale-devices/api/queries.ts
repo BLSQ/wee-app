@@ -31,35 +31,37 @@ export async function listStaleDevices(
 ): Promise<StaleDevice[]> {
   const cutoff = new Date(params.now.getTime() - params.days * DAY_MS)
 
-  return db
-    .selectFrom('device')
-    .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
-    .innerJoin('org_unit as district', (join) =>
-      join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
-    )
-    .leftJoinLateral(
-      (eb) =>
-        eb
-          .selectFrom('device_sync as sync')
-          .innerJoin('app_user as user', 'user.id', 'sync.user_id')
-          .select(['sync.synced_at', 'user.username'])
-          .whereRef('sync.device_id', '=', 'device.id')
-          .orderBy('sync.synced_at', 'desc')
-          .limit(1)
-          .as('last'),
-      (join) => join.onTrue(),
-    )
-    .select([
-      'device.id as id',
-      'device.serial as serial',
-      'facility.name as facilityName',
-      'district.name as districtName',
-      'last.synced_at as lastSyncedAt',
-      'last.username as lastUsername',
-    ])
-    .where((eb) => eb.or([eb('last.synced_at', 'is', null), eb('last.synced_at', '<', cutoff)]))
-    // Postgres sorts nulls last on asc, and a device that never synced is the most stale of all.
-    .orderBy('last.synced_at', (ob) => ob.asc().nullsFirst())
-    .orderBy('device.serial', 'asc')
-    .execute()
+  return (
+    db
+      .selectFrom('device')
+      .innerJoin('org_unit as facility', 'facility.id', 'device.org_unit_id')
+      .innerJoin('org_unit as district', (join) =>
+        join.on('district.id', '=', sql<number>`split_part(facility.path, '.', 2)::int`),
+      )
+      .leftJoinLateral(
+        (eb) =>
+          eb
+            .selectFrom('device_sync as sync')
+            .innerJoin('app_user as user', 'user.id', 'sync.user_id')
+            .select(['sync.synced_at', 'user.username'])
+            .whereRef('sync.device_id', '=', 'device.id')
+            .orderBy('sync.synced_at', 'desc')
+            .limit(1)
+            .as('last'),
+        (join) => join.onTrue(),
+      )
+      .select([
+        'device.id as id',
+        'device.serial as serial',
+        'facility.name as facilityName',
+        'district.name as districtName',
+        'last.synced_at as lastSyncedAt',
+        'last.username as lastUsername',
+      ])
+      .where((eb) => eb.or([eb('last.synced_at', 'is', null), eb('last.synced_at', '<', cutoff)]))
+      // Postgres sorts nulls last on asc, and a device that never synced is the most stale of all.
+      .orderBy('last.synced_at', (ob) => ob.asc().nullsFirst())
+      .orderBy('device.serial', 'asc')
+      .execute()
+  )
 }

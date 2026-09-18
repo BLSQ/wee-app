@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StaleDevicesRouteImport } from './routes/stale-devices'
 import { Route as SyncsRouteImport } from './routes/syncs'
 import { Route as ApiTrpcSplatRouteImport } from './routes/api/trpc/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StaleDevicesRoute = StaleDevicesRouteImport.update({
+  id: '/stale-devices',
+  path: '/stale-devices',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SyncsRoute = SyncsRouteImport.update({
@@ -31,30 +37,34 @@ const ApiTrpcSplatRoute = ApiTrpcSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/stale-devices': typeof StaleDevicesRoute
   '/syncs': typeof SyncsRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/stale-devices': typeof StaleDevicesRoute
   '/syncs': typeof SyncsRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/stale-devices': typeof StaleDevicesRoute
   '/syncs': typeof SyncsRoute
   '/api/trpc/$': typeof ApiTrpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/syncs' | '/api/trpc/$'
+  fullPaths: '/' | '/stale-devices' | '/syncs' | '/api/trpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/syncs' | '/api/trpc/$'
-  id: '__root__' | '/' | '/syncs' | '/api/trpc/$'
+  to: '/' | '/stale-devices' | '/syncs' | '/api/trpc/$'
+  id: '__root__' | '/' | '/stale-devices' | '/syncs' | '/api/trpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  StaleDevicesRoute: typeof StaleDevicesRoute
   SyncsRoute: typeof SyncsRoute
   ApiTrpcSplatRoute: typeof ApiTrpcSplatRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stale-devices': {
+      id: '/stale-devices'
+      path: '/stale-devices'
+      fullPath: '/stale-devices'
+      preLoaderRoute: typeof StaleDevicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/syncs': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  StaleDevicesRoute: StaleDevicesRoute,
   SyncsRoute: SyncsRoute,
   ApiTrpcSplatRoute: ApiTrpcSplatRoute,
 }
