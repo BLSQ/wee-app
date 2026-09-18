@@ -5,6 +5,13 @@ import type {
   MapMouseEvent,
   Popup,
 } from 'maplibre-gl'
+// MapLibre resolves its web worker relative to its own module URL. Vite serves
+// that module from `.vite/deps` in dev and from a hashed chunk in production,
+// and the worker file sits beside neither: the request 404s, the worker never
+// starts, and every GeoJSON source hangs unloaded — a map that draws its
+// background and nothing else, with no error in the console. Vite bundles the
+// worker for us here, and `setWorkerUrl` below points MapLibre at it.
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import { useEffect, useRef, useState } from 'react'
 import type { DistrictSyncHealth } from '../api/queries'
 import {
@@ -62,8 +69,11 @@ export function DistrictMap({ districts, selectedDistrictId, onSelect }: Props) 
     let cancelled = false
 
     void (async () => {
-      const { Map, NavigationControl, Popup } = await import('maplibre-gl')
+      const { Map, NavigationControl, Popup, setWorkerUrl } = await import('maplibre-gl')
       if (cancelled || !container.current) return
+
+      // Before the first Map: the worker is created with the map.
+      setWorkerUrl(maplibreWorkerUrl)
 
       const instance = new Map({
         container: container.current,

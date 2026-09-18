@@ -43,5 +43,16 @@ A defect that lives only in the canvas — a layer never added, a handler never 
 preview deployment before anyone sees it. The split limits the blast radius, since anything that
 can be decided without a canvas is decided in `health.ts`, but it does not remove it.
 
+The first one arrived immediately, and is worth recording. MapLibre resolves its web worker
+relative to its own module URL. Vite serves that module from `.vite/deps` in development and from
+a hashed chunk in production, and the worker file sits beside neither, so the request 404s. The
+worker never starts, every GeoJSON source stays unloaded, and the map draws its background layer
+and nothing else — with no error in the console, because MapLibre reports none. `pnpm test` was
+green throughout, `tsc` was clean, and the query returned all thirteen districts. Only opening the
+page showed it. `DistrictMap.tsx` now passes Vite's own bundled worker to `setWorkerUrl`.
+
+That is the argument for issue #9, a smoke test that loads a page in a real browser. Until it
+exists, "the preview deployment is the check" has to mean someone actually looks.
+
 Revisit if the repository gains a browser-based test runner (issue #9), or if a second map feature
 makes the imperative code worth wrapping.
