@@ -6,4 +6,5 @@ export const navItems: { label: string; to: string }[] = [
   { label: 'Syncs', to: '/syncs' },
   { label: 'Stale devices', to: '/stale-devices' },
   { label: 'Trend', to: '/trend' },
+  { label: 'Users', to: '/users' },
 ]
