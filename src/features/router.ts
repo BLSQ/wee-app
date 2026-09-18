@@ -1,5 +1,6 @@
 import { router } from '#/server/trpc/base'
 import { deviceSyncsRouter } from './device-syncs/api/router'
+import { userActivityRouter } from './user-activity/api/router'
 
 /**
  * Feature registry, server side. Adding a feature adds one router entry here and
@@ -10,6 +11,7 @@ import { deviceSyncsRouter } from './device-syncs/api/router'
  */
 export const appRouter = router({
   deviceSyncs: deviceSyncsRouter,
+  userActivity: userActivityRouter,
 })
 
 export type AppRouter = typeof appRouter
