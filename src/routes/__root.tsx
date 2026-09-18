@@ -1,4 +1,7 @@
 import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core'
+// @mantine/charts ships its own stylesheet, and it is the one that lays out the chart
+// tooltip and legend. Without it they render as unpositioned text beside the plot.
+import chartsCss from '@mantine/charts/styles.css?url'
 import mantineCss from '@mantine/core/styles.css?url'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
@@ -14,7 +17,10 @@ export const Route = createRootRoute({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'wee-app' },
     ],
-    links: [{ rel: 'stylesheet', href: mantineCss }],
+    links: [
+      { rel: 'stylesheet', href: mantineCss },
+      { rel: 'stylesheet', href: chartsCss },
+    ],
   }),
   shellComponent: RootDocument,
 })
