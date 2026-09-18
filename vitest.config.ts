@@ -10,7 +10,12 @@ export default defineConfig({
         test: {
           name: 'node',
           environment: 'node',
-          include: ['src/**/*.test.ts', 'data/**/*.test.ts', 'scripts/**/*.test.ts'],
+          include: [
+            'src/**/*.test.ts',
+            'data/**/*.test.ts',
+            'scripts/**/*.test.ts',
+            'eslint-rules/**/*.test.ts',
+          ],
         },
       },
       {
